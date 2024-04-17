@@ -19,9 +19,6 @@ from api.http.auth import (
     get_user_session_by_authorization,
 )
 
-from .product.queries import ProductQueries
-from .product.mutations import ProductMutations
-
 
 async def get_context(
     request: Request,
@@ -56,14 +53,12 @@ async def get_context(
 
 @strawberry.type
 class Query:
-    product_queries: ProductQueries = strawberry.field(
-        resolver=ProductQueries)
+    pass
 
 
 @strawberry.type
 class Mutation:
-    product_mutations: ProductMutations = strawberry.field(
-        resolver=ProductMutations)
+    pass
 
 
 schema = strawberry.Schema(
