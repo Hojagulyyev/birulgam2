@@ -1,0 +1,25 @@
+# project
+*.log
+*.pot
+*.pyc
+*.db
+__pycache__
+media
+static
+logs
+
+# enviroments
+.env
+venv/
+
+# pycharm
+.idea
+
+# visual studio code
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
