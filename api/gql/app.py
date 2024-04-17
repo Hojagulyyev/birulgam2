@@ -13,7 +13,6 @@ from strawberry.fastapi import GraphQLRouter
 from domain.user_session.entities import UserSession
 
 from infrastructure.fastapi.config import APP_CONFIG
-from infrastructure.sqlite3 import get_conn
 from api.http.auth import (
     authenticate_api_docs_user,
     get_user_session_by_authorization,
@@ -23,7 +22,6 @@ from api.http.auth import (
 async def get_context(
     request: Request,
     body = Body(None),
-    sqlite_conn = Depends(get_conn),
     user_session: UserSession | None = Depends(
         get_user_session_by_authorization
     ),
@@ -46,14 +44,18 @@ async def get_context(
             )
     
     return {
-        "sqlite_conn": sqlite_conn,
         "user_session": user_session,
     }
 
 
 @strawberry.type
+class User:
+    id: int | None = None
+
+
+@strawberry.type
 class Query:
-    pass
+    users = strawberry.field(resolver=User)
 
 
 @strawberry.type
@@ -63,7 +65,7 @@ class Mutation:
 
 schema = strawberry.Schema(
     query=Query,
-    mutation=Mutation,
+    # mutation=Mutation,
 )
 
 graphql_app = GraphQLRouter(
