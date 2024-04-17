@@ -11,23 +11,29 @@ class CompanyPgRepository(ICompanyRepository):
         
     async def save(self, company: Company) -> Company:
         if not company.id:
-            stmt = await self._conn.prepare(
-                '''
-                INSERT INTO companies (name) VALUES (:name)
-                '''
-            )
-            data = {'name': company.name}
+            company = await self._insert(company)
         else:
-            stmt = await self._conn.prepare(
-                '''
-                UPDATE companies SET name = :name WHERE id = :id
-                '''
-            )
-            data = {'name': company.name, 'id': company.id}
+            company = await self._update(company)
+        return company
+    
+    async def _insert(self, company: Company) -> Company:
+        stmt = (
+            '''
+            INSERT INTO companies (name) VALUES ($1)
+            RETURNING id
+            '''
+        )
+        args = (company.name,)
+        inserted_id = await self._conn.fetchval(stmt, *args)
+        company.id = inserted_id
+        return company
 
-        rows = await stmt.execute(data)
-        
-        if not company.id:
-            company.id = rows[0]['id']
-
+    async def _update(self, company: Company) -> Company:
+        stmt = (
+            '''
+            UPDATE companies SET name = $1 WHERE id = $2
+            '''
+        )
+        args = (company.name, company.id)
+        await self._conn.execute(stmt, *args)
         return company

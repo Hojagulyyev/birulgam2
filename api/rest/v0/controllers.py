@@ -9,12 +9,14 @@ from infrastructure.openapi.html import get_swagger_ui_html
 from api.http.auth import authenticate_api_docs_user
 
 from . import VERSION
+from . import company
 
 
 router = APIRouter()
 
 app = FastAPI(**APP_CONFIG)
 app.include_router(router)
+app.include_router(company.router)
 
 
 @app.get(

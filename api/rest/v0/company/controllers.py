@@ -30,16 +30,16 @@ router = APIRouter(
     path="",
     status_code=status.HTTP_201_CREATED,
 )
-def create_company_controller(
+async def create_company_controller(
     dto: CreateCompanyControllerDto,
     pool: Pool = Depends(get_pool)
 ):
-    with pool.acquire() as conn:
+    async with pool.acquire() as conn:
         company_repo = CompanyPgRepository(conn=conn)
         create_company_usecase = CreateCompanyUsecase(
             company_repo=company_repo,
         )
-        company = create_company_usecase.execute(
+        company = await create_company_usecase.execute(
             CreateCompanyUsecaseDto(name=dto.name),
         )
     

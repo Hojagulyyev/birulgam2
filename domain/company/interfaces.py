@@ -4,5 +4,5 @@ from abc import ABC, abstractmethod
 class ICompanyRepository(ABC):
     
     @abstractmethod
-    def save(self):
+    async def save(self):
         raise NotImplementedError
