@@ -1,0 +1,1 @@
+\i infrastructure/postgres/migrations/0001_companies.up.sql;
