@@ -1,6 +1,6 @@
-# TODO: get from .env
+# TODO: store credentials as .env variables
 DEBUG = True
-PROJECT_NAME = "Python Clean Architecture"
+PROJECT_NAME = "BirUlgam2"
 
 
 APP_CONFIG = {

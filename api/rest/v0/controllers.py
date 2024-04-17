@@ -27,7 +27,7 @@ app.include_router(router)
 async def get_api_docs():
     return get_swagger_ui_html(
         openapi_url=f"/api/{VERSION}/openapi.json",
-        title="Python Clean Architecture",
+        title="BirUlgam2",
         shard="DEFAULT_SHARD_NAME",
         signin_url="{BASE_URL}/api/{VERSION}/auth/signin/",
         username="DEFAULT_USER_USERNAME_FOR_OPENAPI_ROUTES",
