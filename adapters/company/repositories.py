@@ -20,7 +20,7 @@ class CompanyPgRepository(ICompanyRepository):
         else:
             stmt = await self._conn.prepare(
                 '''
-                UPDATE companys SET name = :name WHERE id = :id
+                UPDATE companies SET name = :name WHERE id = :id
                 '''
             )
             data = {'name': company.name, 'id': company.id}
