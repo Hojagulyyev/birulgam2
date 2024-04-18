@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from api.rest.v0.controllers import app as v0_app
 from api.gql.app import app as gql_app
 
-from infrastructure.postgres import get_pool
+from infrastructure.asyncpg import get_pool
 from config import APP_CONFIG
 
 

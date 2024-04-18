@@ -1,0 +1,1 @@
+\i infrastructure/migrations/0001_companies.up.sql;
