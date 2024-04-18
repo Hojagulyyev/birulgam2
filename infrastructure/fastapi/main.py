@@ -7,24 +7,24 @@ ROOT_DIR = os.getcwd()
 sys.path.append(ROOT_DIR)
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from api.rest.v0.controllers import app as v0_app
 from api.gql.app import app as gql_app
 
-from infrastructure.asyncpg import get_pool
+from infrastructure.asyncpg import Database
 from config import APP_CONFIG
+
+
+db = Database()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # on app startup
-    global pool
-    pool = await get_pool()
+    await db.create_pool()
     yield
     # on app shutdown
-    await pool.close()
-
 
 app = FastAPI(
     **APP_CONFIG,
@@ -32,6 +32,13 @@ app = FastAPI(
 )
 app.mount("/api/v0", v0_app)
 app.mount("/api", gql_app)
+
+
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    request.state.pgpool = db.pool
+    response = await call_next(request)
+    return response
 
 
 if __name__ == "__main__":

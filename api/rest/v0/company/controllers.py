@@ -2,8 +2,8 @@ from fastapi import (
     APIRouter,
     Depends,
     status,
+    Request,
 )
-from asyncpg import Pool
 
 from application.company.usecases import (
     CreateCompanyUsecase,
@@ -13,7 +13,6 @@ from application.company.dtos import (
 )
 from adapters.company.repositories import CompanyPgRepository
 from adapters.company.map import CompanyMap
-from infrastructure.asyncpg import get_pool
 
 from .dtos import (
     CreateCompanyControllerDto,
@@ -32,9 +31,9 @@ router = APIRouter(
 )
 async def create_company_controller(
     dto: CreateCompanyControllerDto,
-    pool: Pool = Depends(get_pool)
+    request: Request,
 ):
-    async with pool.acquire() as conn:
+    async with request.state.pgpool.acquire() as conn:
         company_repo = CompanyPgRepository(conn=conn)
         create_company_usecase = CreateCompanyUsecase(
             company_repo=company_repo,
@@ -42,6 +41,6 @@ async def create_company_controller(
         company = await create_company_usecase.execute(
             CreateCompanyUsecaseDto(name=dto.name),
         )
-    
+
     response = CompanyMap.serialize_one(company)
     return response
