@@ -13,7 +13,7 @@ from application.company.dtos import (
 )
 from adapters.company.repositories import CompanyPgRepository
 from adapters.company.map import CompanyMap
-from infrastructure.postgres import get_pool
+from infrastructure.asyncpg import get_pool
 
 from .dtos import (
     CreateCompanyControllerDto,
