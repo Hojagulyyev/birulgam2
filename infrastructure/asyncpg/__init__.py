@@ -1,4 +1,4 @@
-from asyncpg import create_pool
+from asyncpg import create_pool, Pool
 
 from infrastructure import env
 
@@ -13,7 +13,7 @@ DATABASE_URL = (
 class Database():
 
     async def create_pool(self):
-        self.pool = await create_pool(dsn=DATABASE_URL)
+        self.pool: Pool = await create_pool(dsn=DATABASE_URL)
     
 
 db = Database()
