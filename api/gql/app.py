@@ -18,6 +18,9 @@ from api.http.auth import (
     get_user_session_by_authorization,
 )
 
+from .company.mutations import CompanyMutations
+from .company.schemas import CompanySchema
+
 
 async def get_context(
     request: Request,
@@ -45,27 +48,28 @@ async def get_context(
     
     return {
         "user_session": user_session,
+        "pgpool": request.state.pgpool,
     }
 
 
-@strawberry.type
-class User:
-    id: int | None = None
-
+def get_companies() -> list[CompanySchema]:
+    return [CompanySchema(id=1, name="BirUlgam2"),]
 
 @strawberry.type
 class Query:
-    users = strawberry.field(resolver=User)
+    companies = strawberry.field(resolver=get_companies)
 
 
 @strawberry.type
 class Mutation:
-    pass
+    company_mutations: CompanyMutations = strawberry.field(
+        resolver=CompanyMutations,
+    )
 
 
 schema = strawberry.Schema(
     query=Query,
-    # mutation=Mutation,
+    mutation=Mutation,
 )
 
 graphql_app = GraphQLRouter(

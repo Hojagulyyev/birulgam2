@@ -1,6 +1,6 @@
 from domain.company.entities import Company
 
-# from api.gql.company.schemas import Company as CompanyGqlSchema
+from api.gql.company.schemas import CompanySchema
 
 
 class CompanyMap:
@@ -16,10 +16,9 @@ class CompanyMap:
             for company in companies 
         ]
     
-    # @classmethod
-    # def to_gql_schema(cls, company: Company):
-    #     return CompanyGqlSchema(
-    #         id=company.id,
-    #         name=company.name,
-    #     )
-    
+    @classmethod
+    def to_gql_schema(cls, company: Company):
+        return CompanySchema(
+            id=company.id,
+            name=company.name,
+        )
