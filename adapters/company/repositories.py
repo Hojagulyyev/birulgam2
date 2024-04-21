@@ -19,7 +19,13 @@ class CompanyPgRepository(ICompanyRepository):
     async def _insert(self, company: Company) -> Company:
         stmt = (
             '''
-            INSERT INTO companies (name) VALUES ($1)
+            INSERT INTO companies 
+            (
+                name
+            ) 
+            VALUES (
+                $1
+            )
             RETURNING id
             '''
         )
@@ -31,7 +37,9 @@ class CompanyPgRepository(ICompanyRepository):
     async def _update(self, company: Company) -> Company:
         stmt = (
             '''
-            UPDATE companies SET name = $1 WHERE id = $2
+            UPDATE companies SET 
+                name = $1 
+            WHERE id = $2
             '''
         )
         args = (company.name, company.id)
