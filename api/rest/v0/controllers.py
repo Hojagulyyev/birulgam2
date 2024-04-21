@@ -10,12 +10,14 @@ from api.http.auth import authenticate_api_docs_user
 
 from . import VERSION
 from . import company
+from . import auth
 
 
 router = APIRouter()
 
 app = FastAPI(**APP_CONFIG)
 app.include_router(router)
+app.include_router(auth.router)
 app.include_router(company.router)
 
 

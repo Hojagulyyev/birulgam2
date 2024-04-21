@@ -10,7 +10,7 @@ class User:
     password: str
     id: int | None = None
 
-    company: Company | None = Company
+    company: Company | None = None
 
     USERNAME_MIN_LENGTH = 3
     USERNAME_MAX_LENGTH = 16
@@ -36,6 +36,7 @@ class User:
             raise ValueError(f'user username\'s length must be between {self.USERNAME_MIN_LENGTH} and {self.USERNAME_MAX_LENGTH}')
         
     def _validate_password(self):
+        print(self.password)
         if not isinstance(self.password, str):
             raise TypeError
         

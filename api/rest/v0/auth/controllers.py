@@ -13,6 +13,7 @@ from application.user.dtos import CreateUserUsecaseDto
 from adapters.company.repositories import CompanyPgRepository
 from adapters.user.repositories import UserPgRepository
 from adapters.user.map import UserMap
+from adapters.user.services import UserPasswordService
 
 from .dtos import SignupControllerDto
 
@@ -39,7 +40,10 @@ async def signup_controller(
         )
 
         user_repo = UserPgRepository(conn=conn)
-        create_user_usecase = CreateUserUsecase(user_repo)
+        create_user_usecase = CreateUserUsecase(
+            user_repo=user_repo, 
+            user_password_service=UserPasswordService(),
+        )
         user = await create_user_usecase.execute(
             CreateUserUsecaseDto(
                 username=dto.username,
@@ -48,5 +52,6 @@ async def signup_controller(
             )
         )
 
+    user.company = company
     response = UserMap.serialize_one(user)
     return response

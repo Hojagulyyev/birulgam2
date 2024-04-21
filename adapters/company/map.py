@@ -7,7 +7,10 @@ class CompanyMap:
 
     @classmethod
     def serialize_one(cls, company: Company):
-        return company.__dict__
+        return {
+            "id": company.id,
+            "name": company.name,
+        }
 
     @classmethod
     def serialize_many(cls, companies: list[Company]):

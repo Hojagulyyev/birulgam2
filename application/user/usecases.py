@@ -20,7 +20,7 @@ class CreateUserUsecase:
         self.user_password_service = user_password_service
 
     async def execute(self, dto: CreateUserUsecaseDto) -> User:
-        hashed_password = (
+        hashed_password = await (
             self.user_password_service
             .hash_password(dto.password)
         )
