@@ -23,7 +23,7 @@ class UserPgRepository(IUserRepository):
             (
                 username,
                 password,
-                company_id,
+                company_id
             ) VALUES (
                 $1, $2, $3
             )
