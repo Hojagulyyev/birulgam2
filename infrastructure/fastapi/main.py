@@ -12,11 +12,8 @@ from fastapi import FastAPI, Request
 from api.rest.v0.controllers import app as v0_app
 from api.gql.app import app as gql_app
 
-from infrastructure.asyncpg import Database
+from infrastructure.asyncpg import db
 from config import APP_CONFIG
-
-
-db = Database()
 
 
 @asynccontextmanager
