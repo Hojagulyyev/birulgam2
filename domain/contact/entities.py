@@ -43,7 +43,7 @@ class Contact:
     JOB_TITLE_MIN_LENGTH = 3
     JOB_TITLE_MAX_LENGTH = 64
 
-    PASSPORT_MIN_LENGTH =10
+    PASSPORT_MIN_LENGTH = 10
     PASSPORT_MAX_LENGTH = 11
 
     PASSPORT_ISSUED_PLACE_MIN_LENGTH = 5
@@ -79,7 +79,7 @@ class Contact:
             first_name_len < self.FIRST_NAME_MIN_LENGTH
             or first_name_len > self.FIRST_NAME_MAX_LENGTH
         ):
-            raise ValueError(f'contact first_name\'s length must be between {self.NAME_MIN_LENGTH} and {self.NAME_MAX_LENGTH}')
+            raise ValueError(f'contact first_name\'s length must be between {self.FIRST_NAME_MIN_LENGTH} and {self.FIRST_NAME_MAX_LENGTH}')
 
     def _validate_surname(self):
         if not isinstance(self.surname, str):
