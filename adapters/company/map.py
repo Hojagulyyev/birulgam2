@@ -10,8 +10,11 @@ class CompanyMap:
         return company.__dict__
 
     @classmethod
-    def serialize_many(cls, companys: list[Company]):
-        return [ CompanyMap.serialize_one(company) for company in companys ]
+    def serialize_many(cls, companies: list[Company]):
+        return [ 
+            CompanyMap.serialize_one(company) 
+            for company in companies 
+        ]
     
     # @classmethod
     # def to_gql_schema(cls, company: Company):
