@@ -43,8 +43,8 @@ class UserPgRepository(IUserRepository):
         stmt = (
             '''
             UPDATE users SET 
-                username = $1 
-                password = $2 
+                username = $1,
+                password = $2,
                 company_id = $3
             WHERE id = $4
             '''
