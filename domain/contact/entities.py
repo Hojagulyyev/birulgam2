@@ -1,9 +1,12 @@
 from datetime import date
 from dataclasses import dataclass
 
+from domain.company.entities import Company
+
 
 @dataclass
 class Contact:
+    company_id: int
     first_name: str
     surname: str | None = None
     patronymic: str | None = None
@@ -17,6 +20,8 @@ class Contact:
     passport_issued_date: date | None = None
     passport_issued_place: str | None = None
     id: int | None = None
+
+    company: Company | None = Company
 
     FIRST_NAME_MIN_LENGTH = 3
     FIRST_NAME_MAX_LENGTH = 20
