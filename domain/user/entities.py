@@ -13,10 +13,10 @@ class User:
     company: Company | None = Company
 
     USERNAME_MIN_LENGTH = 3
-    USERNAME_MAX_LENGTH = 20
+    USERNAME_MAX_LENGTH = 16
 
     PASSWORD_MIN_LENGTH = 4
-    PASSWORD_MAX_LENGTH = 26
+    PASSWORD_MAX_LENGTH = 128
 
     def __post_init__(self):
         if not isinstance(self.id, int | None):
