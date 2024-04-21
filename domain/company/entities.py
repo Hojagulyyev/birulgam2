@@ -24,4 +24,4 @@ class Company:
             name_len < self.NAME_MIN_LENGTH
             or name_len > self.NAME_MAX_LENGTH
         ):
-            raise ValueError('company name\'s length must be between {NAME_MIN_LENGTH} and {NAME_MAX_LENGTH}')
+            raise ValueError(f'company name\'s length must be between {self.NAME_MIN_LENGTH} and {self.NAME_MAX_LENGTH}')

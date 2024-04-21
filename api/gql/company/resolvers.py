@@ -1,11 +1,9 @@
 from strawberry.types import Info
 
 from application.company.usecases import (
-    # GetCompanysUsecase,
     CreateCompanyUsecase,
 ) 
 from application.company.dtos import (
-    # GetCompanysUsecaseDto,
     CreateCompanyUsecaseDto,
 )
 from adapters.company.map import CompanyMap
