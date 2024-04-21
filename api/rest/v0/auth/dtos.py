@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from fastapi import HTTPException, status
+from pydantic import BaseModel, Field, model_validator
 
 from domain.user.entities import User
 
@@ -17,3 +18,14 @@ class SignupControllerDto(BaseModel):
         ...,
         min_length=User.PASSWORD_MIN_LENGTH,
     )
+
+    @model_validator(mode="after")
+    def validate_passwords(cls, dto):
+        if dto.password_confirm != dto.password:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "password mismatch"
+                ),
+            )
+        return dto
