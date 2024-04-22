@@ -8,7 +8,6 @@ class UserMap:
 
     @classmethod
     def serialize_one(cls, user: User):
-        print("user.company", user.company)
         return {
             "id": user.id,
             "username": user.username,

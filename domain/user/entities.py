@@ -36,7 +36,6 @@ class User:
             raise ValueError(f'user username\'s length must be between {self.USERNAME_MIN_LENGTH} and {self.USERNAME_MAX_LENGTH}')
         
     def _validate_password(self):
-        print(self.password)
         if not isinstance(self.password, str):
             raise TypeError
         

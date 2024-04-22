@@ -4,3 +4,5 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(128) NOT NULL,
     company_id BIGINT REFERENCES companies(id) ON DELETE CASCADE
 );
+ALTER TABLE users
+    ADD CONSTRAINT users__uk__username UNIQUE (username);

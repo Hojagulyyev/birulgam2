@@ -3,7 +3,9 @@ from fastapi import (
     Depends,
     status,
     Request,
+    HTTPException,
 )
+from asyncpg.exceptions import UniqueViolationError
 
 from application.company.usecases import CreateCompanyUsecase
 from application.company.dtos import CreateCompanyUsecaseDto
@@ -38,19 +40,26 @@ async def signup_controller(
         company = await create_company_usecase.execute(
             CreateCompanyUsecaseDto(),
         )
+        
 
         user_repo = UserPgRepository(conn=conn)
         create_user_usecase = CreateUserUsecase(
             user_repo=user_repo, 
             user_password_service=UserPasswordService(),
         )
-        user = await create_user_usecase.execute(
-            CreateUserUsecaseDto(
-                username=dto.username,
-                password=dto.password,
-                company_id=company.id,
+        try:
+            user = await create_user_usecase.execute(
+                CreateUserUsecaseDto(
+                    username=dto.username,
+                    password=dto.password,
+                    company_id=company.id,
+                )
             )
-        )
+        except UniqueViolationError as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
 
     user.company = company
     response = UserMap.serialize_one(user)
