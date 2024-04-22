@@ -39,5 +39,5 @@ async def get_user_session_by_authorization(
     
     # check is access token expired ...
     # get user session from user session cache repository ...
-    user_session = UserSession(user_id=1)
+    user_session = UserSession(user_id=1, company_id=1)
     return user_session
