@@ -1,0 +1,34 @@
+import json
+
+from domain.user_session.interfaces import IUserSessionRepository
+from domain.user_session.entities import UserSession
+
+from infrastructure import env
+from infrastructure.redis import cache
+from infrastructure.jwt import generate_token_by_user_id
+
+
+class UserSessionRedisRepository(IUserSessionRepository):
+
+    async def get_by_access_token(self, access_token: str) -> UserSession:
+        user_session_in_str = cache.get(f"access_tokens{access_token}")
+        user_session_in_dict = json.loads(user_session_in_str)
+        user_session = UserSession(
+            user_id=user_session_in_dict["user_id"],
+            company_id=user_session_in_dict["company_id"],
+        )
+        return user_session
+        
+    async def save(self, user_session: UserSession) -> UserSession:
+        access_token = generate_token_by_user_id(user_session.user_id)
+        user_session_in_dict = {
+            "user_id": user_session.user_id,
+            "company_id": user_session.company_id,
+        }
+        user_session_in_str = json.dumps(user_session_in_dict)
+        cache.set(
+            f"access_tokens{access_token}",
+            user_session_in_str,
+            ex=env.ACCESS_TOKEN_EXPIRATION_TIME_IN_SECONDS,
+        )
+        return user_session

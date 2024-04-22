@@ -1,17 +1,12 @@
 import redis
-from decouple import config
 
-
-REDIS_HOST = config("REDIS_HOST")
-REDIS_PORT = config("REDIS_PORT")
-REDIS_PASSWORD = config("REDIS_PASSWORD")
-REDIS_INDEX = config("REDIS_INDEX")
+from infrastructure import env
 
 
 cache = redis.StrictRedis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    password=REDIS_PASSWORD,
-    db=REDIS_INDEX,
+    host=env.REDIS_HOST,
+    port=env.REDIS_PORT,
+    password=env.REDIS_PASSWORD,
+    db=env.REDIS_INDEX,
     decode_responses=True,
 )
