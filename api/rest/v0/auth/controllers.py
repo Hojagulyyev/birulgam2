@@ -100,7 +100,8 @@ async def signin_controller(
             raise TypeError
         
     check_user_password_usecase = CheckUserPasswordUsecase(
-        UserPasswordService())
+        user_password_service=UserPasswordService()
+    )
     password_match = await (
         check_user_password_usecase
         .execute(dto.password, user.password)

@@ -6,6 +6,7 @@ from infrastructure import env
 
 
 class TokenService:
+    algorithm = "HS256"
 
     @classmethod
     def generate_token_by_user_id(
@@ -22,6 +23,19 @@ class TokenService:
                 'iat': datetime.now(),
             },
             env.SECRET,
-            algorithm="HS256",
+            algorithm=cls.algorithm,
         )
         return token
+    
+    @classmethod
+    def is_token_expired(cls, token: str):
+        try:
+            jwt.decode(
+                token,
+                algorithms=[cls.algorithm],
+                key=env.SECRET,
+                verify=True,
+            )
+            return False
+        except jwt.exceptions.ExpiredSignatureError:
+            return True
