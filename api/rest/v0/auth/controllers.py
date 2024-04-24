@@ -9,8 +9,12 @@ from asyncpg.exceptions import UniqueViolationError
 
 from application.company.usecases import CreateCompanyUsecase
 from application.company.dtos import CreateCompanyUsecaseDto
-from application.user.usecases import CreateUserUsecase
+from application.user.usecases import (
+    CreateUserUsecase,
+    GetUserByUsernameUsecase,
+)
 from application.user.dtos import CreateUserUsecaseDto
+from application.user.errors import UserNotFoundError
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 
@@ -76,8 +80,20 @@ async def signup_controller(
 )
 async def signin_controller(
     dto: SigninControllerDto,
+    request: Request,
 ):
-    # TODO: get user by username
+    async with request.state.pgpool.acquire() as conn:
+        get_user_by_username_usecase = GetUserByUsernameUsecase(
+            UserPgRepository(conn=conn),
+        )
+        try:
+            user = await get_user_by_username_usecase.execute(dto.username)
+        except UserNotFoundError as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
+
     user = {
         "id": 1,
         "company_id": 1,

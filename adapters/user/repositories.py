@@ -1,7 +1,9 @@
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User
 
-from asyncpg import Connection
+from application.user.errors import UserNotFoundError
+
+from asyncpg import Connection, Record
 
 
 class UserPgRepository(IUserRepository):
@@ -17,14 +19,15 @@ class UserPgRepository(IUserRepository):
                 username = $1
             '''
         )
-        args = (username, )
-        row = await self._conn.fetchrow(stmt, args)
-        print(row)
+        row: Record = await self._conn.fetchrow(stmt, username)
+        if row is None:
+            raise UserNotFoundError
+
         user = User(
             id=row[0],
             username=row[1],
             company_id=row[2],
-            password="",
+            password="secret",
         )
         return user
         
