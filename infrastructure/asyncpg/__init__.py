@@ -13,7 +13,11 @@ DATABASE_URL = (
 class Database():
 
     async def create_pool(self):
-        self.pool: Pool = await create_pool(dsn=DATABASE_URL)
+        pool = await create_pool(dsn=DATABASE_URL)
+        if pool is None:
+            raise ValueError
+        
+        self.pool: Pool = pool
     
 
 db = Database()

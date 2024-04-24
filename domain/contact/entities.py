@@ -21,7 +21,7 @@ class Contact:
     passport_issued_place: str | None = None
     id: int | None = None
 
-    company: Company | None = Company
+    company: Company | None = None
 
     FIRST_NAME_MIN_LENGTH = 3
     FIRST_NAME_MAX_LENGTH = 20
