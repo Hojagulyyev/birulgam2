@@ -10,7 +10,7 @@ class IUserRepository(ABC):
     #     raise NotImplementedError
     
     @abstractmethod
-    async def save(self, contact: User):
+    async def save(self, user: User):
         raise NotImplementedError
     
     # @abstractmethod

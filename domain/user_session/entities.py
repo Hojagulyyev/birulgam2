@@ -6,7 +6,7 @@ class UserSession:
     user_id: int
     company_id: int
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not isinstance(self.user_id, int):
             raise TypeError
         if not isinstance(self.company_id, int):

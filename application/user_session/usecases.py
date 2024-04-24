@@ -3,6 +3,8 @@ from domain.user_session.interfaces import (
     IUserSessionRepository,
 )
 
+from adapters.token.services import TokenService
+
 from .dtos import (
     CreateUserSessionUsecaseDto,
 ) 
@@ -19,14 +21,14 @@ class CreateUserSessionUsecase:
     async def execute(
         self, 
         dto: CreateUserSessionUsecaseDto,
-    ) -> UserSession:
-        
+    ) -> tuple[str, UserSession]:
+        access_token = TokenService.generate_token_by_user_id(dto.user_id)
         user_session = UserSession(
             user_id=dto.user_id,
             company_id=dto.company_id,
         )
         created_user_session = await (
             self.user_session_repo
-            .save(user_session)
+            .set_by_access_token(access_token, user_session)
         )
-        return created_user_session
+        return access_token, created_user_session
