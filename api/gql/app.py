@@ -14,8 +14,7 @@ from domain.user_session.entities import UserSession
 
 from infrastructure.fastapi.config import APP_CONFIG
 from api.http.auth import (
-    authenticate_api_docs_user,
-    get_user_session_by_authorization,
+    get_user_session_by_authorization_for_gql,
 )
 
 from .company.mutations import CompanyMutations
@@ -24,27 +23,12 @@ from .company.schemas import CompanySchema
 
 async def get_context(
     request: Request,
-    body = Body(None),
     user_session: UserSession | None = Depends(
-        get_user_session_by_authorization
+        get_user_session_by_authorization_for_gql
     ),
-    authenticated_api_docs_user = Depends(authenticate_api_docs_user)
 ):
     if user_session is None:
-        # do nothing when GraphiQL opened
-        if request.method == "GET" and authenticated_api_docs_user:
-            return {}
-        # do nothing when GraphiQL Docs generated
-        elif (
-            "IntrospectionQuery" in body["query"] 
-            and authenticated_api_docs_user
-        ):
-            return {}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="invalid authentication credentials",
-            )
+        return {}
     
     return {
         "user_session": user_session,
@@ -57,7 +41,7 @@ def get_companies() -> list[CompanySchema]:
 
 @strawberry.type
 class Query:
-    companies = strawberry.field(resolver=get_companies)
+    companies: list[CompanySchema] = strawberry.field(resolver=get_companies)
 
 
 @strawberry.type

@@ -1,4 +1,5 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
+from typing import Any
 
 import jwt
 
@@ -13,15 +14,16 @@ class TokenService:
         cls,
         user_id: int,
     ) -> str:
+        payload: dict[str, Any] = {
+            'user_id': user_id,
+            'exp': (
+                datetime.now(tz=timezone.utc) + 
+                timedelta(seconds=env.ACCESS_TOKEN_EXPIRATION_TIME_IN_SECONDS)
+            ),
+            'iat': datetime.now(tz=timezone.utc),
+        }
         token = jwt.encode(
-            {
-                'user_id': user_id,
-                'exp': (
-                    datetime.now() + 
-                    timedelta(seconds=env.ACCESS_TOKEN_EXPIRATION_TIME_IN_SECONDS)
-                ),
-                'iat': datetime.now(),
-            },
+            payload,
             env.SECRET,
             algorithm=cls.algorithm,
         )

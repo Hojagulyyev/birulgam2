@@ -86,12 +86,14 @@ async def signin_controller(
     request: Request,
 ):
     async with request.state.pgpool.acquire() as conn:
+
+        # TODO: move below validation logics into create user session usecase
         get_user_by_username_usecase = GetUserByUsernameUsecase(
             UserPgRepository(conn=conn),
         )
         try:
             user = await get_user_by_username_usecase.execute(dto.username)
-        except UserNotFoundError as e:
+        except UserNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="invalid authentication credentials",

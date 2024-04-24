@@ -1,7 +1,23 @@
-from fastapi import  HTTPException, status, Header, Depends, Request
-from fastapi.security import HTTPBasic
+from typing import Annotated
+
+from fastapi import  (
+    HTTPException, 
+    status, 
+    Header,
+    Depends, 
+    Request,
+    Body
+)
+from fastapi.security import (
+    HTTPBasic, 
+    HTTPAuthorizationCredentials, 
+    HTTPBearer,
+)
 
 from domain.user_session.entities import UserSession
+
+from adapters.token.services import TokenService
+from adapters.user_session.repositories import UserSessionRedisRepository
 
 
 # TODO: store credentials as .env variables
@@ -23,21 +39,59 @@ def authenticate_api_docs_user(
     return True
 
 
+http_bearer = HTTPBearer()
 async def get_user_session_by_authorization(
-    access_token: str = Header(default=None),
+    authorization: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)],
 ) -> UserSession | None:
-    if access_token is None:
-        return None
-    
-    access_token = access_token.replace("Bearer", "")
+    access_token: str = authorization.credentials
 
-    if not access_token:
+    if access_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="invalid authentication credentials",
         )
     
-    # check is access token expired ...
-    # get user session from user session cache repository ...
-    user_session = UserSession(user_id=1, company_id=1)
+    expired = TokenService.is_token_expired(access_token)
+    if expired:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="access token expired",
+        )
+    
+    user_session = await UserSessionRedisRepository().get_by_access_token(access_token)
+    return user_session
+
+
+async def get_user_session_by_authorization_for_gql(
+    request: Request,
+    access_token: str = Header(None),
+    authenticated_api_docs_user = Depends(authenticate_api_docs_user),
+    body = Body(None),
+) -> UserSession | None:
+    access_token = access_token.replace("Bearer ", "")
+    
+    if not access_token:
+        # do nothing when GraphiQL opened
+        if request.method == "GET" and authenticated_api_docs_user:
+            return None
+        # do nothing when GraphiQL Docs generated
+        elif (
+            "IntrospectionQuery" in body["query"] 
+            and authenticated_api_docs_user
+        ):
+            return None
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="invalid authentication credentials",
+            )    
+    
+    expired = TokenService.is_token_expired(access_token)
+    if expired:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="access token expired",
+        )
+    
+    user_session = await UserSessionRedisRepository().get_by_access_token(access_token)
     return user_session
