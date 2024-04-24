@@ -8,6 +8,25 @@ class UserPgRepository(IUserRepository):
 
     def __init__(self, conn: Connection):
         self._conn = conn
+
+    async def get_by_username(self, username: str) -> User:
+        stmt = (
+            '''
+            SELECT id, username, company_id FROM users
+            WHERE
+                username = $1
+            '''
+        )
+        args = (username, )
+        row = await self._conn.fetchrow(stmt, args)
+        print(row)
+        user = User(
+            id=row[0],
+            username=row[1],
+            company_id=row[2],
+            password="",
+        )
+        return user
         
     async def save(self, user: User) -> User:
         if not user.id:

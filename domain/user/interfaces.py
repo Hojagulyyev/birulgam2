@@ -8,6 +8,10 @@ class IUserRepository(ABC):
     # @abstractmethod
     # async def list(self):
     #     raise NotImplementedError
+
+    @abstractmethod
+    async def get_by_username(self, username: str) -> User:
+        raise NotImplementedError
     
     @abstractmethod
     async def save(self, user: User):
