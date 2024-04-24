@@ -33,7 +33,7 @@ class CreateUserUsecase:
         self.user_password_service = user_password_service
 
     async def execute(self, dto: CreateUserUsecaseDto) -> User:
-        hashed_password = await (
+        hashed_password = (
             self.user_password_service
             .hash_password(dto.password)
         )
@@ -44,3 +44,23 @@ class CreateUserUsecase:
         )
         created_user = await self.user_repo.save(user)
         return created_user
+    
+
+class CheckUserPasswordUsecase:
+
+    def __init__(
+        self, 
+        user_password_service: IUserPasswordService,
+    ):
+        self.user_password_service = user_password_service
+
+    async def execute(
+        self, 
+        plain_password: str,
+        hashed_password: str,
+    ) -> bool:
+        password_match = (
+            self.user_password_service
+            .check_password(plain_password, hashed_password)
+        )
+        return password_match

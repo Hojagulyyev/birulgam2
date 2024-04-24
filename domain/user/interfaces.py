@@ -25,14 +25,14 @@ class IUserRepository(ABC):
 class IUserPasswordService(ABC):
 
     @abstractmethod
-    async def hash_password(self, password: str):
+    def hash_password(self, password: str) -> str:
         raise NotImplementedError
     
     @abstractmethod
-    async def check_password(
+    def check_password(
         self, 
         plain_password: str, 
         hashed_password: str,
-    ):
+    ) -> bool:
         raise NotImplementedError
     

@@ -14,7 +14,7 @@ class UserPgRepository(IUserRepository):
     async def get_by_username(self, username: str) -> User:
         stmt = (
             '''
-            SELECT id, username, company_id FROM users
+            SELECT id, username, password, company_id FROM users
             WHERE
                 username = $1
             '''
@@ -26,8 +26,8 @@ class UserPgRepository(IUserRepository):
         user = User(
             id=row[0],
             username=row[1],
-            company_id=row[2],
-            password="secret",
+            password=row[2],
+            company_id=row[3],
         )
         return user
         

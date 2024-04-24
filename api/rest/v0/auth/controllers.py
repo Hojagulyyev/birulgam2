@@ -12,6 +12,7 @@ from application.company.dtos import CreateCompanyUsecaseDto
 from application.user.usecases import (
     CreateUserUsecase,
     GetUserByUsernameUsecase,
+    CheckUserPasswordUsecase,
 )
 from application.user.dtos import CreateUserUsecaseDto
 from application.user.errors import UserNotFoundError
@@ -93,19 +94,28 @@ async def signin_controller(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=str(e),
             )
-
-    user = {
-        "id": 1,
-        "company_id": 1,
-    }
+        if user.id is None:
+            raise TypeError
+        
+    check_user_password_usecase = CheckUserPasswordUsecase(
+        UserPasswordService())
+    password_match = await (
+        check_user_password_usecase
+        .execute(dto.password, user.password)
+    )
+    if not password_match:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="password mismatch",
+        )
 
     create_user_session_usecase = CreateUserSessionUsecase(
         user_session_repo=UserSessionRedisRepository(),
     )
     access_token, user_session = await create_user_session_usecase.execute(
         CreateUserSessionUsecaseDto(
-            user_id=user["id"],
-            company_id=user["company_id"],
+            user_id=user.id,
+            company_id=user.company_id,
         )
     )
     return access_token, user_session
