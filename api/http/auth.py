@@ -25,7 +25,7 @@ def authenticate_api_docs_user(
 
 async def get_user_session_by_authorization(
     access_token: str = Header(default=None),
-) -> UserSession:
+) -> UserSession | None:
     if access_token is None:
         return None
     

@@ -5,7 +5,6 @@ from fastapi import (
     Request,
     HTTPException,
 )
-from asyncpg.exceptions import UniqueViolationError
 
 from application.company.usecases import CreateCompanyUsecase
 from application.company.dtos import CreateCompanyUsecaseDto
@@ -15,7 +14,10 @@ from application.user.usecases import (
     CheckUserPasswordUsecase,
 )
 from application.user.dtos import CreateUserUsecaseDto
-from application.user.errors import UserNotFoundError
+from application.user.errors import (
+    UserNotFoundError,
+    UsernameMustBeUniqueError,
+)
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 
@@ -64,7 +66,7 @@ async def signup_controller(
                     company_id=company.id,
                 )
             )
-        except UniqueViolationError as e:
+        except UsernameMustBeUniqueError as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=str(e),
@@ -92,7 +94,7 @@ async def signin_controller(
         except UserNotFoundError as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(e),
+                detail="invalid authentication credentials",
             )
         if user.id is None:
             raise TypeError
@@ -106,7 +108,7 @@ async def signin_controller(
     if not password_match:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="password mismatch",
+            detail="invalid authentication credentials",
         )
 
     create_user_session_usecase = CreateUserSessionUsecase(
