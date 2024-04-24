@@ -9,6 +9,19 @@ from .dtos import (
 ) 
 
 
+class GetUserByUsernameUsecase:
+
+    def __init__(
+        self, 
+        user_repo: IUserRepository,
+    ):
+        self.user_repo = user_repo
+
+    async def execute(self, username: str) -> User:
+        user = await self.user_repo.get_by_username(username)
+        return user
+
+
 class CreateUserUsecase:
 
     def __init__(
