@@ -13,10 +13,10 @@ from strawberry.fastapi import GraphQLRouter
 from domain.user_session.entities import UserSession
 
 from infrastructure.fastapi.config import APP_CONFIG
-from api.http.auth import (
-    get_user_session_by_authorization_for_gql,
-)
 
+from .auth import (
+    get_user_session_by_authorization,
+)
 from .company.mutations import CompanyMutations
 from .company.schemas import CompanySchema
 
@@ -24,7 +24,7 @@ from .company.schemas import CompanySchema
 async def get_context(
     request: Request,
     user_session: UserSession | None = Depends(
-        get_user_session_by_authorization_for_gql
+        get_user_session_by_authorization
     ),
 ):
     if user_session is None:

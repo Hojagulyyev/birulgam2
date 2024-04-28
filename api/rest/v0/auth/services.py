@@ -30,10 +30,10 @@ API_DOCS_CREDENTIALS = {
 
 http_basic_authentication = HTTPBasic()
 def authenticate_api_docs_user(
-    form: HTTPBasicCredentials = Depends(http_basic_authentication),
+    credentials: HTTPBasicCredentials = Depends(http_basic_authentication),
 ):
-    correct_username = form.username == API_DOCS_CREDENTIALS["username"]
-    correct_password = form.password == API_DOCS_CREDENTIALS["password"]
+    correct_username = credentials.username == API_DOCS_CREDENTIALS["username"]
+    correct_password = credentials.password == API_DOCS_CREDENTIALS["password"]
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -45,8 +45,8 @@ http_bearer = HTTPBearer()
 async def get_user_session_by_authorization(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)],
 ) -> UserSession | None:
-    access_token: str = authorization.credentials
 
+    access_token: str = authorization.credentials
     if access_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
