@@ -6,8 +6,8 @@ from fastapi import (
 
 from infrastructure.fastapi.config import APP_CONFIG
 from infrastructure.openapi.html import get_swagger_ui_html
-from api.http.auth import authenticate_api_docs_user
 
+from .auth.services import authenticate_api_docs_user
 from . import VERSION
 from . import company
 from . import auth
