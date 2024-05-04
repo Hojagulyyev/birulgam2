@@ -18,7 +18,7 @@ class UserPgRepository(IUserRepository):
     async def get_by_username(self, username: str) -> User:
         stmt = (
             '''
-            SELECT id, username, password, company_id FROM users
+            SELECT id, username, password, company_id FROM user_
             WHERE
                 username = $1
             '''
@@ -45,7 +45,7 @@ class UserPgRepository(IUserRepository):
     async def _insert(self, user: User) -> User:
         stmt = (
             '''
-            INSERT INTO users 
+            INSERT INTO user_
             (
                 username,
                 password,
@@ -64,7 +64,7 @@ class UserPgRepository(IUserRepository):
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
-            if "users__uk__username" in str(e):
+            if "user__uk__username" in str(e):
                 raise UsernameMustBeUniqueError
             raise e
 
@@ -74,7 +74,7 @@ class UserPgRepository(IUserRepository):
     async def _update(self, user: User) -> User:
         stmt = (
             '''
-            UPDATE users SET 
+            UPDATE user_ SET 
                 username = $1,
                 password = $2,
                 company_id = $3
