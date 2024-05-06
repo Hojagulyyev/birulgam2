@@ -1,0 +1,111 @@
+from asyncpg import Connection
+from asyncpg.exceptions import UniqueViolationError
+
+from domain.contact.interfaces import IContactRepository
+from domain.contact.entities import Contact
+
+from application.contact.errors import (
+    ContactPhoneMustBeUniqueError,
+)
+
+
+class ContactPgRepository(IContactRepository):
+
+    def __init__(self, conn: Connection):
+        self._conn = conn
+        
+    async def save(self, contact: Contact) -> Contact:
+        if not contact.id:
+            contact = await self._insert(contact)
+        else:
+            contact = await self._update(contact)
+        return contact
+    
+    async def _insert(self, contact: Contact) -> Contact:
+        stmt = (
+            '''
+            INSERT INTO contact
+            (
+                company_id,
+                first_name,
+                surname,
+                patronymic,
+                phone,
+                address,
+                birthday,
+                gender,
+                workplace,
+                job_title,
+                passport,
+                passport_issued_date,
+                passport_issued_place,
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, 
+                $8, $9, $10, $11, $12, $13
+            )
+            RETURNING id
+            '''
+        )
+        args = (
+            contact.company_id,
+            contact.first_name,
+            contact.surname,
+            contact.patronymic,
+            contact.phone,
+            contact.address,
+            contact.birthday,
+            contact.gender,
+            contact.workplace,
+            contact.job_title,
+            contact.passport,
+            contact.passport_issued_date,
+            contact.passport_issued_place,
+        )
+        try:
+            inserted_id = await self._conn.fetchval(stmt, *args)
+        except UniqueViolationError as e:
+            if "contact__uk__company_id__phone" in str(e):
+                raise ContactPhoneMustBeUniqueError
+            raise e
+
+        contact.id = inserted_id
+        return contact
+
+    async def _update(self, contact: Contact) -> Contact:
+        stmt = (
+            '''
+            UPDATE contact SET 
+                company_id = $1
+                first_name = $2
+                surname = $3
+                patronymic = $4
+                phone = $5
+                address = $6
+                birthday = $7
+                gender = $8
+                workplace = $9
+                job_title = $10
+                passport = $11
+                passport_issued_date = $12
+                passport_issued_place = $13
+            WHERE id = $14
+            '''
+        )
+        args = (
+            contact.company_id,
+            contact.first_name,
+            contact.surname,
+            contact.patronymic,
+            contact.phone,
+            contact.address,
+            contact.birthday,
+            contact.gender,
+            contact.workplace,
+            contact.job_title,
+            contact.passport,
+            contact.passport_issued_date,
+            contact.passport_issued_place,
+            contact.id,
+        )
+        await self._conn.execute(stmt, *args)
+        return contact
