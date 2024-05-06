@@ -1,4 +1,4 @@
-from domain.contact.entities import Contact
+from domain.contact.entities import Contact, ContactPage
 from domain.contact.interfaces import (
     IContactRepository, 
 )
@@ -16,9 +16,9 @@ class GetContactsUsecase:
     ):
         self.contact_repo = contact_repo
 
-    async def execute(self) -> list[Contact]:
-        contacts = await self.contact_repo.list()
-        return contacts
+    async def execute(self) -> ContactPage:
+        contact_page = await self.contact_repo.list()
+        return contact_page
 
 
 class CreateContactUsecase:

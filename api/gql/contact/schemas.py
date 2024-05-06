@@ -23,3 +23,9 @@ class ContactSchema:
     id: int | None = None
 
     company: CompanySchema | None = None
+
+
+@strawberry.type
+class ContactPageSchema:
+    contacts: list[ContactSchema]
+    total: int

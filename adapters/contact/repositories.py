@@ -2,7 +2,7 @@ from asyncpg import Connection
 from asyncpg.exceptions import UniqueViolationError
 
 from domain.contact.interfaces import IContactRepository
-from domain.contact.entities import Contact
+from domain.contact.entities import Contact, ContactPage
 
 from application.contact.errors import (
     ContactPhoneMustBeUniqueError,
@@ -14,7 +14,7 @@ class ContactPgRepository(IContactRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def list(self) -> list[Contact]:
+    async def list(self) -> ContactPage:
         stmt = (
             '''
             SELECT
@@ -31,7 +31,8 @@ class ContactPgRepository(IContactRepository):
                 job_title,
                 passport,
                 passport_issued_date,
-                passport_issued_place
+                passport_issued_place,
+                COUNT(*) OVER() AS total
             FROM contact
             '''
         )
@@ -56,7 +57,11 @@ class ContactPgRepository(IContactRepository):
             )
             for row in rows
         ]
-        return contacts
+        contact_page = ContactPage(
+            contacts=contacts,
+            total=rows[0][14],
+        )
+        return contact_page
         
     async def save(self, contact: Contact) -> Contact:
         if not contact.id:

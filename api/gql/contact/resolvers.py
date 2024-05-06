@@ -10,23 +10,28 @@ from application.contact.dtos import (
 from adapters.contact.map import ContactMap
 from adapters.contact.repositories import ContactPgRepository
 
-from .schemas import ContactSchema
+from .schemas import ContactSchema, ContactPageSchema
 from .inputs import CreateContactInput
 
 
 async def get_contacts_resolver(
     info: Info,
-) -> list[ContactSchema]:
+) -> ContactPageSchema:
     async with info.context["pgpool"].acquire() as conn:
         contact_repo = ContactPgRepository(conn=conn)
         get_contacts_usecase = GetContactsUsecase(
             contact_repo=contact_repo,
         )
-        contacts = await get_contacts_usecase.execute()
-    response = [
+        contact_page = await get_contacts_usecase.execute()
+    
+    contact_schema_list = [
         ContactMap.to_gql_schema(contact)
-        for contact in contacts
+        for contact in contact_page.contacts
     ]
+    response = ContactPageSchema(
+        contacts=contact_schema_list,
+        total=contact_page.total,
+    )
     return response
 
 

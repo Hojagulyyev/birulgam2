@@ -1,11 +1,11 @@
 import strawberry
 
-from .schemas import ContactSchema
+from .schemas import ContactPageSchema
 from .resolvers import get_contacts_resolver
 
 
 @strawberry.type
 class ContactQueries:
-    contacts: list[ContactSchema] = strawberry.field(
+    contact_page: ContactPageSchema = strawberry.field(
         resolver=get_contacts_resolver,
     )

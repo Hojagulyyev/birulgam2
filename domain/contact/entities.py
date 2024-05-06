@@ -164,3 +164,9 @@ class Contact:
             or passport_issued_place_len > self.PASSPORT_ISSUED_PLACE_MAX_LENGTH
         ):
             raise ValueError(f'contact passport_issued_place\'s length must be between {self.PASSPORT_ISSUED_PLACE_MIN_LENGTH} and {self.PASSPORT_ISSUED_PLACE_MAX_LENGTH}')
+
+
+@dataclass
+class ContactPage:
+    contacts: list[Contact]
+    total: int

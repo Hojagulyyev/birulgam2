@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-from .entities import Contact
+from .entities import Contact, ContactPage
 
 
 class IContactRepository(ABC):
 
     @abstractmethod
-    async def list(self) -> list[Contact]:
+    async def list(self) -> ContactPage:
         raise NotImplementedError
     
     @abstractmethod
