@@ -19,6 +19,7 @@ from .auth import (
 )
 from .company.mutations import CompanyMutations
 from .company.schemas import CompanySchema
+from .contact.mutations import ContactMutations
 
 
 async def get_context(
@@ -48,6 +49,9 @@ class Query:
 class Mutation:
     company_mutations: CompanyMutations = strawberry.field(
         resolver=CompanyMutations,
+    )
+    contact_mutations: ContactMutations = strawberry.field(
+        resolver=ContactMutations,
     )
 
 

@@ -38,7 +38,7 @@ class ContactPgRepository(IContactRepository):
                 job_title,
                 passport,
                 passport_issued_date,
-                passport_issued_place,
+                passport_issued_place
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, 
                 $8, $9, $10, $11, $12, $13
@@ -75,18 +75,18 @@ class ContactPgRepository(IContactRepository):
         stmt = (
             '''
             UPDATE contact SET 
-                company_id = $1
-                first_name = $2
-                surname = $3
-                patronymic = $4
-                phone = $5
-                address = $6
-                birthday = $7
-                gender = $8
-                workplace = $9
-                job_title = $10
-                passport = $11
-                passport_issued_date = $12
+                company_id = $1,
+                first_name = $2,
+                surname = $3,
+                patronymic = $4,
+                phone = $5,
+                address = $6,
+                birthday = $7,
+                gender = $8,
+                workplace = $9,
+                job_title = $10,
+                passport = $11,
+                passport_issued_date = $12,
                 passport_issued_place = $13
             WHERE id = $14
             '''
