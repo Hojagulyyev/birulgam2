@@ -6,7 +6,7 @@ from .entities import Contact
 class IContactRepository(ABC):
 
     @abstractmethod
-    async def list(self):
+    async def list(self) -> list[Contact]:
         raise NotImplementedError
     
     @abstractmethod

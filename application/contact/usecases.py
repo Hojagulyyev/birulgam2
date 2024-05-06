@@ -5,7 +5,20 @@ from domain.contact.interfaces import (
 
 from .dtos import (
     CreateContactUsecaseDto,
-) 
+)
+
+
+class GetContactsUsecase:
+
+    def __init__(
+        self, 
+        contact_repo: IContactRepository,
+    ):
+        self.contact_repo = contact_repo
+
+    async def execute(self) -> list[Contact]:
+        contacts = await self.contact_repo.list()
+        return contacts
 
 
 class CreateContactUsecase:
