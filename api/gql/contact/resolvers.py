@@ -2,6 +2,7 @@ from strawberry.types import Info
 
 from application.contact.usecases import (
     CreateContactUsecase,
+    GetContactsUsecase,
 ) 
 from application.contact.dtos import (
     CreateContactUsecaseDto,
@@ -11,6 +12,22 @@ from adapters.contact.repositories import ContactPgRepository
 
 from .schemas import ContactSchema
 from .inputs import CreateContactInput
+
+
+async def get_contacts_resolver(
+    info: Info,
+) -> list[ContactSchema]:
+    async with info.context["pgpool"].acquire() as conn:
+        contact_repo = ContactPgRepository(conn=conn)
+        get_contacts_usecase = GetContactsUsecase(
+            contact_repo=contact_repo,
+        )
+        contacts = await get_contacts_usecase.execute()
+    response = [
+        ContactMap.to_gql_schema(contact)
+        for contact in contacts
+    ]
+    return response
 
 
 async def create_contact_resolver(

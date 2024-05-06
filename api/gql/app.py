@@ -17,8 +17,10 @@ from infrastructure.fastapi.config import APP_CONFIG
 from .auth import (
     get_user_session_by_authorization,
 )
-from .company.mutations import CompanyMutations
 from .company.schemas import CompanySchema
+from .company.mutations import CompanyMutations
+from .contact.schemas import ContactSchema
+from .contact.queries import ContactQueries
 from .contact.mutations import ContactMutations
 
 
@@ -43,6 +45,7 @@ def get_companies() -> list[CompanySchema]:
 @strawberry.type
 class Query:
     companies: list[CompanySchema] = strawberry.field(resolver=get_companies)
+    contact_queries: ContactQueries = strawberry.field(resolver=ContactQueries)
 
 
 @strawberry.type
