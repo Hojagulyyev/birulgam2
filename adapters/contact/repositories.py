@@ -13,6 +13,50 @@ class ContactPgRepository(IContactRepository):
 
     def __init__(self, conn: Connection):
         self._conn = conn
+
+    async def list(self) -> list[Contact]:
+        stmt = (
+            '''
+            SELECT
+                id,
+                company_id,
+                first_name,
+                surname,
+                patronymic,
+                phone,
+                address,
+                birthday,
+                gender,
+                workplace,
+                job_title,
+                passport,
+                passport_issued_date,
+                passport_issued_place
+            FROM contact
+            '''
+        )
+        rows = await self._conn.fetch(stmt)
+        
+        contacts: list[Contact] = [
+            Contact(
+                id=row[0],
+                company_id=row[1],
+                first_name=row[2],
+                surname=row[3],
+                patronymic=row[4],
+                phone=row[5],
+                address=row[6],
+                birthday=row[7],
+                gender=row[8],
+                workplace=row[9],
+                job_title=row[10],
+                passport=row[11],
+                passport_issued_date=row[12],
+                passport_issued_place=row[13],
+            )
+            for row in rows
+        ]
+        return contacts
         
     async def save(self, contact: Contact) -> Contact:
         if not contact.id:

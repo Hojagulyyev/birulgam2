@@ -5,9 +5,9 @@ from .entities import Contact
 
 class IContactRepository(ABC):
 
-    # @abstractmethod
-    # async def list(self):
-    #     raise NotImplementedError
+    @abstractmethod
+    async def list(self):
+        raise NotImplementedError
     
     @abstractmethod
     async def save(self, contact: Contact):

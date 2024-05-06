@@ -13,9 +13,7 @@ from .schemas import CompanySchema
 from . import inputs
 
 
-# TODO: remove self arg of below function
 async def create_company_resolver(
-    self,
     info: Info,
     input: inputs.CreateCompanyInput,
 ) -> CompanySchema:
