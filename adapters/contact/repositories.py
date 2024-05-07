@@ -37,7 +37,7 @@ class ContactPgRepository(IContactRepository):
             '''
         )
         rows = await self._conn.fetch(stmt)
-        
+
         contacts: list[Contact] = [
             Contact(
                 id=row[0],
@@ -57,9 +57,11 @@ class ContactPgRepository(IContactRepository):
             )
             for row in rows
         ]
+        total = rows[0][14] if rows else 0
+        
         contact_page = ContactPage(
             contacts=contacts,
-            total=rows[0][14],
+            total=total,
         )
         return contact_page
         
