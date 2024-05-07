@@ -1,5 +1,7 @@
 CREATE TABLE IF NOT EXISTS contact (
     id SERIAL PRIMARY KEY,
+    company_id BIGINT NOT NULL REFERENCES company(id) ON DELETE CASCADE,
+    
     first_name VARCHAR(20) NOT NULL,
     surname VARCHAR(24) DEFAULT NULL,
     patronymic VARCHAR(24) DEFAULT NULL,
@@ -11,9 +13,8 @@ CREATE TABLE IF NOT EXISTS contact (
     job_title VARCHAR(64) DEFAULT NULL,
     passport VARCHAR(11) DEFAULT NULL,
     passport_issued_date timestamp DEFAULT NULL,
-    passport_issued_place VARCHAR(64) DEFAULT NULL,
-    
-    company_id BIGINT NOT NULL REFERENCES company(id) ON DELETE CASCADE
+    passport_issued_place VARCHAR(64) DEFAULT NULL
 );
+
 ALTER TABLE contact
     ADD CONSTRAINT contact__uk__company_id__phone UNIQUE (company_id, phone);
