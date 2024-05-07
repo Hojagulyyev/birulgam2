@@ -1,12 +1,54 @@
+from core.random import generate_random_string
+
 from domain.user.entities import User
 from domain.user.interfaces import (
     IUserRepository, 
     IUserPasswordService,
 )
+from domain.company.entities import Company
+from domain.company.interfaces import ICompanyRepository
+from domain.store.interfaces import IStoreRepository
 
 from .dtos import (
+    SignupUserUsecaseDto,
     CreateUserUsecaseDto,
-) 
+)
+
+
+class SignupUserUsecase:
+
+    def __init__(
+        self, 
+        user_repo: IUserRepository,
+        user_password_service: IUserPasswordService,
+        company_repo: ICompanyRepository,
+        store_repo: IStoreRepository,
+    ):
+        self.user_repo = user_repo
+        self.user_password_service = user_password_service
+        self.company_repo = company_repo
+        self.store_repo = store_repo
+
+    async def execute(self, dto: SignupUserUsecaseDto) -> User:
+        dto.validate()
+
+        company = Company(name=generate_random_string())
+        company = await self.company_repo.save(company)
+        if company.id is None:
+            raise TypeError
+
+        hashed_password = (
+            self.user_password_service
+            .hash_password(dto.password)
+        )
+        user = User(
+            username=dto.username,
+            password=hashed_password,
+            company_id=company.id,
+        )
+        user = await self.user_repo.save(user)
+        user.company = company
+        return user
 
 
 class GetUserByUsernameUsecase:
