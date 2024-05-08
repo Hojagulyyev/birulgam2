@@ -3,8 +3,7 @@ CREATE TABLE IF NOT EXISTS user_ (
     company_id BIGINT REFERENCES company(id) ON DELETE CASCADE,
     
     username VARCHAR(16) NOT NULL,
-    password VARCHAR(128) NOT NULL
+    password VARCHAR(128) NOT NULL,
+    
+    CONSTRAINT user__uk__username UNIQUE (username)
 );
-
-ALTER TABLE user_
-    ADD CONSTRAINT user__uk__username UNIQUE (username);

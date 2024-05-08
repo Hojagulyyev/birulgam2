@@ -13,8 +13,7 @@ CREATE TABLE IF NOT EXISTS contact (
     job_title VARCHAR(64) DEFAULT NULL,
     passport VARCHAR(11) DEFAULT NULL,
     passport_issued_date timestamp DEFAULT NULL,
-    passport_issued_place VARCHAR(64) DEFAULT NULL
-);
+    passport_issued_place VARCHAR(64) DEFAULT NULL,
 
-ALTER TABLE contact
-    ADD CONSTRAINT contact__uk__company_id__phone UNIQUE (company_id, phone);
+    CONSTRAINT contact__uk__company_id__phone UNIQUE (company_id, phone)
+);
