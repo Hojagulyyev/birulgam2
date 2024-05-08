@@ -40,31 +40,29 @@ def authenticate_api_docs_user(
                 detail="invalid authentication credentials"
             )
 
-
+# TODO: add docs security by authenticate_api_docs_user function
 async def get_user_session_by_authorization(
     request: Request,
     access_token: str = Header(None),
-    _ = Depends(authenticate_api_docs_user),
     body = Body(None),
 ) -> UserSession | None:
     if body is None:
         return None
-       
+    
     authorization = access_token
     if not authorization:
-        # do nothing when GraphiQL opened
-        if request.method == "GET":
-            return None
-        # do nothing when GraphiQL Docs generated
-        elif (
-            "IntrospectionQuery" in body["query"]
+        if (
+            request.method == "POST"
+            and "IntrospectionQuery" not in body["query"]
         ):
-            return None
-        else:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="invalid authentication credentials",
             )
+        # do nothing when GraphiQL opened
+        # do nothing when GraphiQL Docs generated
+        else:
+            return None
     
     access_token = authorization.replace("Bearer ", "")
     try:
