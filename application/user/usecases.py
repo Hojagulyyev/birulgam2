@@ -7,6 +7,7 @@ from domain.user.interfaces import (
 )
 from domain.company.entities import Company
 from domain.company.interfaces import ICompanyRepository
+from domain.store.entities import Store
 from domain.store.interfaces import IStoreRepository
 
 from .dtos import (
@@ -36,6 +37,13 @@ class SignupUserUsecase:
         company = await self.company_repo.save(company)
         if company.id is None:
             raise TypeError
+        
+        store = Store(
+            company_id=company.id,
+            name=generate_random_string(),
+            code=generate_random_string(Store.CODE_MAX_LENGTH),
+        )
+        store = await self.store_repo.save(store)
 
         hashed_password = (
             self.user_password_service
