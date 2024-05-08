@@ -12,8 +12,9 @@ from application.user.usecases import (
     CreateUserUsecase,
     GetUserByUsernameUsecase,
     CheckUserPasswordUsecase,
+    SignupUserUsecase,
 )
-from application.user.dtos import CreateUserUsecaseDto
+from application.user.dtos import CreateUserUsecaseDto, SignupUserUsecaseDto
 from application.user.errors import (
     UserNotFoundError,
     UsernameMustBeUniqueError,
@@ -23,6 +24,7 @@ from application.user_session.dtos import CreateUserSessionUsecaseDto
 
 from adapters.company.repositories import CompanyPgRepository
 from adapters.user.repositories import UserPgRepository
+from adapters.store.repositories import StorePgRepository
 from adapters.user.map import UserMap
 from adapters.user.services import UserPasswordService
 from adapters.user_session.repositories import UserSessionRedisRepository
@@ -45,34 +47,19 @@ async def signup_controller(
     request: Request,
 ):
     async with request.state.pgpool.acquire() as conn:
-        company_repo = CompanyPgRepository(conn=conn)
-        create_company_usecase = CreateCompanyUsecase(company_repo)
-        company = await create_company_usecase.execute(
-            CreateCompanyUsecaseDto(),
-        )
-        if company.id is None:
-            raise TypeError
-
-        user_repo = UserPgRepository(conn=conn)
-        create_user_usecase = CreateUserUsecase(
-            user_repo=user_repo, 
+        signup_user_usecase = SignupUserUsecase(
+            user_repo=UserPgRepository(conn),
             user_password_service=UserPasswordService(),
+            company_repo=CompanyPgRepository(conn),
+            store_repo=StorePgRepository(conn),
         )
-        try:
-            user = await create_user_usecase.execute(
-                CreateUserUsecaseDto(
-                    username=dto.username,
-                    password=dto.password,
-                    company_id=company.id,
-                )
+        user = await signup_user_usecase.execute(
+            dto=SignupUserUsecaseDto(
+                username=dto.username,
+                password=dto.password,
+                password_confirm=dto.password_confirm,
             )
-        except UsernameMustBeUniqueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(e),
-            )
-
-    user.company = company
+        )
     response = UserMap.serialize_one(user)
     return response
 
