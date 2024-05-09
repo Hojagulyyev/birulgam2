@@ -18,7 +18,7 @@ class TokenService:
             'user_id': user_id,
             'exp': (
                 datetime.now(tz=timezone.utc) + 
-                timedelta(seconds=env.ACCESS_TOKEN_EXPIRATION_TIME_IN_SECONDS)
+                timedelta(seconds=env.ACCESS_TOKEN_LIFETIME_IN_SECONDS)
             ),
             'iat': datetime.now(tz=timezone.utc),
         }

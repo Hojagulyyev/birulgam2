@@ -1,4 +1,4 @@
 - refactor: add table constraints to entity class as constants
 - perf: use validate method instead __post_init__ method validation from entity,
     and use that validate method only in repo save() method
-
+- refactor: make AppError class in application layer instead of api layer
