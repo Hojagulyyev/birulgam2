@@ -1,13 +1,70 @@
 from asyncpg import Connection
 
 from domain.deal.interfaces import IDealRepository
-from domain.deal.entities import Deal
+from domain.deal.entities import Deal, DealPage
 
 
 class DealPgRepository(IDealRepository):
 
     def __init__(self, conn: Connection):
         self._conn = conn
+
+    async def list(self) -> DealPage:
+        stmt = (
+            '''
+            SELECT
+                id,
+                company_id,
+                store_id,
+                user_id,
+                seller_id,
+                buyer_id,
+                total_amount,
+                remaining_amount_due,
+                type,
+                installments,
+                installment_amount,
+                installment_trifle,
+                installment_expiration_date,
+                created_at,
+                last_paid_at,
+                closed_at,
+                note,
+                COUNT(*) OVER() AS total
+            FROM deal
+            '''
+        )
+        rows = await self._conn.fetch(stmt)
+
+        deals: list[Deal] = [
+            Deal(
+                id=row[0],
+                company_id=row[1],
+                store_id=row[2],
+                user_id=row[3],
+                seller_id=row[4],
+                buyer_id=row[5],
+                total_amount=row[6],
+                remaining_amount_due=row[7],
+                type=row[8],
+                installments=row[9],
+                installment_amount=row[10],
+                installment_trifle=row[11],
+                installment_expiration_date=row[12],
+                created_at=row[13],
+                last_paid_at=row[14],
+                closed_at=row[15],
+                note=row[16],
+            )
+            for row in rows
+        ]
+        total = rows[0][17] if rows else 0
+        
+        deal_page = DealPage(
+            deals=deals,
+            total=total,
+        )
+        return deal_page
         
     async def save(self, deal: Deal) -> Deal:
         if not deal.id:

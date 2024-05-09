@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 
-from .entities import Deal
+from .entities import Deal, DealPage
 
 
 class IDealRepository(ABC):
+
+    @abstractmethod
+    async def list(self) -> DealPage:
+        raise NotImplementedError
 
     @abstractmethod
     async def save(self, deal: Deal) -> Deal:

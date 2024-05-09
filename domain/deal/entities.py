@@ -90,3 +90,9 @@ class Deal:
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
             raise ValueError(f'deal type {self.type} does not allowed')
+
+
+@dataclass
+class DealPage:
+    deals: list[Deal]
+    total: int
