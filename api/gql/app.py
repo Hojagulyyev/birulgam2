@@ -1,10 +1,7 @@
 from fastapi import (
-    FastAPI, 
-    Depends, 
-    HTTPException, 
-    Request, 
-    status,
-    Body,
+    FastAPI,
+    Depends,
+    Request,
 )
 import strawberry
 import strawberry.exceptions
@@ -17,11 +14,10 @@ from infrastructure.fastapi.config import APP_CONFIG
 from .auth import (
     get_user_session_by_authorization,
 )
-from .company.schemas import CompanySchema
 from .company.mutations import CompanyMutations
-from .contact.schemas import ContactSchema
 from .contact.queries import ContactQueries
 from .contact.mutations import ContactMutations
+from .deal.queries import DealQueries
 
 
 async def get_context(
@@ -39,13 +35,10 @@ async def get_context(
     }
 
 
-def get_companies() -> list[CompanySchema]:
-    return [CompanySchema(id=1, name="BirUlgam2"),]
-
 @strawberry.type
 class Query:
-    companies: list[CompanySchema] = strawberry.field(resolver=get_companies)
     contact_queries: ContactQueries = strawberry.field(resolver=ContactQueries)
+    deal_queries: DealQueries = strawberry.field(resolver=DealQueries)
 
 
 @strawberry.type
