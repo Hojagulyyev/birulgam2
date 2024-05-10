@@ -1,0 +1,20 @@
+import strawberry
+
+from ..company.schemas import CompanySchema
+ 
+ 
+@strawberry.type
+class StoreSchema:
+    id: int | None
+    company_id: int
+
+    name: str
+    code: str
+
+    company: CompanySchema | None = None
+
+
+@strawberry.type
+class StorePageSchema:
+    stores: list[StoreSchema]
+    total: int
