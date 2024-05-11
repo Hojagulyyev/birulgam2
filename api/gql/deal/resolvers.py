@@ -1,5 +1,7 @@
 from strawberry.types import Info
 
+from domain.user_session.entities import UserSession
+
 from application.deal.usecases import (
     CreateDealUsecase,
     GetDealsUsecase,
@@ -9,8 +11,6 @@ from application.deal.dtos import (
 )
 from adapters.deal.map import DealMap
 from adapters.deal.repositories import DealPgRepository
-
-from domain.user_session.entities import UserSession
 
 from .schemas import DealSchema, DealPageSchema
 from .inputs import CreateDealInput
@@ -41,6 +41,7 @@ async def create_deal_resolver(
     input: CreateDealInput,
 ) -> DealSchema:
     user_session: UserSession = info.context["user_session"]
+
     async with info.context["pgpool"].acquire() as conn:
         create_deal_usecase = CreateDealUsecase(
             deal_repo=DealPgRepository(conn=conn),

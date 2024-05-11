@@ -4,10 +4,8 @@ from typing import Annotated
 import strawberry
 
 
-# TODO: use user_session.company_id instead of input.company_id
 @strawberry.input
 class CreateContactInput:
-    company_id: int
     first_name: str
     surname: str | None = None
     patronymic: str | None = None

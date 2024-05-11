@@ -1,5 +1,7 @@
 from strawberry.types import Info
 
+from domain.user_session.entities import UserSession
+
 from application.contact.usecases import (
     CreateContactUsecase,
     GetContactsUsecase,
@@ -39,6 +41,8 @@ async def create_contact_resolver(
     info: Info,
     input: CreateContactInput,
 ) -> ContactSchema:
+    user_session: UserSession = info.context["user_session"]
+
     async with info.context["pgpool"].acquire() as conn:
         contact_repo = ContactPgRepository(conn=conn)
         create_contact_usecase = CreateContactUsecase(
@@ -46,7 +50,7 @@ async def create_contact_resolver(
         )
         contact = await create_contact_usecase.execute(
             CreateContactUsecaseDto(
-                company_id=input.company_id,
+                company_id=user_session.company_id,
                 first_name=input.first_name,
                 surname=input.surname,
                 patronymic=input.patronymic,
