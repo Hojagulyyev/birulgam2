@@ -7,24 +7,33 @@ from application.contact.usecases import (
     GetContactsUsecase,
 ) 
 from application.contact.dtos import (
+    GetContactsUsecaseDto,
     CreateContactUsecaseDto,
 )
 from adapters.contact.map import ContactMap
 from adapters.contact.repositories import ContactPgRepository
 
 from .schemas import ContactSchema, ContactPageSchema
-from .inputs import CreateContactInput
+from .inputs import (
+    GetContactsInput,
+    CreateContactInput,
+)
 
 
 async def get_contacts_resolver(
     info: Info,
+    input: GetContactsInput,
 ) -> ContactPageSchema:
     async with info.context["pgpool"].acquire() as conn:
         contact_repo = ContactPgRepository(conn=conn)
         get_contacts_usecase = GetContactsUsecase(
             contact_repo=contact_repo,
         )
-        contact_page = await get_contacts_usecase.execute()
+        contact_page = await get_contacts_usecase.execute(
+            dto=GetContactsUsecaseDto(
+                company_id=input.company_id,
+            )
+        )
     
     contact_schema_list = [
         ContactMap.to_gql_schema(contact)

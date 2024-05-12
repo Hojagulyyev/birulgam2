@@ -39,13 +39,12 @@ class ContactPgRepository(IContactRepository):
             '''
         )
         args = []
-        where_clause = ''
 
         if company_id:
             args.append(company_id)
-            where_clause += f'company_id = {len(args)}'
+            stmt += f'company_id = ${len(args)}'
 
-        rows = await self._conn.fetch(stmt, company_id)
+        rows = await self._conn.fetch(stmt, *args)
 
         contacts: list[Contact] = [
             Contact(

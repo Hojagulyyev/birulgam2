@@ -5,6 +5,11 @@ import strawberry
 
 
 @strawberry.input
+class GetContactsInput:
+    company_id: int
+
+
+@strawberry.input
 class CreateContactInput:
     first_name: str
     surname: str | None = None
