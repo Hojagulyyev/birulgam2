@@ -58,8 +58,6 @@ class Deal:
             raise TypeError
         if not isinstance(self.total_amount, int):
             raise TypeError
-        if not isinstance(self.remaining_amount_due, int):
-            raise TypeError
         if not isinstance(self.installments, int):
             raise TypeError
         if not isinstance(self.installment_amount, int):
@@ -75,9 +73,17 @@ class Deal:
         if not isinstance(self.closed_at, datetime | None):
             raise TypeError
             
+        self._validate_remaining_amount_due()
         self._validate_type()
         if self.note:
             self._validate_note()
+
+    def _validate_remaining_amount_due(self):
+        if not isinstance(self.remaining_amount_due, int):
+            raise TypeError
+        
+        if self.remaining_amount_due > self.total_amount:
+            raise ValueError('deal remaining amount must not be greater than total amount')
         
     def _validate_note(self):
         if not isinstance(self.note, str):

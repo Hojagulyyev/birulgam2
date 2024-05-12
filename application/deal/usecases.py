@@ -45,5 +45,6 @@ class CreateDealUsecase:
             closed_at=dto.closed_at,
             note=dto.note,
         )
+        deal.validate()
         created_deal = await self.deal_repo.save(deal)
         return created_deal
