@@ -27,6 +27,6 @@ class UserSessionRedisRepository(IUserSessionRepository):
         cache.set(
             f"access_tokens{access_token}",
             user_session_in_str,
-            ex=env.ACCESS_TOKEN_TTL_IN_SECONDS,
+            ex=env.ACCESS_TOKEN_TTL,
         )
         return user_session

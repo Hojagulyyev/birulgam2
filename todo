@@ -1,4 +1,7 @@
-- refactor: add table constraints to entity class as constants
+- refactor: add table constraints to repository class as constants
 - perf: use validate method instead __post_init__ method validation from entity,
     and use that validate method only in repo save() method
 - refactor: make AppError class in application layer instead of api layer
+- fix: validate CreateDealUsecaseDto. eg: must remaining_mount <= total_amount
+- fix: validate fkey constraint errors. eg: create_deal_usecase should handle deal_store_id_fkey (not exist)
+- 
