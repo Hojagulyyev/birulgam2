@@ -19,11 +19,12 @@ from domain.user_session.entities import UserSession
 from adapters.token.services import TokenService
 from adapters.user_session.repositories import UserSessionRedisRepository
 
+from infrastructure import env
 
-# TODO: store credentials as .env variables
+
 API_DOCS_CREDENTIALS = {
-    "username": "username",
-    "password": "password",
+    "username": env.USERNAME_FOR_GRAPHIQL,
+    "password": env.PASSWORD_FOR_GRAPHIQL,
 }
 
 security = HTTPBasic()

@@ -3,10 +3,7 @@ from typing import Annotated
 from fastapi import  (
     HTTPException, 
     status, 
-    Header,
     Depends, 
-    Request,
-    Body
 )
 from fastapi.security import (
     HTTPBasic, 
@@ -20,20 +17,15 @@ from domain.user_session.entities import UserSession
 from adapters.token.services import TokenService
 from adapters.user_session.repositories import UserSessionRedisRepository
 
-
-# TODO: store credentials as .env variables
-API_DOCS_CREDENTIALS = {
-    "username": "username",
-    "password": "password",
-}
+from infrastructure import env
 
 
 http_basic_authentication = HTTPBasic()
 def authenticate_api_docs_user(
     credentials: HTTPBasicCredentials = Depends(http_basic_authentication),
 ):
-    correct_username = credentials.username == API_DOCS_CREDENTIALS["username"]
-    correct_password = credentials.password == API_DOCS_CREDENTIALS["password"]
+    correct_username = credentials.username == env.USERNAME_FOR_SWAGGER
+    correct_password = credentials.password == env.PASSWORD_FOR_SWAGGER
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
