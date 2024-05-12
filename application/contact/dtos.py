@@ -3,6 +3,11 @@ from datetime import date
 
 
 @dataclass
+class GetContactsUsecaseDto:
+    company_id: int
+
+
+@dataclass
 class CreateContactUsecaseDto:
     company_id: int
     first_name: str

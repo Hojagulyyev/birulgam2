@@ -6,7 +6,10 @@ from .entities import Contact, ContactPage
 class IContactRepository(ABC):
 
     @abstractmethod
-    async def list(self) -> ContactPage:
+    async def list(
+        self, 
+        company_id: int | None,
+    ) -> ContactPage:
         raise NotImplementedError
     
     @abstractmethod

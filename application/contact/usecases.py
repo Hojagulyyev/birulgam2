@@ -4,6 +4,7 @@ from domain.contact.interfaces import (
 )
 
 from .dtos import (
+    GetContactsUsecaseDto,
     CreateContactUsecaseDto,
 )
 
@@ -16,8 +17,11 @@ class GetContactsUsecase:
     ):
         self.contact_repo = contact_repo
 
-    async def execute(self) -> ContactPage:
-        contact_page = await self.contact_repo.list()
+    async def execute(self, dto: GetContactsUsecaseDto) -> ContactPage:
+        contact_page = await (
+            self.contact_repo
+            .list(company_id=dto.company_id)
+        )
         return contact_page
 
 

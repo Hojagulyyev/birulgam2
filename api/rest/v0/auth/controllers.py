@@ -6,7 +6,7 @@ from fastapi import (
     HTTPException,
 )
 
-from application.error import AppError
+from application.errors import AppError
 from application.company.usecases import CreateCompanyUsecase
 from application.company.dtos import CreateCompanyUsecaseDto
 from application.user.usecases import (

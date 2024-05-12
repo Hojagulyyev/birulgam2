@@ -14,7 +14,7 @@ class ContactPgRepository(IContactRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def list(self) -> ContactPage:
+    async def list(self, company_id: int | None) -> ContactPage:
         stmt = (
             '''
             SELECT
@@ -34,9 +34,18 @@ class ContactPgRepository(IContactRepository):
                 passport_issued_place,
                 COUNT(*) OVER() AS total
             FROM contact
+            WHERE 
+                1 = 1 AND
             '''
         )
-        rows = await self._conn.fetch(stmt)
+        args = []
+        where_clause = ''
+
+        if company_id:
+            args.append(company_id)
+            where_clause += f'company_id = {len(args)}'
+
+        rows = await self._conn.fetch(stmt, company_id)
 
         contacts: list[Contact] = [
             Contact(
