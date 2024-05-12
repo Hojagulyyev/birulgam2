@@ -6,8 +6,3 @@ class UserNotFoundError(Exception):
 class UsernameMustBeUniqueError(Exception):
     def __init__(self):
         super().__init__(f"username must be unique")
-
-
-class UserPasswordMismatchError(Exception):
-    def __init__(self):
-        super().__init__(f"user password mismatch")

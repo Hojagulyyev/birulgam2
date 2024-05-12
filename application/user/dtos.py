@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .errors import UserPasswordMismatchError
+from application.error import InvalidError
 
 
 @dataclass
@@ -18,4 +18,7 @@ class SignupUserUsecaseDto:
 
     def validate(self):
         if self.password != self.password_confirm:
-            raise UserPasswordMismatchError
+            raise InvalidError(
+                loc=['body', 'password_confirm'], 
+                msg='password mismatch',
+            )

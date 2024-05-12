@@ -6,6 +6,7 @@ from fastapi import (
     HTTPException,
 )
 
+from application.error import AppError
 from application.company.usecases import CreateCompanyUsecase
 from application.company.dtos import CreateCompanyUsecaseDto
 from application.user.usecases import (
@@ -53,13 +54,19 @@ async def signup_controller(
             company_repo=CompanyPgRepository(conn),
             store_repo=StorePgRepository(conn),
         )
-        user = await signup_user_usecase.execute(
-            dto=SignupUserUsecaseDto(
-                username=dto.username,
-                password=dto.password,
-                password_confirm=dto.password_confirm,
+        try:
+            user = await signup_user_usecase.execute(
+                dto=SignupUserUsecaseDto(
+                    username=dto.username,
+                    password=dto.password,
+                    password_confirm=dto.password_confirm,
+                )
             )
-        )
+        except AppError as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=e.serialize(),
+            )
     response = UserMap.serialize_one(user)
     return response
 
