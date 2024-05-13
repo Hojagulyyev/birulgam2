@@ -9,7 +9,11 @@ class DealPgRepository(IDealRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def list(self, company_id: int | None) -> DealPage:
+    async def list(
+        self,
+        ids: list[int] | None = None,
+        company_id: int | None = None,
+    ) -> DealPage:
         stmt = (
             '''
             SELECT
@@ -33,17 +37,22 @@ class DealPgRepository(IDealRepository):
                 COUNT(*) OVER() AS total
             FROM deal
             WHERE 
-                1 = 1 AND
+                1 = 1
             '''
         )
         args = []
 
+        if ids:
+            args += ids
+            ids_placeholder = ', '.join([f'${i+1}' for i in range(len(ids))])
+            stmt += f'AND id IN ({ids_placeholder})'
+
         if company_id:
             args.append(company_id)
-            stmt += f'company_id = ${len(args)}'
+            stmt += f'AND company_id = ${len(args)}'
 
         rows = await self._conn.fetch(stmt, *args)
-
+        
         deals: list[Deal] = [
             Deal(
                 id=row[0],

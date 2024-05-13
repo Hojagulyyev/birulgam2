@@ -18,7 +18,10 @@ class GetDealsUsecase:
     async def execute(self, dto: GetDealsUsecaseDto) -> DealPage:
         deal_page = await (
             self.deal_repo
-            .list(company_id=dto.company_id)
+            .list(
+                ids=dto.ids, 
+                company_id=dto.company_id,
+            )
         )
         return deal_page
 

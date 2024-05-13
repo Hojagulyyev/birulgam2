@@ -6,10 +6,9 @@ import strawberry
 
 @strawberry.input
 class GetDealsInput:
-    company_id: int
+    ids: list[int] | None = None
 
 
-# TODO: use strawberry Enum on field.type instead of str
 @strawberry.input
 class CreateDealInput:
     store_id: int

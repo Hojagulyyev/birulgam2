@@ -8,7 +8,8 @@ class IDealRepository(ABC):
     @abstractmethod
     async def list(
         self,
-        company_id: int | None,
+        ids: list[int] | None = None,
+        company_id: int | None = None,
     ) -> DealPage:
         raise NotImplementedError
 

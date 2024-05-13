@@ -5,6 +5,7 @@ from datetime import date, datetime
 @dataclass
 class GetDealsUsecaseDto:
     company_id: int
+    ids: list[int] | None = None
 
 
 @dataclass

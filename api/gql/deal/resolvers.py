@@ -24,13 +24,16 @@ async def get_deals_resolver(
     info: Info,
     input: GetDealsInput,
 ) -> DealPageSchema:
+    user_session: UserSession = info.context["user_session"]
+
     async with info.context["pgpool"].acquire() as conn:
         get_deals_usecase = GetDealsUsecase(
             DealPgRepository(conn=conn),
         )
         deal_page = await get_deals_usecase.execute(
             dto=GetDealsUsecaseDto(
-                company_id=input.company_id,
+                company_id=user_session.company_id,
+                ids=input.ids,
             )
         )
     
