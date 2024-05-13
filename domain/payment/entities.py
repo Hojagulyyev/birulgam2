@@ -63,6 +63,10 @@ class Payment:
         if not isinstance(self.created_at, datetime):
             raise TypeError
         
+        self._validate_type()
+        self._validate_method()
+        self._validate_category()
+        
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
             raise ValueError(f'payment type {self.type} does not allowed')
