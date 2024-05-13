@@ -41,7 +41,7 @@ class Payment:
     store: Store | None = None
     user: User | None = None
     deal: Deal | None = None
-    prayer: Contact | None = None
+    sender: Contact | None = None
     receiver: Contact | None = None
 
     def validate(self):
