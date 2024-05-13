@@ -27,7 +27,7 @@ class Payment:
     store_id: int
     user_id: int
     deal_id: int
-    prayer_id: int | None
+    sender_id: int | None
     receiver_id: int | None
 
     amount: int
@@ -55,7 +55,7 @@ class Payment:
             raise TypeError
         if not isinstance(self.deal_id, int):
             raise TypeError
-        if not isinstance(self.prayer_id, int | None):
+        if not isinstance(self.sender_id, int | None):
             raise TypeError
         if not isinstance(self.receiver_id, int | None):
             raise TypeError

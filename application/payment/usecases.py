@@ -47,7 +47,7 @@ class CreatePaymentUsecase:
             store_id=dto.store_id,
             user_id=dto.user_id,
             deal_id=dto.deal_id,
-            prayer_id=dto.prayer_id,
+            sender_id=dto.sender_id,
             receiver_id=dto.receiver_id,
 
             amount=dto.amount,

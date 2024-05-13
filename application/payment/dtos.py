@@ -11,7 +11,7 @@ class CreatePaymentUsecaseDto:
     store_id: int
     user_id: int
     deal_id: int
-    prayer_id: int | None
+    sender_id: int | None
     receiver_id: int | None
 
     amount: int
