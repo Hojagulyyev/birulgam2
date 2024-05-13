@@ -38,7 +38,7 @@ class CreatePaymentUsecase:
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(loc=['amount'])
         
-        if dto.created_at > deal.created_at:
+        if dto.created_at < deal.created_at:
             raise InvalidError(loc=['created_at'])
 
         payment = Payment(
