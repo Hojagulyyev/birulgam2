@@ -5,6 +5,25 @@ from domain.deal.entities import Deal, DealPage
 
 
 class DealPgRepository(IDealRepository):
+    columns = '''
+        id,
+        company_id,
+        store_id,
+        user_id,
+        seller_id,
+        buyer_id,
+        total_amount,
+        remaining_amount_due,
+        type,
+        installments,
+        installment_amount,
+        installment_trifle,
+        installment_expiration_date,
+        created_at,
+        last_paid_at,
+        closed_at,
+        note,
+    '''
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -17,23 +36,9 @@ class DealPgRepository(IDealRepository):
         stmt = (
             '''
             SELECT
-                id,
-                company_id,
-                store_id,
-                user_id,
-                seller_id,
-                buyer_id,
-                total_amount,
-                remaining_amount_due,
-                type,
-                installments,
-                installment_amount,
-                installment_trifle,
-                installment_expiration_date,
-                created_at,
-                last_paid_at,
-                closed_at,
-                note,
+            '''
+            + self.columns + 
+            '''
                 COUNT(*) OVER() AS total
             FROM deal
             WHERE 
