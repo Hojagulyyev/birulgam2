@@ -1,3 +1,4 @@
+\i migrations/0006_payment.down.sql;
 \i migrations/0005_deal.down.sql;
 \i migrations/0004_store.down.sql;
 \i migrations/0003_contact.down.sql;
