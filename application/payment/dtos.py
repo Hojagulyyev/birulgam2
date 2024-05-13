@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from domain.payment.entities import Payment
 from domain.deal.entities import Deal
 
 
@@ -14,8 +15,8 @@ class CreatePaymentUsecaseDto:
     receiver_id: int | None
 
     amount: int
-    type: str
-    method: int
+    type: Payment.Type
+    method: Payment.Method
     category: Deal.Type
 
     created_at: datetime = datetime.now()
