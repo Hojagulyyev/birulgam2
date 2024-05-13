@@ -22,7 +22,7 @@ class DealPgRepository(IDealRepository):
         created_at,
         last_paid_at,
         closed_at,
-        note,
+        note
     '''
 
     def __init__(self, conn: Connection):
@@ -39,6 +39,7 @@ class DealPgRepository(IDealRepository):
             '''
             + self.columns + 
             '''
+                ,
                 COUNT(*) OVER() AS total
             FROM deal
             WHERE 

@@ -80,3 +80,8 @@ class Payment:
         if self.category not in Deal.Type.__members__.values():
             raise ValueError(f'payment category {self.category} does not allowed')
     
+
+@dataclass
+class PaymentPage:
+    payments: list[Payment]
+    total: int

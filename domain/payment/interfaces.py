@@ -1,11 +1,18 @@
 from abc import ABC, abstractmethod
 
-from .entities import Payment
+from .entities import Payment, PaymentPage
 
 
 class IPaymentRepository(ABC):
 
     @abstractmethod
+    async def list(
+        self,
+        ids: list[int] | None = None,
+        company_id: int | None = None,
+    ) -> PaymentPage:
+        raise NotImplementedError
+
+    @abstractmethod
     async def save(self, payment: Payment) -> Payment:
         raise NotImplementedError
-    
