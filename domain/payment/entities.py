@@ -11,27 +11,6 @@ from domain.deal.entities import Deal
 
 @dataclass
 class Payment:
-    id: int | None
-    company_id: int
-    store_id: int
-    user_id: int
-    deal_id: int
-    prayer_id: int | None
-    receiver_id: int | None
-
-    amount: int
-    type: str
-    method: int
-    category: Deal.Type
-
-    created_at: datetime = datetime.now()
-
-    company: Company | None = None
-    store: Store | None = None
-    user: User | None = None
-    deal: Deal | None = None
-    prayer: Contact | None = None
-    receiver: Contact | None = None
 
     @unique
     class Type(str, Enum):
@@ -42,6 +21,28 @@ class Payment:
     class Method(str, Enum):
         CASH = "cash"
         ONLINE = "online"
+
+    id: int | None
+    company_id: int
+    store_id: int
+    user_id: int
+    deal_id: int
+    prayer_id: int | None
+    receiver_id: int | None
+
+    amount: int
+    type: Type
+    method: Method
+    category: Deal.Type
+
+    created_at: datetime = datetime.now()
+
+    company: Company | None = None
+    store: Store | None = None
+    user: User | None = None
+    deal: Deal | None = None
+    prayer: Contact | None = None
+    receiver: Contact | None = None
 
     def validate(self):
         if not isinstance(self.id, int | None):
