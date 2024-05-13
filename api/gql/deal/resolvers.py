@@ -7,23 +7,32 @@ from application.deal.usecases import (
     GetDealsUsecase,
 ) 
 from application.deal.dtos import (
+    GetDealsUsecaseDto,
     CreateDealUsecaseDto,
 )
 from adapters.deal.map import DealMap
 from adapters.deal.repositories import DealPgRepository
 
 from .schemas import DealSchema, DealPageSchema
-from .inputs import CreateDealInput
+from .inputs import (
+    GetDealsInput,
+    CreateDealInput,
+)
 
 
 async def get_deals_resolver(
     info: Info,
+    input: GetDealsInput,
 ) -> DealPageSchema:
     async with info.context["pgpool"].acquire() as conn:
         get_deals_usecase = GetDealsUsecase(
             DealPgRepository(conn=conn),
         )
-        deal_page = await get_deals_usecase.execute()
+        deal_page = await get_deals_usecase.execute(
+            dto=GetDealsUsecaseDto(
+                company_id=input.company_id,
+            )
+        )
     
     deal_schema_list = [
         DealMap.to_gql_schema(deal)

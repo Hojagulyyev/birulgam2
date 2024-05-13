@@ -4,6 +4,11 @@ from typing import Annotated
 import strawberry
 
 
+@strawberry.input
+class GetDealsInput:
+    company_id: int
+
+
 # TODO: use strawberry Enum on field.type instead of str
 @strawberry.input
 class CreateDealInput:

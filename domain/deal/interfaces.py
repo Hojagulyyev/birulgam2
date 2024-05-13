@@ -6,7 +6,10 @@ from .entities import Deal, DealPage
 class IDealRepository(ABC):
 
     @abstractmethod
-    async def list(self) -> DealPage:
+    async def list(
+        self,
+        company_id: int | None,
+    ) -> DealPage:
         raise NotImplementedError
 
     @abstractmethod

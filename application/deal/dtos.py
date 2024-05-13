@@ -3,6 +3,11 @@ from datetime import date, datetime
 
 
 @dataclass
+class GetDealsUsecaseDto:
+    company_id: int
+
+
+@dataclass
 class CreateDealUsecaseDto:
     company_id: int
     store_id: int

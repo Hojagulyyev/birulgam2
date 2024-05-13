@@ -1,7 +1,10 @@
 from domain.deal.entities import Deal, DealPage
 from domain.deal.interfaces import IDealRepository
 
-from .dtos import CreateDealUsecaseDto
+from .dtos import (
+    GetDealsUsecaseDto,
+    CreateDealUsecaseDto,
+)
 
 
 class GetDealsUsecase:
@@ -12,8 +15,11 @@ class GetDealsUsecase:
     ):
         self.deal_repo = deal_repo
 
-    async def execute(self) -> DealPage:
-        deal_page = await self.deal_repo.list()
+    async def execute(self, dto: GetDealsUsecaseDto) -> DealPage:
+        deal_page = await (
+            self.deal_repo
+            .list(company_id=dto.company_id)
+        )
         return deal_page
 
 
