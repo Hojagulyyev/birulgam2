@@ -1,11 +1,15 @@
 import strawberry
 
+from ..error.schemas import ErrorSchema
 from .schemas import PaymentSchema
-from .resolvers import create_payment_resolver
+from .resolvers import (
+    create_payment_resolver,
+    create_payment_response,
+)
 
 
 @strawberry.type
 class PaymentMutations:
-    create_payment: PaymentSchema = strawberry.mutation(
+    create_payment: create_payment_response = strawberry.mutation(
         resolver=create_payment_resolver,
     )

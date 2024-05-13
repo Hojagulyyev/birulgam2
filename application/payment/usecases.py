@@ -36,10 +36,19 @@ class CreatePaymentUsecase:
             deal = deal_page.deals[0]
 
         if dto.amount > deal.remaining_amount_due:
-            raise InvalidError(loc=['amount'])
+            raise InvalidError(
+                loc=['amount'],
+                msg=(
+                    'amount must not be greater than '
+                    'deal remaining amount due'
+                ),
+            )
         
         if dto.created_at < deal.created_at:
-            raise InvalidError(loc=['created_at'])
+            raise InvalidError(
+                loc=['created_at'],
+                msg='created_at must be greater than deal created_at'
+            )
 
         payment = Payment(
             id=None,
