@@ -32,8 +32,8 @@ class CreatePaymentUsecase:
         )
         if deal_page.total == 0:
             raise DoesNotExistError(loc=['deal_id'])
-        else:
-            deal = deal_page.deals[0]
+        
+        deal = deal_page.deals[0]
 
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
@@ -43,7 +43,7 @@ class CreatePaymentUsecase:
                     'deal remaining amount due'
                 ),
             )
-        
+
         if dto.created_at < deal.created_at:
             raise InvalidError(
                 loc=['created_at'],
@@ -67,6 +67,10 @@ class CreatePaymentUsecase:
             created_at=dto.created_at,
         )
         payment.validate()
-
         created_payment = await self.payment_repo.save(payment)
+
+        deal.remaining_amount_due -= payment.amount
+        deal.validate()
+        await self.deal_repo.save(deal)
+
         return created_payment
