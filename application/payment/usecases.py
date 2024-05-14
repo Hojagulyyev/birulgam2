@@ -24,15 +24,13 @@ class CreatePaymentUsecase:
         self.deal_repo = deal_repo
     
     async def execute(self, dto: CreatePaymentUsecaseDto) -> Payment:
-        deal_page = await self.deal_repo.list(
+        deal = await self.deal_repo.get_by_id(
             company_id=dto.company_id,
-            ids=[dto.deal_id],
+            id=dto.deal_id,
         )
-        if deal_page.total == 0:
+        if not deal:
             raise DoesNotExistError(loc=['deal_id'])
         
-        deal = deal_page.deals[0]
-
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
                 loc=['amount'],
