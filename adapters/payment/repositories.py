@@ -78,6 +78,20 @@ class PaymentPgRepository(IPaymentRepository):
             total=total,
         )
         return payment_page
+    
+    async def get_by_id(
+        self, 
+        id: int, 
+        company_id: int | None = None,
+    ) -> Payment | None:
+        payment_page = await self.list(
+            ids=[id],
+            company_id=company_id,
+        )
+        if payment_page.total == 0:
+            return None
+        
+        return payment_page.payments[0]
         
     async def save(self, payment: Payment) -> Payment:
         if not payment.id:

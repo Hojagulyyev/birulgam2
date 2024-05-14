@@ -12,6 +12,14 @@ class IPaymentRepository(ABC):
         company_id: int | None = None,
     ) -> PaymentPage:
         raise NotImplementedError
+    
+    @abstractmethod
+    async def get_by_id(
+        self,
+        id: int,
+        company_id: int | None = None,
+    ) -> Payment | None:
+        raise NotImplementedError
 
     @abstractmethod
     async def save(self, payment: Payment) -> Payment:
