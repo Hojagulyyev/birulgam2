@@ -88,6 +88,20 @@ class DealPgRepository(IDealRepository):
             total=total,
         )
         return deal_page
+    
+    async def get_by_id(
+        self, 
+        id: int, 
+        company_id: int | None = None,
+    ) -> Deal | None:
+        deal_page = await self.list(
+            ids=[id],
+            company_id=company_id,
+        )
+        if deal_page.total == 0:
+            return None
+        
+        return deal_page.deals[0]
         
     async def save(self, deal: Deal) -> Deal:
         if not deal.id:

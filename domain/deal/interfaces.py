@@ -12,6 +12,14 @@ class IDealRepository(ABC):
         company_id: int | None = None,
     ) -> DealPage:
         raise NotImplementedError
+    
+    @abstractmethod
+    async def get_by_id(
+        self,
+        id: int,
+        company_id: int | None = None,
+    ) -> Deal | None:
+        raise NotImplementedError
 
     @abstractmethod
     async def save(self, deal: Deal) -> Deal:
