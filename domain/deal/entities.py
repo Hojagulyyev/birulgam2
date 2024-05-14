@@ -82,6 +82,9 @@ class Deal:
         if not isinstance(self.remaining_amount_due, int):
             raise TypeError
         
+        if self.remaining_amount_due < 0:
+            raise ValueError('deal remaining amount must be a whole number')
+        
         if self.remaining_amount_due > self.total_amount:
             raise ValueError('deal remaining amount must not be greater than total amount')
         

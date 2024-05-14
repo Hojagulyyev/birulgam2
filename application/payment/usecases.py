@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from domain.payment.entities import Payment
 from domain.payment.interfaces import IPaymentRepository
 from domain.deal.entities import Deal
@@ -66,6 +68,11 @@ class CreatePaymentUsecase:
         created_payment = await self.payment_repo.save(payment)
 
         deal.remaining_amount_due -= payment.amount
+        deal.last_paid_at = datetime.now()
+
+        if deal.remaining_amount_due == 0:
+            deal.closed_at = datetime.now()
+
         deal.validate()
         await self.deal_repo.save(deal)
 
