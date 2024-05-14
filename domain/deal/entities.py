@@ -99,6 +99,15 @@ class Deal:
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
             raise ValueError(f'deal type {self.type} does not allowed')
+        
+    def _validate_installments(self):
+        calculated_total_amount = (
+            self.installment_amount * 
+            self.installments + 
+            self.installment_trifle
+        )
+        if calculated_total_amount != self.total_amount:
+            raise ValueError('deal installments data is inconsistent')
 
 
 @dataclass

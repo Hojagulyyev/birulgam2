@@ -26,6 +26,7 @@ class CreatePaymentUsecase:
         self.deal_repo = deal_repo
     
     async def execute(self, dto: CreatePaymentUsecaseDto) -> Payment:
+        # >>> SECURITY
         deal = await self.deal_repo.get_by_id(
             company_id=dto.company_id,
             id=dto.deal_id,
@@ -33,6 +34,7 @@ class CreatePaymentUsecase:
         if not deal:
             raise DoesNotExistError(loc=['deal_id'])
         
+        # >>> VALIDATION
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
                 loc=['amount'],
@@ -48,6 +50,7 @@ class CreatePaymentUsecase:
                 msg='created_at must be greater than deal created_at'
             )
 
+        # >>> MAIN
         payment = Payment(
             id=None,
             company_id=dto.company_id,
@@ -67,6 +70,7 @@ class CreatePaymentUsecase:
         payment.validate()
         created_payment = await self.payment_repo.save(payment)
 
+        # >>> SIDE EFFECT
         deal.remaining_amount_due -= payment.amount
         deal.last_paid_at = datetime.now()
 
