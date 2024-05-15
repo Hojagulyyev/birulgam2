@@ -77,6 +77,9 @@ class CreatePaymentUsecase:
         if deal.remaining_amount_due == 0:
             deal.closed_at = datetime.now()
 
+        if deal.installments:
+            deal.set_installment_expiration_date()
+
         deal.validate()
         await self.deal_repo.save(deal)
 
