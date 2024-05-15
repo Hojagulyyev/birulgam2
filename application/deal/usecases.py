@@ -54,6 +54,7 @@ class CreateDealUsecase:
             closed_at=dto.closed_at,
             note=dto.note,
         )
+        # TODO: below code works incorrectly, debug it
         if deal.installments:
             deal.set_installment_expiration_date()
 

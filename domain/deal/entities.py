@@ -76,11 +76,12 @@ class Deal:
             
         self._validate_remaining_amount_due()
         self._validate_type()
-        self._validate_installments()
+        if self.installments:
+            self._validate_installments()
         if self.note:
             self._validate_note()
 
-    def set_installment_expiration_date(self) -> date | None:
+    def set_installment_expiration_date(self):
         if self.remaining_amount_due == 0:
             return None
         
