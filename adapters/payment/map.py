@@ -1,6 +1,7 @@
 from domain.payment.entities import Payment
 
 from api.gql.payment.schemas import PaymentSchema
+from adapters.deal.map import DealMap
 
 
 class PaymentMap:
@@ -25,4 +26,6 @@ class PaymentMap:
             category=payment.category,
 
             created_at=payment.created_at,
+
+            deal=payment.deal and DealMap.to_gql_schema(payment.deal),
         )

@@ -83,19 +83,23 @@ class Deal:
 
     def set_installment_expiration_date(self):
         if self.remaining_amount_due == 0:
-            return None
+            self.installment_expiration_date = None
+            return
         
         paid_amount = self.total_amount - self.remaining_amount_due
         
         if paid_amount <= self.installment_trifle:
-            return self.created_at + relativedelta(months=1)
+            self.installment_expiration_date = (
+                self.created_at + relativedelta(months=1)
+            )
+            return
         
         paid_amount_without_trifle = paid_amount - self.installment_trifle
-        diff_in_months = self.installment_amount / paid_amount_without_trifle
-        installment_expiration_date = (
-            self.created_at + relativedelta(months=int(diff_in_months))
+        diff_in_months = int(paid_amount_without_trifle / self.installment_amount)
+        next_month_from_month_diff = diff_in_months + 1
+        self.installment_expiration_date = (
+            self.created_at + relativedelta(months=next_month_from_month_diff)
         )
-        self.installment_expiration_date = installment_expiration_date
 
     def _validate_remaining_amount_due(self):
         if not isinstance(self.remaining_amount_due, int):
@@ -105,7 +109,8 @@ class Deal:
             raise ValueError('deal remaining amount must be a whole number')
         
         if self.remaining_amount_due > self.total_amount:
-            raise ValueError('deal remaining amount must not be greater than total amount')
+            raise ValueError(
+                'deal remaining amount must not be greater than total amount')
         
     def _validate_note(self):
         if not isinstance(self.note, str):
@@ -113,7 +118,9 @@ class Deal:
         
         note_len = len(self.note)
         if note_len > self.NOTE_MAX_LENGTH:
-            raise ValueError(f'deal note\'s length must be less than {self.NOTE_MAX_LENGTH}')
+            raise ValueError(
+                f'deal note\'s length must be less than {self.NOTE_MAX_LENGTH}'
+            )
         
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
