@@ -54,6 +54,9 @@ class CreateDealUsecase:
             closed_at=dto.closed_at,
             note=dto.note,
         )
+        if deal.installments != 0:
+            deal.set_installment_expiration_date()
+            
         deal.validate()
         created_deal = await self.deal_repo.save(deal)
         return created_deal

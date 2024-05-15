@@ -1,4 +1,5 @@
 from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
 from enum import Enum, unique
 
@@ -75,8 +76,25 @@ class Deal:
             
         self._validate_remaining_amount_due()
         self._validate_type()
+        self._validate_installments()
         if self.note:
             self._validate_note()
+
+    def set_installment_expiration_date(self) -> date | None:
+        if self.remaining_amount_due == 0:
+            return None
+        
+        paid_amount = self.total_amount - self.remaining_amount_due
+        
+        if paid_amount <= self.installment_trifle:
+            return self.created_at + relativedelta(months=1)
+        
+        paid_amount_without_trifle = paid_amount - self.installment_trifle
+        diff_in_months = self.installment_amount / paid_amount_without_trifle
+        installment_expiration_date = (
+            self.created_at + relativedelta(months=int(diff_in_months))
+        )
+        self.installment_expiration_date = installment_expiration_date
 
     def _validate_remaining_amount_due(self):
         if not isinstance(self.remaining_amount_due, int):
