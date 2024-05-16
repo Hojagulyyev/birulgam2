@@ -4,8 +4,8 @@ from asyncpg.exceptions import UniqueViolationError
 from domain.contact.interfaces import IContactRepository
 from domain.contact.entities import Contact, ContactPage
 
-from application.contact.errors import (
-    ContactPhoneMustBeUniqueError,
+from application.errors import (
+    UniqueError,
 )
 
 
@@ -124,7 +124,7 @@ class ContactPgRepository(IContactRepository):
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
             if "contact__uk__company_id__phone" in str(e):
-                raise ContactPhoneMustBeUniqueError
+                raise UniqueError(loc=['contact', 'phone'])
             raise e
 
         contact.id = inserted_id
