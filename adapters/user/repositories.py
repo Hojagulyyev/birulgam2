@@ -4,10 +4,7 @@ from asyncpg.exceptions import UniqueViolationError
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User
 
-from application.user.errors import (
-    UserNotFoundError, 
-    UsernameMustBeUniqueError,
-)
+from application.errors import UniqueError, DoesNotExistError
 
 
 class UserPgRepository(IUserRepository):
@@ -25,7 +22,7 @@ class UserPgRepository(IUserRepository):
         )
         row: Record = await self._conn.fetchrow(stmt, username)
         if row is None:
-            raise UserNotFoundError
+            raise DoesNotExistError(loc=['user', 'username'])
 
         user = User(
             id=row[0],
@@ -65,7 +62,7 @@ class UserPgRepository(IUserRepository):
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
             if "user__uk__username" in str(e):
-                raise UsernameMustBeUniqueError
+                raise UniqueError(loc=['user', 'username'])
             raise e
 
         user.id = inserted_id

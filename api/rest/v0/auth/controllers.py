@@ -1,25 +1,17 @@
 from fastapi import (
     APIRouter,
-    Depends,
     status,
     Request,
     HTTPException,
 )
 
 from application.errors import AppError
-from application.company.usecases import CreateCompanyUsecase
-from application.company.dtos import CreateCompanyUsecaseDto
 from application.user.usecases import (
-    CreateUserUsecase,
     GetUserByUsernameUsecase,
     CheckUserPasswordUsecase,
     SignupUserUsecase,
 )
-from application.user.dtos import CreateUserUsecaseDto, SignupUserUsecaseDto
-from application.user.errors import (
-    UserNotFoundError,
-    UsernameMustBeUniqueError,
-)
+from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 
@@ -80,17 +72,16 @@ async def signin_controller(
     request: Request,
 ):
     async with request.state.pgpool.acquire() as conn:
-
         # TODO: move below validation logics into create user session usecase
         get_user_by_username_usecase = GetUserByUsernameUsecase(
             UserPgRepository(conn=conn),
         )
         try:
             user = await get_user_by_username_usecase.execute(dto.username)
-        except UserNotFoundError:
+        except AppError as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="invalid authentication credentials",
+                detail=e.serialize(),
             )
         if user.id is None:
             raise TypeError
