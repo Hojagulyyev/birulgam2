@@ -4,9 +4,8 @@ from asyncpg.exceptions import UniqueViolationError
 from domain.store.interfaces import IStoreRepository
 from domain.store.entities import Store
 
-from application.store.errors import (
-    StoreNameMustBeUniqueError,
-    StoreCodeMustBeUniqueError
+from application.errors import (
+    UniqueError,
 )
 
 
@@ -45,9 +44,9 @@ class StorePgRepository(IStoreRepository):
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
             if "store__uk__company_id__name" in str(e):
-                raise StoreNameMustBeUniqueError
+                raise UniqueError(loc=['store', 'name'])
             if "store__uk__company_id__code" in str(e):
-                raise StoreCodeMustBeUniqueError
+                raise UniqueError(loc=['store', 'code'])
             raise e
 
         store.id = inserted_id
