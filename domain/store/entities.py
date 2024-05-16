@@ -15,7 +15,7 @@ class Store:
     CODE_MIN_LENGTH = 2
     CODE_MAX_LENGTH = 2
 
-    def __post_init__(self):
+    def validate(self):
         if not isinstance(self.id, int | None):
             raise TypeError
         self._validate_name()

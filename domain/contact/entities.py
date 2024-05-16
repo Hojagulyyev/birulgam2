@@ -49,7 +49,7 @@ class Contact:
     PASSPORT_ISSUED_PLACE_MIN_LENGTH = 5
     PASSPORT_ISSUED_PLACE_MAX_LENGTH = 64
 
-    def __post_init__(self):
+    def validate(self):
         if not isinstance(self.id, int | None):
             raise TypeError
         self._validate_first_name()

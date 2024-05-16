@@ -49,6 +49,7 @@ class CreateContactUsecase:
             passport_issued_date=dto.passport_issued_date,
             passport_issued_place=dto.passport_issued_place,
         )
+        contact.validate()
         created_contact = await self.contact_repo.save(contact)
         return created_contact
     

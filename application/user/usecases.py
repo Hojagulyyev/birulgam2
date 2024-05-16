@@ -34,6 +34,7 @@ class SignupUserUsecase:
         dto.validate()
 
         company = Company(name=generate_random_string())
+        company.validate()
         company = await self.company_repo.save(company)
         if company.id is None:
             raise TypeError
@@ -43,6 +44,7 @@ class SignupUserUsecase:
             name=generate_random_string(),
             code=generate_random_string(Store.CODE_MAX_LENGTH),
         )
+        store.validate()
         store = await self.store_repo.save(store)
 
         hashed_password = (
@@ -54,6 +56,7 @@ class SignupUserUsecase:
             password=hashed_password,
             company_id=company.id,
         )
+        user.validate()
         user = await self.user_repo.save(user)
         user.company = company
         return user
@@ -92,6 +95,7 @@ class CreateUserUsecase:
             password=hashed_password,
             company_id=dto.company_id,
         )
+        user.validate()
         created_user = await self.user_repo.save(user)
         return created_user
     

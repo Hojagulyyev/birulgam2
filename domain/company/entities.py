@@ -9,7 +9,7 @@ class Company:
     NAME_MIN_LENGTH = 3
     NAME_MAX_LENGTH = 16
 
-    def __post_init__(self):
+    def validate(self):
         if not isinstance(self.id, int | None):
             raise TypeError
         self._validate_name()
