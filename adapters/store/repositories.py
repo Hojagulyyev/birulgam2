@@ -11,6 +11,10 @@ from application.errors import (
 
 class StorePgRepository(IStoreRepository):
 
+    class Constraints:
+        uk_name = 'store__uk__company_id__name'
+        uk_code = 'store__uk__company_id__code'
+
     def __init__(self, conn: Connection):
         self._conn = conn
         
@@ -43,9 +47,9 @@ class StorePgRepository(IStoreRepository):
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
-            if "store__uk__company_id__name" in str(e):
+            if self.Constraints.uk_name in str(e):
                 raise UniqueError(loc=['store', 'name'])
-            if "store__uk__company_id__code" in str(e):
+            if self.Constraints.uk_code in str(e):
                 raise UniqueError(loc=['store', 'code'])
             raise e
 

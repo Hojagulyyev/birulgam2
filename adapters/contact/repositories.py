@@ -11,6 +11,9 @@ from application.errors import (
 
 class ContactPgRepository(IContactRepository):
 
+    class Constraints:
+        uk_phone = 'contact__uk__company_id__phone'
+
     def __init__(self, conn: Connection):
         self._conn = conn
 
@@ -123,7 +126,7 @@ class ContactPgRepository(IContactRepository):
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
-            if "contact__uk__company_id__phone" in str(e):
+            if self.Constraints.uk_phone in str(e):
                 raise UniqueError(loc=['contact', 'phone'])
             raise e
 

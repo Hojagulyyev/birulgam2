@@ -1,10 +1,16 @@
+from asyncpg import Connection
+from asyncpg.exceptions import UniqueViolationError
+
 from domain.company.interfaces import ICompanyRepository
 from domain.company.entities import Company
 
-from asyncpg import Connection
+from application.errors import UniqueError
 
 
 class CompanyPgRepository(ICompanyRepository):
+
+    class Constraints:
+        uk_name = 'company__uk__name'
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -30,7 +36,13 @@ class CompanyPgRepository(ICompanyRepository):
             '''
         )
         args = (company.name,)
-        inserted_id = await self._conn.fetchval(stmt, *args)
+        try:
+            inserted_id = await self._conn.fetchval(stmt, *args)
+        except UniqueViolationError as e:
+            if self.Constraints.uk_name in str(e):
+                raise UniqueError(loc=['company', 'name'])
+            raise e
+        
         company.id = inserted_id
         return company
 

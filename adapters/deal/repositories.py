@@ -5,6 +5,10 @@ from domain.deal.entities import Deal, DealPage
 
 
 class DealPgRepository(IDealRepository):
+
+    class Constraints:
+        pass
+
     columns = '''
         id,
         company_id,

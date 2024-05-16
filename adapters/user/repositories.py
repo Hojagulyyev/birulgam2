@@ -9,6 +9,9 @@ from application.errors import UniqueError, DoesNotExistError
 
 class UserPgRepository(IUserRepository):
 
+    class Constraints:
+        uk_username = 'user__uk__username'
+
     def __init__(self, conn: Connection):
         self._conn = conn
 
@@ -61,7 +64,7 @@ class UserPgRepository(IUserRepository):
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
-            if "user__uk__username" in str(e):
+            if self.Constraints.uk_username in str(e):
                 raise UniqueError(loc=['user', 'username'])
             raise e
 

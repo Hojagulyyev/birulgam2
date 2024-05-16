@@ -5,6 +5,10 @@ from domain.payment.entities import Payment, PaymentPage
 
 
 class PaymentPgRepository(IPaymentRepository):
+
+    class Constraints:
+        pass
+
     columns = '''
         id,
         company_id,
