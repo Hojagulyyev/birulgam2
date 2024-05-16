@@ -1,13 +1,16 @@
 from asyncpg import Connection
+from asyncpg.exceptions import ForeignKeyViolationError
 
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealPage
+
+from application.errors import InvalidError
 
 
 class DealPgRepository(IDealRepository):
 
     class Constraints:
-        pass
+        fk_store_id = 'deal_store_id_fkey'
 
     columns = '''
         id,
@@ -162,7 +165,9 @@ class DealPgRepository(IDealRepository):
         )
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
-        except Exception as e:
+        except ForeignKeyViolationError as e:
+            if self.Constraints.fk_store_id in str(e):
+                raise InvalidError(loc=['deal', 'store_id'])
             raise e
 
         deal.id = inserted_id
