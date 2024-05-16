@@ -91,7 +91,7 @@ class Deal:
         if paid_amount <= self.installment_trifle:
             self.installment_expiration_date = (
                 self.created_at + relativedelta(months=1)
-            )
+            ).date()
             return
         
         paid_amount_without_trifle = paid_amount - self.installment_trifle
@@ -99,7 +99,7 @@ class Deal:
         next_month_from_month_diff = diff_in_months + 1
         self.installment_expiration_date = (
             self.created_at + relativedelta(months=next_month_from_month_diff)
-        )
+        ).date()
 
     def _validate_remaining_amount_due(self):
         if not isinstance(self.remaining_amount_due, int):
