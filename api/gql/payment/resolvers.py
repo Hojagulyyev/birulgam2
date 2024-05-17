@@ -14,6 +14,8 @@ from application.payment.usecases import (
 from application.payment.dtos import (
     CreatePaymentUsecaseDto,
 )
+
+from api.gql.utils import get_selected_fields
 from adapters.payment.map import PaymentMap
 from adapters.payment.repositories import PaymentPgRepository
 from adapters.deal.repositories import DealPgRepository
@@ -34,6 +36,10 @@ async def create_payment_resolver(
     input: CreatePaymentInput,
 ) -> create_payment_response:
     user_session: UserSession = info.context["user_session"]
+
+    import pprint
+    x = await get_selected_fields(info, 5)
+    pprint.pprint(x)
 
     async with info.context["pgpool"].acquire() as conn:
         create_payment_usecase = CreatePaymentUsecase(
