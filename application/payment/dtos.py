@@ -7,6 +7,8 @@ from domain.deal.entities import Deal
 
 @dataclass
 class CreatePaymentUsecaseDto:
+    selected_fields: dict
+
     company_id: int
     store_id: int
     user_id: int

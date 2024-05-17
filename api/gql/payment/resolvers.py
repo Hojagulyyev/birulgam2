@@ -36,10 +36,7 @@ async def create_payment_resolver(
     input: CreatePaymentInput,
 ) -> create_payment_response:
     user_session: UserSession = info.context["user_session"]
-
-    import pprint
-    x = await get_selected_fields(info, 5)
-    pprint.pprint(x)
+    selected_fields = await get_selected_fields(info)
 
     async with info.context["pgpool"].acquire() as conn:
         create_payment_usecase = CreatePaymentUsecase(
@@ -49,6 +46,7 @@ async def create_payment_resolver(
         try:
             payment = await create_payment_usecase.execute(
                 CreatePaymentUsecaseDto(
+                    selected_fields=selected_fields,
                     company_id=user_session.company_id,
                     store_id=input.store_id,
                     user_id=user_session.user_id,
