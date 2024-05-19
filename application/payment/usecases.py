@@ -84,5 +84,6 @@ class CreatePaymentUsecase:
         await self.deal_repo.save(deal)
 
         # >>> RESPONSE
-        created_payment.deal = deal
+        if 'deal' in dto.selected_fields:
+            created_payment.deal = deal
         return created_payment
