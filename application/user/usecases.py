@@ -31,21 +31,26 @@ class SignupUserUsecase:
         self.store_repo = store_repo
 
     async def execute(self, dto: SignupUserUsecaseDto) -> User:
+        # >>> VALIDATE
         dto.validate()
 
-        company = Company(name=generate_random_string())
-        company.validate()
-        company = await self.company_repo.save(company)
-        if company.id is None:
-            raise TypeError
-        
-        store = Store(
-            company_id=company.id,
-            name=generate_random_string(),
-            code=generate_random_string(Store.CODE_MAX_LENGTH),
-        )
-        store.validate()
-        store = await self.store_repo.save(store)
+        # >>> MAIN
+        companies = []
+        if dto.create_company:
+            company = Company(name=generate_random_string())
+            company.validate()
+            company = await self.company_repo.save(company)
+            if company.id is None:
+                raise TypeError
+            companies = [company]
+            
+            store = Store(
+                company_id=company.id,
+                name=generate_random_string(),
+                code=generate_random_string(Store.CODE_MAX_LENGTH),
+            )
+            store.validate()
+            store = await self.store_repo.save(store)
 
         hashed_password = (
             self.user_password_service
@@ -57,7 +62,9 @@ class SignupUserUsecase:
         )
         user.validate()
         user = await self.user_repo.save(user)
-        user.companies = [company]
+
+        # >>> RESPONSE
+        user.companies = companies
         return user
 
 

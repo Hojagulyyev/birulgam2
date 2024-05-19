@@ -27,6 +27,7 @@ class CreateUserSessionUsecase:
             user_id=dto.user_id,
             company_ids=dto.company_ids,
         )
+        user_session.validate()
         created_user_session = await (
             self.user_session_repo
             .set_by_access_token(access_token, user_session)

@@ -34,3 +34,8 @@ class UniqueError(AppError):
 class DoesNotExistError(AppError):
     def __init__(self, *args, **kwargs):
         super().__init__(type="does_not_exist", *args, **kwargs)
+
+
+class PermissionDeniedError(AppError):
+    def __init__(self, *args, **kwargs):
+        super().__init__(type="permission_denied", *args, **kwargs)

@@ -17,6 +17,7 @@ class SignupControllerDto(BaseModel):
         ...,
         min_length=User.PASSWORD_MIN_LENGTH,
     )
+    create_company: bool = False
 
 
 class SigninControllerDto(BaseModel):

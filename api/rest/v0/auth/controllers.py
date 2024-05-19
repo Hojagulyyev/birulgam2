@@ -52,6 +52,7 @@ async def signup_controller(
                     username=dto.username,
                     password=dto.password,
                     password_confirm=dto.password_confirm,
+                    create_company=dto.create_company,
                 )
             )
         except AppError as e:
