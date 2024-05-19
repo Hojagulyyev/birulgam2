@@ -69,6 +69,7 @@ class UserPgRepository(IUserRepository):
         return user
     
     async def _insert(self, user: User) -> User:
+        # >>> MAIN
         stmt = (
             '''
             INSERT INTO user_
@@ -86,15 +87,34 @@ class UserPgRepository(IUserRepository):
             user.password,
         )
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
+            user_id = await self._conn.fetchval(stmt, *args)
         except UniqueViolationError as e:
             if self.Constraints.uk_username in str(e):
                 raise UniqueError(loc=['user', 'username'])
             raise e
+        
+        # >>> M2M: user.companies
+        stmt = (
+            f'''
+            INSERT INTO user_company
+            (
+                user_id,
+                company_id
+            ) VALUES 
+            {', '.join([
+                f'({user_id}, ${i+1})'
+                for i in range(len(user.company_ids))
+            ])}
+            '''
+        )
+        args = (company_id for company_id in user.company_ids)
+        await self._conn.fetchval(stmt, *args)
 
-        user.id = inserted_id
+        # >>> REPSONSE
+        user.id = user_id
         return user
 
+    # TODO: implement M2M: user.companies
     async def _update(self, user: User) -> User:
         stmt = (
             '''

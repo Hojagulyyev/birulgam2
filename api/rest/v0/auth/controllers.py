@@ -59,6 +59,7 @@ async def signup_controller(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=e.serialize(),
             )
+
     response = UserMap.serialize_one(user)
     return response
 
