@@ -5,7 +5,7 @@ from ..company.schemas import CompanySchema
  
 @strawberry.type
 class StoreSchema:
-    id: int | None
+    id: int
     company_id: int
 
     name: str

@@ -3,6 +3,7 @@ from asyncpg.exceptions import UniqueViolationError
 
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User
+from domain.company.entities import Company
 
 from application.errors import UniqueError, DoesNotExistError
 
@@ -18,12 +19,12 @@ class UserPgRepository(IUserRepository):
     async def get_by_username(self, username: str) -> User:
         stmt = (
             '''
-            SELECT id, username, password, company_id FROM user_
+            SELECT id, username, password FROM user_
             WHERE
                 username = $1
             '''
         )
-        row: Record = await self._conn.fetchrow(stmt, username)
+        row = await self._conn.fetchrow(stmt, username)
         if row is None:
             raise DoesNotExistError(loc=['user', 'username'])
 
@@ -31,8 +32,33 @@ class UserPgRepository(IUserRepository):
             id=row[0],
             username=row[1],
             password=row[2],
-            company_id=row[3],
+            company_ids=[],
         )
+        return user
+    
+    async def join_companies(self, user: User) -> User:
+        stmt = (
+            '''
+            SELECT
+                company.id,
+                company.name
+            FROM user_company
+            LEFT JOIN company ON 
+                company.id = user_company.company_id
+            WHERE
+                user_id = $1
+            '''
+        )
+        rows = await self._conn.fetch(stmt, user.id)
+
+        companies: list[Company] = [
+            Company(
+                id=row[0],
+                name=row[1],
+            )
+            for row in rows
+        ]
+        user.companies =companies
         return user
         
     async def save(self, user: User) -> User:
@@ -48,18 +74,16 @@ class UserPgRepository(IUserRepository):
             INSERT INTO user_
             (
                 username,
-                password,
-                company_id
+                password
             ) VALUES (
-                $1, $2, $3
+                $1, $2
             )
             RETURNING id
             '''
         )
         args = (
             user.username, 
-            user.password, 
-            user.company_id, 
+            user.password,
         )
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
@@ -76,15 +100,13 @@ class UserPgRepository(IUserRepository):
             '''
             UPDATE user_ SET 
                 username = $1,
-                password = $2,
-                company_id = $3
-            WHERE id = $4
+                password = $2
+            WHERE id = $3
             '''
         )
         args = (
             user.username, 
             user.password, 
-            user.company_id, 
             user.id,
         )
         await self._conn.execute(stmt, *args)

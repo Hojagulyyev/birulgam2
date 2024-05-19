@@ -14,6 +14,10 @@ class IUserRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
+    async def join_companies(self, user: User) -> User:
+        raise NotImplementedError
+    
+    @abstractmethod
     async def save(self, user: User) -> User:
         raise NotImplementedError
     

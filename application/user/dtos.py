@@ -7,7 +7,7 @@ from application.errors import InvalidError
 class CreateUserUsecaseDto:
     username: str
     password: str
-    company_id: int
+    company_ids: list[int]
 
 
 @dataclass

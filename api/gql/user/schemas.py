@@ -6,6 +6,8 @@ from ..company.schemas import CompanySchema
 @strawberry.type
 class UserSchema:
     id: int
+    company_ids: list[int]
+    
     username: str
-    company_id: int
-    company: CompanySchema | None
+
+    companies: list[CompanySchema] | None = None

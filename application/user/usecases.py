@@ -54,11 +54,11 @@ class SignupUserUsecase:
         user = User(
             username=dto.username,
             password=hashed_password,
-            company_id=company.id,
+            company_ids=[company.id],
         )
         user.validate()
         user = await self.user_repo.save(user)
-        user.company = company
+        user.companies = [company]
         return user
 
 
@@ -72,6 +72,7 @@ class GetUserByUsernameUsecase:
 
     async def execute(self, username: str) -> User:
         user = await self.user_repo.get_by_username(username)
+        await self.user_repo.join_companies(user)
         return user
 
 
@@ -93,7 +94,7 @@ class CreateUserUsecase:
         user = User(
             username=dto.username,
             password=hashed_password,
-            company_id=dto.company_id,
+            company_ids=dto.company_ids,
         )
         user.validate()
         created_user = await self.user_repo.save(user)

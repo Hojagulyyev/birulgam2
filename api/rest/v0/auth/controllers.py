@@ -105,7 +105,7 @@ async def signin_controller(
     access_token, user_session = await create_user_session_usecase.execute(
         CreateUserSessionUsecaseDto(
             user_id=user.id,
-            company_id=user.company_id,
+            company_id=user.company_ids[0],
         )
     )
     return access_token, user_session

@@ -11,10 +11,12 @@ class UserMap:
         return {
             "id": user.id,
             "username": user.username,
-            "company_id": user.company_id,
-            "company": (
-                CompanyMap.serialize_one(user.company)
-                if user.company else None
+            "company_ids": user.company_ids,
+            "companies": (
+                user.companies and [
+                    CompanyMap.serialize_one(company)
+                    for company in user.companies
+                ]
             ),
         }
 
@@ -33,9 +35,11 @@ class UserMap:
         return UserSchema(
             id=user.id,
             username=user.username,
-            company_id=user.company_id,
-            company=(
-                CompanyMap.to_gql_schema(user.company)
-                if user.company else None
-            )
+            company_ids=user.company_ids,
+            companies=(
+                user.companies and [
+                    CompanyMap.to_gql_schema(company)
+                    for company in user.companies
+                ]
+            ), # type: ignore
         )
