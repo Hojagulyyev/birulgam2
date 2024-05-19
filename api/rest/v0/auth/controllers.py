@@ -86,7 +86,7 @@ async def signin_controller(
             )
         if user.id is None:
             raise TypeError
-        
+    
     check_user_password_usecase = CheckUserPasswordUsecase(
         user_password_service=UserPasswordService()
     )
@@ -103,10 +103,16 @@ async def signin_controller(
     create_user_session_usecase = CreateUserSessionUsecase(
         user_session_repo=UserSessionRedisRepository(),
     )
+
+    company_ids = [
+        company.id for company in user.companies 
+        if company.id
+    ] if user.companies else []
+
     access_token, user_session = await create_user_session_usecase.execute(
         CreateUserSessionUsecaseDto(
             user_id=user.id,
-            company_id=user.company_ids[0],
-        )
+            company_ids=company_ids,
+        ),
     )
     return access_token, user_session

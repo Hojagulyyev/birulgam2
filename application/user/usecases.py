@@ -54,7 +54,6 @@ class SignupUserUsecase:
         user = User(
             username=dto.username,
             password=hashed_password,
-            company_ids=[company.id],
         )
         user.validate()
         user = await self.user_repo.save(user)

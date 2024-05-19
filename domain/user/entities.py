@@ -5,11 +5,11 @@ from domain.company.entities import Company
 
 @dataclass
 class User:
-    company_ids: list[int]
     username: str
     password: str
     id: int | None = None
 
+    company_ids: list[int] | None = None
     companies: list[Company] | None = None
 
     USERNAME_MIN_LENGTH = 3

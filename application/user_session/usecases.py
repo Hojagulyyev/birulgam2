@@ -25,7 +25,7 @@ class CreateUserSessionUsecase:
         access_token = TokenService.generate_token_by_user_id(dto.user_id)
         user_session = UserSession(
             user_id=dto.user_id,
-            company_id=dto.company_id,
+            company_ids=dto.company_ids,
         )
         created_user_session = await (
             self.user_session_repo

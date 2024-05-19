@@ -32,7 +32,6 @@ class UserPgRepository(IUserRepository):
             id=row[0],
             username=row[1],
             password=row[2],
-            company_ids=[],
         )
         return user
     
@@ -94,21 +93,22 @@ class UserPgRepository(IUserRepository):
             raise e
         
         # >>> M2M: user.companies
-        stmt = (
-            f'''
-            INSERT INTO user_company
-            (
-                user_id,
-                company_id
-            ) VALUES 
-            {', '.join([
-                f'({user_id}, ${i+1})'
-                for i in range(len(user.company_ids))
-            ])}
-            '''
-        )
-        args = (company_id for company_id in user.company_ids)
-        await self._conn.fetchval(stmt, *args)
+        if user.company_ids:
+            stmt = (
+                f'''
+                INSERT INTO user_company
+                (
+                    user_id,
+                    company_id
+                ) VALUES 
+                {', '.join([
+                    f'({user_id}, ${i+1})'
+                    for i in range(len(user.company_ids))
+                ])}
+                '''
+            )
+            args = (company_id for company_id in user.company_ids)
+            await self._conn.fetchval(stmt, *args)
 
         # >>> REPSONSE
         user.id = user_id

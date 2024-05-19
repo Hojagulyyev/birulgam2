@@ -11,7 +11,6 @@ class UserMap:
         return {
             "id": user.id,
             "username": user.username,
-            "company_ids": user.company_ids,
             "companies": (
                 user.companies and [
                     CompanyMap.serialize_one(company)
