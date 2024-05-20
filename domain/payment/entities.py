@@ -22,7 +22,7 @@ class Payment:
         CASH = "cash"
         ONLINE = "online"
 
-    id: int | None
+    id: int
     company_id: int
     store_id: int
     user_id: int

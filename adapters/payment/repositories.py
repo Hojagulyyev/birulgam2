@@ -141,11 +141,13 @@ class PaymentPgRepository(IPaymentRepository):
             payment.created_at,
         )
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
+            payment_id = await self._conn.fetchval(stmt, *args)
+            if not payment_id:
+                raise ValueError
         except Exception as e:
             raise e
 
-        payment.id = inserted_id
+        payment.id = payment_id
         return payment
 
     async def _update(self, payment: Payment) -> Payment:
