@@ -3,7 +3,7 @@ from typing import Annotated
 import strawberry
 from strawberry.types import Info
 
-from core.errors import AppError
+from core.errors import Error
 from domain.user_session.entities import UserSession
 
 from application.deal.usecases import (
@@ -94,7 +94,7 @@ async def create_deal_resolver(
                     note=input.note,
                 ),
             )
-        except AppError as e:
+        except Error as e:
             return ErrorSchema(**e.serialize())
         
     response = DealMap.to_gql_schema(deal)

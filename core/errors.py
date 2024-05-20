@@ -1,4 +1,4 @@
-class AppError(Exception):
+class Error(Exception):
 
     def __init__(
         self,
@@ -21,21 +21,21 @@ class AppError(Exception):
         }
 
 
-class InvalidError(AppError):
+class InvalidError(Error):
     def __init__(self, *args, **kwargs):
         super().__init__(type="invalid", *args, **kwargs)
 
 
-class UniqueError(AppError):
+class UniqueError(Error):
     def __init__(self, *args, **kwargs):
         super().__init__(type="unique", *args, **kwargs)
 
 
-class DoesNotExistError(AppError):
+class DoesNotExistError(Error):
     def __init__(self, *args, **kwargs):
         super().__init__(type="does_not_exist", *args, **kwargs)
 
 
-class PermissionDeniedError(AppError):
+class PermissionDeniedError(Error):
     def __init__(self, *args, **kwargs):
         super().__init__(type="permission_denied", *args, **kwargs)

@@ -5,7 +5,7 @@ from fastapi import (
     HTTPException,
 )
 
-from core.errors import AppError
+from core.errors import Error
 
 from application.user.usecases import (
     GetUserByUsernameUsecase,
@@ -56,7 +56,7 @@ async def signup_controller(
                     create_company=dto.create_company,
                 )
             )
-        except AppError as e:
+        except Error as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=e.serialize(),
@@ -81,7 +81,7 @@ async def signin_controller(
         )
         try:
             user = await get_user_by_username_usecase.execute(dto.username)
-        except AppError as e:
+        except Error as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=e.serialize(),
