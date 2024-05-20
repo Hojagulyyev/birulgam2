@@ -3,9 +3,9 @@ from typing import Annotated
 import strawberry
 from strawberry.types import Info
 
+from core.errors import AppError
 from domain.user_session.entities import UserSession
 
-from application.errors import AppError
 from application.deal.usecases import (
     CreateDealUsecase,
     GetDealsUsecase,

@@ -1,11 +1,10 @@
 from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
 
+from core.errors import UniqueError, DoesNotExistError
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User
 from domain.company.entities import Company
-
-from application.errors import UniqueError, DoesNotExistError
 
 
 class UserPgRepository(IUserRepository):

@@ -3,11 +3,11 @@ from typing import Annotated
 import strawberry
 from strawberry.types import Info
 
+from core.errors import AppError
 from domain.user_session.entities import UserSession
 from domain.payment.entities import Payment
 from domain.deal.entities import Deal
 
-from application.errors import AppError
 from application.payment.usecases import (
     CreatePaymentUsecase,
 ) 

@@ -1,12 +1,11 @@
 from asyncpg import Connection
 from asyncpg.exceptions import UniqueViolationError
 
-from domain.store.interfaces import IStoreRepository
-from domain.store.entities import Store
-
-from application.errors import (
+from core.errors import (
     UniqueError,
 )
+from domain.store.interfaces import IStoreRepository
+from domain.store.entities import Store
 
 
 class StorePgRepository(IStoreRepository):

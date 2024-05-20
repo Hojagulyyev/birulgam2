@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from application.errors import PermissionDeniedError
+from core.errors import PermissionDeniedError
 
 
 @dataclass

@@ -5,7 +5,8 @@ from fastapi import (
     HTTPException,
 )
 
-from application.errors import AppError
+from core.errors import AppError
+
 from application.user.usecases import (
     GetUserByUsernameUsecase,
     CheckUserPasswordUsecase,

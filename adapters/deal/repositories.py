@@ -1,10 +1,9 @@
 from asyncpg import Connection
 from asyncpg.exceptions import ForeignKeyViolationError
 
+from core.errors import InvalidError
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealPage
-
-from application.errors import InvalidError
 
 
 class DealPgRepository(IDealRepository):

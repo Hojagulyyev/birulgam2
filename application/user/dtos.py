@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from application.errors import InvalidError
+from core.errors import InvalidError
 
 
 @dataclass

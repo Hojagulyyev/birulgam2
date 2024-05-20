@@ -1,12 +1,11 @@
 from asyncpg import Connection
 from asyncpg.exceptions import UniqueViolationError
 
-from domain.contact.interfaces import IContactRepository
-from domain.contact.entities import Contact, ContactPage
-
-from application.errors import (
+from core.errors import (
     UniqueError,
 )
+from domain.contact.interfaces import IContactRepository
+from domain.contact.entities import Contact, ContactPage
 
 
 class ContactPgRepository(IContactRepository):

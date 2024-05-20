@@ -1,14 +1,12 @@
 from datetime import datetime
 
-from domain.payment.entities import Payment
-from domain.payment.interfaces import IPaymentRepository
-from domain.deal.entities import Deal
-from domain.deal.interfaces import IDealRepository
-
-from application.errors import (
+from core.errors import (
     DoesNotExistError, 
     InvalidError,
 )
+from domain.payment.entities import Payment
+from domain.payment.interfaces import IPaymentRepository
+from domain.deal.interfaces import IDealRepository
 
 from .dtos import (
     CreatePaymentUsecaseDto,

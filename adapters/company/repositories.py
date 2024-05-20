@@ -1,10 +1,10 @@
 from asyncpg import Connection
 from asyncpg.exceptions import UniqueViolationError
 
+from core.errors import UniqueError
 from domain.company.interfaces import ICompanyRepository
 from domain.company.entities import Company
 
-from application.errors import UniqueError
 
 
 class CompanyPgRepository(ICompanyRepository):
