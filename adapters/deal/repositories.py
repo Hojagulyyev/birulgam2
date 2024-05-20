@@ -163,13 +163,15 @@ class DealPgRepository(IDealRepository):
                 deal.note,
         )
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
+            deal_id = await self._conn.fetchval(stmt, *args)
+            if not deal_id:
+                raise ValueError
         except ForeignKeyViolationError as e:
             if self.Constraints.fk_store_id in str(e):
                 raise InvalidError(loc=['deal', 'store_id'])
             raise e
 
-        deal.id = inserted_id
+        deal.id = deal_id
         return deal
 
     async def _update(self, deal: Deal) -> Deal:

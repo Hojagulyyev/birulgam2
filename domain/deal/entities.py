@@ -11,7 +11,7 @@ from domain.contact.entities import Contact
 
 @dataclass
 class Deal:
-    id: int | None
+    id: int
     company_id: int
     store_id: int
     user_id: int

@@ -36,7 +36,7 @@ class CreateDealUsecase:
     
     async def execute(self, dto: CreateDealUsecaseDto) -> Deal:
         deal = Deal(
-            id=None,
+            id=0,
             company_id=dto.company_id,
             store_id=dto.store_id,
             user_id=dto.user_id,
