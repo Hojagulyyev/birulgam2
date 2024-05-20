@@ -36,3 +36,8 @@ class UserSession:
     @company_ids.setter
     def company_ids(self, value):
         self._company_ids = value
+
+    def exists_company(self) -> bool:
+        if self._company_id and self._company_ids:
+            return True
+        return False

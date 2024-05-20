@@ -108,10 +108,27 @@ async def signin_controller(
         company.id for company in user.companies 
     ] if user.companies else []
 
+    print(1)
+
     access_token, user_session = await create_user_session_usecase.execute(
         CreateUserSessionUsecaseDto(
             user_id=user.id,
             company_ids=company_ids,
         ),
     )
-    return access_token, user_session
+    return {
+        'access_token': access_token, 
+        'user_session': {
+            'user_id': user_session.user_id,
+            'company_id': (
+                user_session.company_id
+                if user_session.exists_company()
+                else None
+            ),
+            'company_ids': (
+                user_session.company_ids
+                if user_session.exists_company()
+                else []
+            ),
+        }
+    }
