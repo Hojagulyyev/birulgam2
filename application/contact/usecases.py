@@ -35,6 +35,7 @@ class CreateContactUsecase:
 
     async def execute(self, dto: CreateContactUsecaseDto) -> Contact:
         contact = Contact(
+            id=0,
             company_id=dto.company_id,
             first_name=dto.first_name,
             surname=dto.surname,

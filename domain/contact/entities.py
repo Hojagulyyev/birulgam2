@@ -6,7 +6,9 @@ from domain.company.entities import Company
 
 @dataclass
 class Contact:
+    id: int
     company_id: int
+
     first_name: str
     surname: str | None = None
     patronymic: str | None = None
@@ -19,7 +21,6 @@ class Contact:
     passport: str | None = None
     passport_issued_date: date | None = None
     passport_issued_place: str | None = None
-    id: int | None = None
 
     company: Company | None = None
 
@@ -50,7 +51,7 @@ class Contact:
     PASSPORT_ISSUED_PLACE_MAX_LENGTH = 64
 
     def validate(self):
-        if not isinstance(self.id, int | None):
+        if not isinstance(self.id, int):
             raise TypeError
         self._validate_first_name()
         if self.surname:

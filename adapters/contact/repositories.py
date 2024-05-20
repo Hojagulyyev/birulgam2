@@ -123,13 +123,15 @@ class ContactPgRepository(IContactRepository):
             contact.passport_issued_place,
         )
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
+            contact_id = await self._conn.fetchval(stmt, *args)
+            if not contact_id:
+                raise ValueError
         except UniqueViolationError as e:
             if self.Constraints.uk_phone in str(e):
                 raise UniqueError(loc=['contact', 'phone'])
             raise e
 
-        contact.id = inserted_id
+        contact.id = contact_id
         return contact
 
     async def _update(self, contact: Contact) -> Contact:
