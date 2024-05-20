@@ -106,7 +106,6 @@ async def signin_controller(
 
     company_ids = [
         company.id for company in user.companies 
-        if company.id
     ] if user.companies else []
 
     access_token, user_session = await create_user_session_usecase.execute(

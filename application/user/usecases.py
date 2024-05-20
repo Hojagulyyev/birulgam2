@@ -46,6 +46,7 @@ class SignupUserUsecase:
             companies.append(company)
             
             store = Store(
+                id=0,
                 company_id=company.id,
                 name=generate_random_string(),
                 code=generate_random_string(Store.CODE_MAX_LENGTH),

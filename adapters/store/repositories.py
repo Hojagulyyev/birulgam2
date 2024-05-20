@@ -44,7 +44,9 @@ class StorePgRepository(IStoreRepository):
             store.code,
         )
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
+            store_id = await self._conn.fetchval(stmt, *args)
+            if not store_id:
+                raise ValueError
         except UniqueViolationError as e:
             if self.Constraints.uk_name in str(e):
                 raise UniqueError(loc=['store', 'name'])
@@ -52,7 +54,7 @@ class StorePgRepository(IStoreRepository):
                 raise UniqueError(loc=['store', 'code'])
             raise e
 
-        store.id = inserted_id
+        store.id = store_id
         return store
 
     async def _update(self, store: Store) -> Store:

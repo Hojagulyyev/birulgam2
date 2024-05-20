@@ -3,10 +3,11 @@ from dataclasses import dataclass
 
 @dataclass
 class Store:
+    id: int
     company_id: int
+
     name: str
     code: str
-    id: int | None = None
 
     NAME_MIN_LENGTH = 3
     NAME_MAX_LENGTH = 26
@@ -16,7 +17,7 @@ class Store:
     CODE_MAX_LENGTH = 2
 
     def validate(self):
-        if not isinstance(self.id, int | None):
+        if not isinstance(self.id, int):
             raise TypeError
         self._validate_name()
         self._validate_code()
