@@ -28,9 +28,6 @@ class UserMap:
     
     @classmethod
     def to_gql_schema(cls, user: User):
-        if user.id is None:
-            raise TypeError
-        
         return UserSchema(
             id=user.id,
             username=user.username,

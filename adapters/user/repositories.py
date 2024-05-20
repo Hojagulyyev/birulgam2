@@ -86,6 +86,8 @@ class UserPgRepository(IUserRepository):
         )
         try:
             user_id = await self._conn.fetchval(stmt, *args)
+            if not user_id:
+                raise ValueError
         except UniqueViolationError as e:
             if self.Constraints.uk_username in str(e):
                 raise UniqueError(loc=['user', 'username'])

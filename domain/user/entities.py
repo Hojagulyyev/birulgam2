@@ -5,9 +5,10 @@ from domain.company.entities import Company
 
 @dataclass
 class User:
+    id: int
+
     username: str
     password: str
-    id: int | None = None
 
     company_ids: list[int] | None = None
     companies: list[Company] | None = None
@@ -19,7 +20,7 @@ class User:
     PASSWORD_MAX_LENGTH = 128
 
     def validate(self):
-        if not isinstance(self.id, int | None):
+        if not isinstance(self.id, int):
             raise TypeError
         self._validate_username()
         self._validate_password()

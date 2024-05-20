@@ -37,15 +37,15 @@ class CompanyPgRepository(ICompanyRepository):
         )
         args = (company.name,)
         try:
-            inserted_id = await self._conn.fetchval(stmt, *args)
-            if not inserted_id:
+            company_id = await self._conn.fetchval(stmt, *args)
+            if not company_id:
                 raise ValueError
         except UniqueViolationError as e:
             if self.Constraints.uk_name in str(e):
                 raise UniqueError(loc=['company', 'name'])
             raise e
         
-        company.id = inserted_id
+        company.id = company_id
         return company
 
     async def _update(self, company: Company) -> Company:

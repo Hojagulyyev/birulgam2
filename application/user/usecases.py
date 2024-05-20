@@ -58,6 +58,7 @@ class SignupUserUsecase:
             .hash_password(dto.password)
         )
         user = User(
+            id=0,
             username=dto.username,
             password=hashed_password,
         )
@@ -99,6 +100,7 @@ class CreateUserUsecase:
             .hash_password(dto.password)
         )
         user = User(
+            id=0,
             username=dto.username,
             password=hashed_password,
             company_ids=dto.company_ids,

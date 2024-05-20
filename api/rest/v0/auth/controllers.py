@@ -86,8 +86,6 @@ async def signin_controller(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=e.serialize(),
             )
-        if user.id is None:
-            raise TypeError
     
     check_user_password_usecase = CheckUserPasswordUsecase(
         user_password_service=UserPasswordService()
