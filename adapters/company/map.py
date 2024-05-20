@@ -21,9 +21,6 @@ class CompanyMap:
     
     @classmethod
     def to_gql_schema(cls, company: Company):
-        if company.id is None:
-            raise TypeError
-        
         return CompanySchema(
             id=company.id,
             name=company.name,

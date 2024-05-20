@@ -3,14 +3,14 @@ from dataclasses import dataclass
 
 @dataclass
 class Company:
+    id: int
     name: str
-    id: int | None = None
 
     NAME_MIN_LENGTH = 3
     NAME_MAX_LENGTH = 16
 
     def validate(self):
-        if not isinstance(self.id, int | None):
+        if not isinstance(self.id, int):
             raise TypeError
         self._validate_name()
         
@@ -24,4 +24,7 @@ class Company:
             name_len < self.NAME_MIN_LENGTH
             or name_len > self.NAME_MAX_LENGTH
         ):
-            raise ValueError(f'company name\'s length must be between {self.NAME_MIN_LENGTH} and {self.NAME_MAX_LENGTH}')
+            raise ValueError(
+                f'company name\'s length must be between' 
+                f'{self.NAME_MIN_LENGTH} and {self.NAME_MAX_LENGTH}'
+            )

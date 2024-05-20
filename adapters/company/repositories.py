@@ -38,6 +38,8 @@ class CompanyPgRepository(ICompanyRepository):
         args = (company.name,)
         try:
             inserted_id = await self._conn.fetchval(stmt, *args)
+            if not inserted_id:
+                raise ValueError
         except UniqueViolationError as e:
             if self.Constraints.uk_name in str(e):
                 raise UniqueError(loc=['company', 'name'])

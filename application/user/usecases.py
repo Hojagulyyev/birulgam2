@@ -37,12 +37,13 @@ class SignupUserUsecase:
         # >>> MAIN
         companies = []
         if dto.create_company:
-            company = Company(name=generate_random_string())
+            company = Company(
+                id=0, 
+                name=generate_random_string(),
+            )
             company.validate()
             company = await self.company_repo.save(company)
-            if company.id is None:
-                raise TypeError
-            companies = [company]
+            companies.append(company)
             
             store = Store(
                 company_id=company.id,

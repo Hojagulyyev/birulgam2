@@ -12,7 +12,10 @@ class CreateCompanyUsecase:
         self.company_repo = company_repo
 
     async def execute(self, dto: CreateCompanyUsecaseDto) -> Company:
-        company = Company(name=dto.name)
+        company = Company(
+            id=0,
+            name=dto.name,
+        )
         company.validate()
         created_company = await self.company_repo.save(company)
         return created_company
