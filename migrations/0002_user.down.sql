@@ -1,1 +1,2 @@
+DROP TABLE IF EXISTS user_company;
 DROP TABLE IF EXISTS user_;
