@@ -104,31 +104,21 @@ async def signin_controller(
         user_session_repo=UserSessionRedisRepository(),
     )
 
-    company_ids = [
-        company.id for company in user.companies 
-    ] if user.companies else []
-
-    print(1)
+    if not user.companies:
+        company_id: int = 0
+    else:
+        company_id: int = user.companies[0].id if len(user.companies) else 0
 
     access_token, user_session = await create_user_session_usecase.execute(
         CreateUserSessionUsecaseDto(
             user_id=user.id,
-            company_ids=company_ids,
+            company_id=company_id,
         ),
     )
     return {
         'access_token': access_token, 
         'user_session': {
             'user_id': user_session.user_id,
-            'company_id': (
-                user_session.company_id
-                if user_session.exists_company()
-                else None
-            ),
-            'company_ids': (
-                user_session.company_ids
-                if user_session.exists_company()
-                else []
-            ),
+            'company_id': user_session.company_id,
         }
     }

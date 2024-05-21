@@ -14,18 +14,14 @@ class UserSessionRedisRepository(IUserSessionRepository):
         user_session_in_dict = json.loads(str(user_session_in_str))
         user_session = UserSession(
             user_id=user_session_in_dict["user_id"],
+            company_id=user_session_in_dict["company_id"]
         )
-        user_session.company_ids = user_session_in_dict["company_ids"],
         return user_session
         
     async def set_by_access_token(self, access_token: str, user_session: UserSession):
         user_session_in_dict = {
             "user_id": user_session.user_id,
-            "company_ids": (
-                user_session.company_ids
-                if user_session.exists_company()
-                else []
-            ),
+            "company_id": user_session.company_id,
         }
         user_session_in_str = json.dumps(user_session_in_dict)
         cache.set(
