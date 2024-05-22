@@ -2,15 +2,15 @@ class Error(Exception):
 
     def __init__(
         self,
-        loc: list[str] | None = None,
         msg: str | None = None,
+        loc: list[str] | None = None,
         type: str | None = None,
     ):
         if loc is None:
             self.loc = []
 
-        self.loc = loc
         self.msg = msg
+        self.loc = loc
         self.type = type
 
     def serialize(self):
