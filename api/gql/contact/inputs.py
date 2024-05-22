@@ -6,7 +6,7 @@ import strawberry
 
 @strawberry.input
 class GetContactsInput:
-    company_id: int
+    search: str | None = None
 
 
 @strawberry.input

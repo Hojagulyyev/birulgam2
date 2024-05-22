@@ -1,3 +1,6 @@
+from typing import Annotated
+
+import strawberry
 from strawberry.types import Info
 
 from core.errors import Error
@@ -27,6 +30,8 @@ async def get_contacts_resolver(
     info: Info,
     input: GetContactsInput,
 ) -> ContactPageSchema:
+    user_session: UserSession = info.context["user_session"]
+
     async with info.context["pgpool"].acquire() as conn:
         contact_repo = ContactPgRepository(conn=conn)
         get_contacts_usecase = GetContactsUsecase(
@@ -34,7 +39,7 @@ async def get_contacts_resolver(
         )
         contact_page = await get_contacts_usecase.execute(
             dto=GetContactsUsecaseDto(
-                company_id=input.company_id,
+                company_id=user_session.company_id,
             )
         )
     
@@ -49,10 +54,14 @@ async def get_contacts_resolver(
     return response
 
 
+create_contact_response = Annotated[
+    ContactSchema | ErrorSchema,
+    strawberry.union('CreateContactResponse'),
+]
 async def create_contact_resolver(
     info: Info,
     input: CreateContactInput,
-) -> ContactSchema | ErrorSchema:
+) -> create_contact_response:
     user_session: UserSession = info.context["user_session"]
     try:
         async with info.context["pgpool"].acquire() as conn:
