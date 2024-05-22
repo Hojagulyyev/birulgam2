@@ -23,13 +23,10 @@ from .payment.mutations import PaymentMutations
 
 async def get_context(
     request: Request,
-    user_session: UserSession | None = Depends(
+    user_session: UserSession = Depends(
         get_user_session_by_authorization
     ),
 ):
-    if user_session is None:
-        return {}
-    
     return {
         "user_session": user_session,
         "pgpool": request.state.pgpool,

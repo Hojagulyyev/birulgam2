@@ -35,7 +35,7 @@ class SignupUserUsecase:
         dto.validate()
 
         # >>> MAIN
-        companies = []
+        companies: list[Company] = []
         if dto.create_company:
             company = Company(
                 id=0, 
@@ -62,6 +62,7 @@ class SignupUserUsecase:
             id=0,
             username=dto.username,
             password=hashed_password,
+            company_ids=[company.id for company in companies],
         )
         user.validate()
         user = await self.user_repo.save(user)

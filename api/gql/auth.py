@@ -1,12 +1,9 @@
-from typing import Annotated
-
 from fastapi import  (
     HTTPException, 
     status, 
     Header,
     Depends, 
     Request,
-    Body
 )
 from fastapi.security import (
     HTTPBasic,
@@ -14,6 +11,7 @@ from fastapi.security import (
 )
 import jwt
 
+from core.errors import PermissionDeniedError
 from domain.user_session.entities import UserSession
 
 from adapters.token.services import TokenService
@@ -43,27 +41,14 @@ def authenticate_api_docs_user(
 
 # TODO: add docs security by authenticate_api_docs_user function
 async def get_user_session_by_authorization(
-    request: Request,
     access_token: str = Header(None),
-    body = Body(None),
-) -> UserSession | None:
-    if body is None:
-        return None
-    
+) -> UserSession:
     authorization = access_token
+    user_session_repo = UserSessionRedisRepository()
+    
     if not authorization:
-        if (
-            request.method == "POST"
-            and "IntrospectionQuery" not in body["query"]
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="invalid authentication credentials",
-            )
-        # do nothing when GraphiQL opened
-        # do nothing when GraphiQL Docs generated
-        else:
-            return None
+        user_session = await user_session_repo.make_empty()
+        return user_session
     
     access_token = authorization.replace("Bearer ", "")
     try:
@@ -71,14 +56,22 @@ async def get_user_session_by_authorization(
     except jwt.DecodeError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="invalid access token",
+            detail=(
+                PermissionDeniedError(
+                    msg='invalid access token',
+                ).serialize()
+            ),
         )
 
     if expired:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="access token expired",
+            detail=(
+                PermissionDeniedError(
+                    msg='access token expired',
+                ).serialize()
+            ),
         )
     
-    user_session = await UserSessionRedisRepository().get_by_access_token(access_token)
+    user_session = await user_session_repo.get_by_access_token(access_token)
     return user_session

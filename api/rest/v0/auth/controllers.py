@@ -119,6 +119,10 @@ async def signin_controller(
         'access_token': access_token, 
         'user_session': {
             'user_id': user_session.user_id,
-            'company_id': user_session.company_id,
+            'company_id': (
+                user_session.company_id
+                if user_session.company_exists()
+                else 0
+            ),
         }
     }

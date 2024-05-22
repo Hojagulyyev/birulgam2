@@ -24,8 +24,8 @@ class CreateUserSessionUsecase:
     ) -> tuple[str, UserSession]:
         access_token = TokenService.generate_token_by_user_id(dto.user_id)
         user_session = UserSession(
-            user_id=dto.user_id,
-            company_id=dto.company_id,
+            _user_id=dto.user_id,
+            _company_id=dto.company_id,
         )
         user_session.validate()
         created_user_session = await (

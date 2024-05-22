@@ -12,3 +12,7 @@ class IUserSessionRepository(ABC):
     @abstractmethod
     async def set_by_access_token(self, access_token: str, user_session: UserSession) -> UserSession:
         raise NotImplementedError
+    
+    @abstractmethod
+    async def make_empty(self) -> UserSession:
+        raise NotImplementedError
