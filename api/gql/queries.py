@@ -1,10 +1,18 @@
 import strawberry
 
-from .contact.queries import ContactQueries
-from .deal.queries import DealQueries
+from .contact.resolvers import (
+    get_contacts_resolver,
+    get_contacts_response,
+)
+from .deal.resolvers import (
+    get_deals_resolver,
+    get_deals_response,
+)
 
 
 @strawberry.type
 class Query:
-    contact_queries: ContactQueries = strawberry.field(resolver=ContactQueries)
-    deal_queries: DealQueries = strawberry.field(resolver=DealQueries)
+    contact_page: get_contacts_response = strawberry.field(
+        resolver=get_contacts_resolver)
+    deal_page: get_deals_response = strawberry.field(
+        resolver=get_deals_resolver)
