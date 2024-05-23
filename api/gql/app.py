@@ -1,55 +1,13 @@
-from fastapi import (
-    FastAPI,
-    Depends,
-    Request,
-)
+from fastapi import FastAPI
 import strawberry
 import strawberry.exceptions
 from strawberry.fastapi import GraphQLRouter
 
-from domain.user_session.entities import UserSession
-
 from infrastructure.fastapi.config import APP_CONFIG
 
-from .auth import (
-    get_user_session_by_authorization,
-)
-from .contact.queries import ContactQueries
-from .contact.mutations import ContactMutations
-from .deal.queries import DealQueries
-from .deal.mutations import DealMutations
-from .payment.mutations import PaymentMutations
-
-
-async def get_context(
-    request: Request,
-    user_session: UserSession = Depends(
-        get_user_session_by_authorization
-    ),
-):
-    return {
-        "user_session": user_session,
-        "pgpool": request.state.pgpool,
-    }
-
-
-@strawberry.type
-class Query:
-    contact_queries: ContactQueries = strawberry.field(resolver=ContactQueries)
-    deal_queries: DealQueries = strawberry.field(resolver=DealQueries)
-
-
-@strawberry.type
-class Mutation:
-    contact_mutations: ContactMutations = strawberry.field(
-        resolver=ContactMutations,
-    )
-    deal_mutations: DealMutations = strawberry.field(
-        resolver=DealMutations,
-    )
-    payment_mutations: PaymentMutations = strawberry.field(
-        resolver=PaymentMutations,
-    )
+from .queries import Query
+from .mutations import Mutation
+from .context import get_context
 
 
 schema = strawberry.Schema(
