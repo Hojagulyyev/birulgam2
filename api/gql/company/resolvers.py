@@ -17,6 +17,8 @@ async def create_company_resolver(
     info: Info,
     input: inputs.CreateCompanyInput,
 ) -> CompanySchema:
+    raise NotImplementedError('resolver\' s aim not declared yet')
+
     async with info.context["pgpool"].acquire() as conn:
         company_repo = CompanyPgRepository(conn=conn)
         create_company_usecase = CreateCompanyUsecase(

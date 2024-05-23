@@ -26,22 +26,32 @@ from .inputs import (
 )
 
 
+get_contacts_response = Annotated[
+    ContactPageSchema | ErrorSchema,
+    strawberry.union('GetContactsResponse'),
+]
 async def get_contacts_resolver(
     info: Info,
     input: GetContactsInput,
-) -> ContactPageSchema:
+) -> get_contacts_response:
     user_session: UserSession = info.context["user_session"]
 
-    async with info.context["pgpool"].acquire() as conn:
-        contact_repo = ContactPgRepository(conn=conn)
-        get_contacts_usecase = GetContactsUsecase(
-            contact_repo=contact_repo,
-        )
-        contact_page = await get_contacts_usecase.execute(
-            dto=GetContactsUsecaseDto(
-                company_id=user_session.company_id,
+    try:
+        company_id: int = user_session.company_id
+
+        async with info.context["pgpool"].acquire() as conn:
+            contact_repo = ContactPgRepository(conn=conn)
+            get_contacts_usecase = GetContactsUsecase(
+                contact_repo=contact_repo,
             )
-        )
+            contact_page = await get_contacts_usecase.execute(
+                dto=GetContactsUsecaseDto(
+                    company_id=company_id,
+                )
+            )
+    except Error as e:
+        return ErrorSchema(**e.serialize())
+
     
     contact_schema_list = [
         ContactMap.to_gql_schema(contact)

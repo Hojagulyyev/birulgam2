@@ -36,20 +36,23 @@ async def create_payment_resolver(
     input: CreatePaymentInput,
 ) -> create_payment_response:
     user_session: UserSession = info.context["user_session"]
-    selected_fields = await get_selected_fields(info)
+    selected_fields = get_selected_fields(info)
 
-    async with info.context["pgpool"].acquire() as conn:
-        create_payment_usecase = CreatePaymentUsecase(
-            payment_repo=PaymentPgRepository(conn=conn),
-            deal_repo=DealPgRepository(conn=conn),
-        )
-        try:
+    try:
+        company_id: int = user_session.company_id
+        user_id: int = user_session.user_id
+        
+        async with info.context["pgpool"].acquire() as conn:
+            create_payment_usecase = CreatePaymentUsecase(
+                payment_repo=PaymentPgRepository(conn=conn),
+                deal_repo=DealPgRepository(conn=conn),
+            )
             payment = await create_payment_usecase.execute(
                 CreatePaymentUsecaseDto(
                     selected_fields=selected_fields,
-                    company_id=user_session.company_id,
+                    company_id=company_id,
                     store_id=input.store_id,
-                    user_id=user_session.user_id,
+                    user_id=user_id,
                     deal_id=input.deal_id,
                     sender_id=input.sender_id,
                     receiver_id=input.receiver_id,
@@ -60,8 +63,8 @@ async def create_payment_resolver(
                     created_at=input.created_at,
                 ),
             )
-        except Error as e:
-            return ErrorSchema(**e.serialize())
+    except Error as e:
+        return ErrorSchema(**e.serialize())
         
     response = PaymentMap.to_gql_schema(payment)
     return response

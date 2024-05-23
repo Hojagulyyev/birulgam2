@@ -26,25 +26,31 @@ from .inputs import (
 )
 
 
+get_deals_response = Annotated[
+    DealPageSchema | ErrorSchema,
+    strawberry.union('GetDealsResponse'),
+]
 async def get_deals_resolver(
     info: Info,
     input: GetDealsInput,
-) -> DealPageSchema | ErrorSchema:
+) -> get_deals_response:
     user_session: UserSession = info.context["user_session"]
 
     try:
+        company_id: int = user_session.company_id
+
         async with info.context["pgpool"].acquire() as conn:
             get_deals_usecase = GetDealsUsecase(
                 DealPgRepository(conn=conn),
             )
             deal_page = await get_deals_usecase.execute(
                 dto=GetDealsUsecaseDto(
-                    company_id=user_session.company_id,
+                    company_id=company_id,
                     ids=input.ids,
                 )
             )
-    except Exception as e:
-        return ErrorSchema(msg=str(e))
+    except Error as e:
+        return ErrorSchema(**e.serialize())
     
     deal_schema_list = [
         DealMap.to_gql_schema(deal)
@@ -67,23 +73,24 @@ async def create_deal_resolver(
 ) -> create_deal_response:
     user_session: UserSession = info.context["user_session"]
 
-    async with info.context["pgpool"].acquire() as conn:
-        create_deal_usecase = CreateDealUsecase(
-            deal_repo=DealPgRepository(conn=conn),
-        )
-        try:
+    try:
+        async with info.context["pgpool"].acquire() as conn:
+            user_id: int = user_session.user_id
+            company_id: int = user_session.company_id
+
+            create_deal_usecase = CreateDealUsecase(
+                deal_repo=DealPgRepository(conn=conn),
+            )
             deal = await create_deal_usecase.execute(
                 CreateDealUsecaseDto(
-                    company_id=user_session.company_id,
+                    company_id=company_id,
                     store_id=input.store_id,
-                    user_id=user_session.user_id,
+                    user_id=user_id,
                     seller_id=input.seller_id,
                     buyer_id=input.buyer_id,
-
                     total_amount=input.total_amount,
                     remaining_amount_due=input.remaining_amount_due,
                     type=input.type,
-
                     installments=input.installments,
                     installment_amount=input.installment_amount,
                     installment_trifle=input.installment_trifle,
@@ -94,8 +101,8 @@ async def create_deal_resolver(
                     note=input.note,
                 ),
             )
-        except Error as e:
-            return ErrorSchema(**e.serialize())
+    except Error as e:
+        return ErrorSchema(**e.serialize())
         
     response = DealMap.to_gql_schema(deal)
     return response

@@ -41,12 +41,12 @@ def get_fields_by_selected_field(
     return response
 
 
-async def get_selected_fields(
+def get_selected_fields(
     info: Info, 
     ignore_depth: int = MAX_DEPTH,
 ) -> dict:
     if ignore_depth > MAX_DEPTH:
-        raise PermissionError()
+        raise PermissionError('query depth exceeded')
     
     response = {}
 

@@ -1,12 +1,13 @@
 import strawberry
 
-from ..error.schemas import ErrorSchema
-from .schemas import ContactSchema
-from .resolvers import create_contact_resolver
+from .resolvers import (
+    create_contact_resolver,
+    create_contact_response,
+)
 
 
 @strawberry.type
 class ContactMutations:
-    create_contact: ContactSchema | ErrorSchema = strawberry.mutation(
+    create_contact: create_contact_response = strawberry.mutation(
         resolver=create_contact_resolver,
     )

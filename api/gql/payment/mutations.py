@@ -1,7 +1,5 @@
 import strawberry
 
-from ..error.schemas import ErrorSchema
-from .schemas import PaymentSchema
 from .resolvers import (
     create_payment_resolver,
     create_payment_response,

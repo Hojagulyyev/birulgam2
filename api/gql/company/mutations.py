@@ -1,7 +1,9 @@
 import strawberry
 
 from .schemas import CompanySchema
-from .resolvers import create_company_resolver
+from .resolvers import (
+    create_company_resolver,
+)
 
 
 @strawberry.type
