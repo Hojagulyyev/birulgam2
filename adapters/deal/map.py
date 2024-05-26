@@ -22,6 +22,7 @@ class DealMap:
             remaining_amount_due=deal.remaining_amount_due,
             type=deal.type,
 
+            installments_total_amount=deal.installments_total_amount,
             installments=deal.installments,
             installment_amount=deal.installment_amount,
             installment_trifle=deal.installment_trifle,

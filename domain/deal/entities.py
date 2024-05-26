@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
 from enum import Enum, unique
 
+from core.errors import InvalidError
 from domain.company.entities import Company
 from domain.store.entities import Store
 from domain.user.entities import User
@@ -22,6 +23,7 @@ class Deal:
     remaining_amount_due: int
     type: str
 
+    installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0
     installment_trifle: int = 0
@@ -76,21 +78,22 @@ class Deal:
             
         self._validate_remaining_amount_due()
         self._validate_type()
-        if self.installments:
+        if self.installments_total_amount:
             self._validate_installments()
         if self.note:
             self._validate_note()
 
-    def set_installment_expiration_date(self):
+    def update_installment_expiration_date(self):
         if self.remaining_amount_due == 0:
             self.installment_expiration_date = None
             return
         
-        paid_amount = self.total_amount - self.remaining_amount_due
+        paid_amount = self.installments_total_amount - self.remaining_amount_due
         
         if paid_amount <= self.installment_trifle:
+            next_month = 1
             self.installment_expiration_date = (
-                self.created_at + relativedelta(months=1)
+                self.created_at + relativedelta(months=next_month)
             ).date()
             return
         
@@ -106,10 +109,10 @@ class Deal:
             raise TypeError
         
         if self.remaining_amount_due < 0:
-            raise ValueError('deal remaining amount must be a whole number')
+            raise InvalidError('deal remaining amount must be a whole number')
         
         if self.remaining_amount_due > self.total_amount:
-            raise ValueError(
+            raise InvalidError(
                 'deal remaining amount must not be greater than total amount')
         
     def _validate_note(self):
@@ -118,13 +121,13 @@ class Deal:
         
         note_len = len(self.note)
         if note_len > self.NOTE_MAX_LENGTH:
-            raise ValueError(
+            raise InvalidError(
                 f'deal note\'s length must be less than {self.NOTE_MAX_LENGTH}'
             )
         
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
-            raise ValueError(f'deal type {self.type} does not allowed')
+            raise InvalidError(f'deal type {self.type} does not allowed')
         
     def _validate_installments(self):
         calculated_total_amount = (
@@ -132,8 +135,8 @@ class Deal:
             self.installments + 
             self.installment_trifle
         )
-        if calculated_total_amount != self.total_amount:
-            raise ValueError('deal installments data is inconsistent')
+        if calculated_total_amount != self.installments_total_amount:
+            raise InvalidError('deal installments data is inconsistent')
 
 
 @dataclass

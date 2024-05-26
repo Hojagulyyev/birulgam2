@@ -1,6 +1,7 @@
 from datetime import date
 from dataclasses import dataclass
 
+from core.errors import InvalidError
 from domain.company.entities import Company
 
 
@@ -80,7 +81,11 @@ class Contact:
             first_name_len < self.FIRST_NAME_MIN_LENGTH
             or first_name_len > self.FIRST_NAME_MAX_LENGTH
         ):
-            raise ValueError(f'contact first_name\'s length must be between {self.FIRST_NAME_MIN_LENGTH} and {self.FIRST_NAME_MAX_LENGTH}')
+            raise InvalidError(
+                f'contact first_name\'s length must be between '
+                f'{self.FIRST_NAME_MIN_LENGTH} and {self.FIRST_NAME_MAX_LENGTH}',
+                loc=['contact', 'first_name'],
+            )
 
     def _validate_surname(self):
         if not isinstance(self.surname, str):
@@ -91,7 +96,11 @@ class Contact:
             surname_len < self.SURNAME_MIN_LENGTH
             or surname_len > self.SURNAME_MAX_LENGTH
         ):
-            raise ValueError(f'contact surname\'s length must be between {self.SURNAME_MIN_LENGTH} and {self.SURNAME_MAX_LENGTH}')
+            raise InvalidError(
+                f'contact surname\'s length must be between '
+                f'{self.SURNAME_MIN_LENGTH} and {self.SURNAME_MAX_LENGTH}',
+                loc=['contact', 'surname'],
+            )
 
     def _validate_patronymic(self):
         if not isinstance(self.patronymic, str):
@@ -102,7 +111,7 @@ class Contact:
             patronymic_len < self.PATRONYMIC_MIN_LENGTH
             or patronymic_len > self.PATRONYMIC_MAX_LENGTH
         ):
-            raise ValueError(f'contact patronymic\'s length must be between {self.PATRONYMIC_MIN_LENGTH} and {self.PATRONYMIC_MAX_LENGTH}')
+            raise InvalidError(f'contact patronymic\'s length must be between {self.PATRONYMIC_MIN_LENGTH} and {self.PATRONYMIC_MAX_LENGTH}')
 
     def _validate_address(self):
         if not isinstance(self.address, str):
@@ -113,14 +122,14 @@ class Contact:
             address_len < self.ADDRESS_MIN_LENGTH
             or address_len > self.ADDRESS_MAX_LENGTH
         ):
-            raise ValueError(f'contact address\'s length must be between {self.ADDRESS_MIN_LENGTH} and {self.ADDRESS_MAX_LENGTH}')
+            raise InvalidError(f'contact address\'s length must be between {self.ADDRESS_MIN_LENGTH} and {self.ADDRESS_MAX_LENGTH}')
 
     def _validate_gender(self):
         if not isinstance(self.gender, str):
             raise TypeError
         
         if self.gender not in self.AVAIABLE_GENDERS: 
-            raise ValueError(f'contact gender must be from this options: {", ".join(self.AVAIABLE_GENDERS)}')
+            raise InvalidError(f'contact gender must be from this options: {", ".join(self.AVAIABLE_GENDERS)}')
 
     def _validate_workplace(self):
         if not isinstance(self.workplace, str):
@@ -131,7 +140,7 @@ class Contact:
             workplace_len < self.WORKPLACE_MIN_LENGTH
             or workplace_len > self.WORKPLACE_MAX_LENGTH
         ):
-            raise ValueError(f'contact workplace\'s length must be between {self.WORKPLACE_MIN_LENGTH} and {self.WORKPLACE_MAX_LENGTH}')
+            raise InvalidError(f'contact workplace\'s length must be between {self.WORKPLACE_MIN_LENGTH} and {self.WORKPLACE_MAX_LENGTH}')
         
     def _validate_job_title(self):
         if not isinstance(self.job_title, str):
@@ -142,7 +151,7 @@ class Contact:
             job_title_len < self.JOB_TITLE_MIN_LENGTH
             or job_title_len > self.JOB_TITLE_MAX_LENGTH
         ):
-            raise ValueError(f'contact job_title\'s length must be between {self.JOB_TITLE_MIN_LENGTH} and {self.JOB_TITLE_MAX_LENGTH}')
+            raise InvalidError(f'contact job_title\'s length must be between {self.JOB_TITLE_MIN_LENGTH} and {self.JOB_TITLE_MAX_LENGTH}')
         
     def _validate_passport(self):
         if not isinstance(self.passport, str):
@@ -153,7 +162,7 @@ class Contact:
             passport_len < self.PASSPORT_MIN_LENGTH
             or passport_len > self.PASSPORT_MAX_LENGTH
         ):
-            raise ValueError(f'contact passport\'s length must be between {self.PASSPORT_MIN_LENGTH} and {self.PASSPORT_MAX_LENGTH}')
+            raise InvalidError(f'contact passport\'s length must be between {self.PASSPORT_MIN_LENGTH} and {self.PASSPORT_MAX_LENGTH}')
         
     def _validate_passport_issued_place(self):
         if not isinstance(self.passport_issued_place, str):
@@ -164,7 +173,7 @@ class Contact:
             passport_issued_place_len < self.PASSPORT_ISSUED_PLACE_MIN_LENGTH
             or passport_issued_place_len > self.PASSPORT_ISSUED_PLACE_MAX_LENGTH
         ):
-            raise ValueError(f'contact passport_issued_place\'s length must be between {self.PASSPORT_ISSUED_PLACE_MIN_LENGTH} and {self.PASSPORT_ISSUED_PLACE_MAX_LENGTH}')
+            raise InvalidError(f'contact passport_issued_place\'s length must be between {self.PASSPORT_ISSUED_PLACE_MIN_LENGTH} and {self.PASSPORT_ISSUED_PLACE_MAX_LENGTH}')
 
 
 @dataclass

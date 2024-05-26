@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from core.errors import InvalidError
 from domain.company.entities import Company
 
 
@@ -34,7 +35,7 @@ class User:
             username_len < self.USERNAME_MIN_LENGTH
             or username_len > self.USERNAME_MAX_LENGTH
         ):
-            raise ValueError(f'user username\'s length must be between {self.USERNAME_MIN_LENGTH} and {self.USERNAME_MAX_LENGTH}')
+            raise InvalidError(f'user username\'s length must be between {self.USERNAME_MIN_LENGTH} and {self.USERNAME_MAX_LENGTH}')
         
     def _validate_password(self):
         if not isinstance(self.password, str):
@@ -45,4 +46,4 @@ class User:
             password_len < self.PASSWORD_MIN_LENGTH
             or password_len > self.PASSWORD_MAX_LENGTH
         ):
-            raise ValueError(f'user password\'s length must be between {self.PASSWORD_MIN_LENGTH} and {self.PASSWORD_MAX_LENGTH}')
+            raise InvalidError(f'user password\'s length must be between {self.PASSWORD_MIN_LENGTH} and {self.PASSWORD_MAX_LENGTH}')

@@ -20,6 +20,7 @@ class CreateDealInput:
     remaining_amount_due: int
     type: str
 
+    installments_total_amount: int = 0
     installments: Annotated[
         int, strawberry.argument(
             description="The number of installments"

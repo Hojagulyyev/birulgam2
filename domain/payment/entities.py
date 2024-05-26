@@ -2,6 +2,7 @@ from datetime import datetime, date
 from dataclasses import dataclass
 from enum import Enum, unique
 
+from core.errors import InvalidError
 from domain.company.entities import Company
 from domain.store.entities import Store
 from domain.user.entities import User
@@ -70,15 +71,15 @@ class Payment:
         
     def _validate_type(self):
         if self.type not in self.Type.__members__.values():
-            raise ValueError(f'payment type {self.type} does not allowed')
+            raise InvalidError(f'payment type {self.type} does not allowed')
         
     def _validate_method(self):
         if self.method not in self.Method.__members__.values():
-            raise ValueError(f'payment method {self.method} does not allowed')
+            raise InvalidError(f'payment method {self.method} does not allowed')
         
     def _validate_category(self):
         if self.category not in Deal.Type.__members__.values():
-            raise ValueError(f'payment category {self.category} does not allowed')
+            raise InvalidError(f'payment category {self.category} does not allowed')
     
 
 @dataclass

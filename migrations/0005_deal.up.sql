@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS deal (
     remaining_amount_due INTEGER NOT NULL,
     type VARCHAR(16) NOT NULL,
 
+    installments_total_amount INTEGER NOT NULL DEFAULT 0,
     installments INTEGER NOT NULL DEFAULT 0,
     installment_amount INTEGER NOT NULL DEFAULT 0,
     installment_trifle INTEGER NOT NULL DEFAULT 0,

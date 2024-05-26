@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from core.errors import InvalidError
+
 
 @dataclass
 class Company:
@@ -24,7 +26,7 @@ class Company:
             name_len < self.NAME_MIN_LENGTH
             or name_len > self.NAME_MAX_LENGTH
         ):
-            raise ValueError(
+            raise InvalidError(
                 f'company name\'s length must be between' 
                 f'{self.NAME_MIN_LENGTH} and {self.NAME_MAX_LENGTH}'
             )

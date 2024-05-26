@@ -21,6 +21,7 @@ class DealPgRepository(IDealRepository):
         total_amount,
         remaining_amount_due,
         type,
+        installments_total_amount,
         installments,
         installment_amount,
         installment_trifle,
@@ -76,18 +77,19 @@ class DealPgRepository(IDealRepository):
                 total_amount=row[6],
                 remaining_amount_due=row[7],
                 type=row[8],
-                installments=row[9],
-                installment_amount=row[10],
-                installment_trifle=row[11],
-                installment_expiration_date=row[12],
-                created_at=row[13],
-                last_paid_at=row[14],
-                closed_at=row[15],
-                note=row[16],
+                installments_total_amount=row[9],
+                installments=row[10],
+                installment_amount=row[11],
+                installment_trifle=row[12],
+                installment_expiration_date=row[13],
+                created_at=row[14],
+                last_paid_at=row[15],
+                closed_at=row[16],
+                note=row[17],
             )
             for row in rows
         ]
-        total = rows[0][17] if rows else 0
+        total = rows[0][18] if rows else 0
         
         deal_page = DealPage(
             deals=deals,
@@ -129,6 +131,7 @@ class DealPgRepository(IDealRepository):
                 total_amount,
                 remaining_amount_due,
                 type,
+                installments_total_amount,
                 installments,
                 installment_amount,
                 installment_trifle,
@@ -139,7 +142,7 @@ class DealPgRepository(IDealRepository):
                 note
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15, $16
+                $11, $12, $13, $14, $15, $16, $17
             )
             RETURNING id
             '''
@@ -153,6 +156,7 @@ class DealPgRepository(IDealRepository):
                 deal.total_amount,
                 deal.remaining_amount_due,
                 deal.type,
+                deal.installments_total_amount,
                 deal.installments,
                 deal.installment_amount,
                 deal.installment_trifle,
@@ -186,15 +190,16 @@ class DealPgRepository(IDealRepository):
                 total_amount = $6,
                 remaining_amount_due = $7,
                 type = $8,
-                installments = $9,
-                installment_amount = $10,
-                installment_trifle = $11,
-                installment_expiration_date = $12,
-                created_at = $13,
-                last_paid_at = $14,
-                closed_at = $15,
-                note = $16
-            WHERE id = $17
+                installments_total_amount = $9,
+                installments = $10,
+                installment_amount = $11,
+                installment_trifle = $12,
+                installment_expiration_date = $13,
+                created_at = $14,
+                last_paid_at = $15,
+                closed_at = $16,
+                note = $17
+            WHERE id = $18
             '''
         )
         args = (
@@ -206,6 +211,7 @@ class DealPgRepository(IDealRepository):
             deal.total_amount,
             deal.remaining_amount_due,
             deal.type,
+            deal.installments_total_amount,
             deal.installments,
             deal.installment_amount,
             deal.installment_trifle,

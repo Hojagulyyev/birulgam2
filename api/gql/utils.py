@@ -2,6 +2,7 @@ from strawberry.types import Info
 
 
 MAX_DEPTH = 5
+MAX_BREADTH = 3
 
 def get_fields_by_selected_field(
     selected_field, 

@@ -35,17 +35,15 @@ class CreatePaymentUsecase:
         # >>> VALIDATION
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
+                'amount must not be greater than '
+                'deal remaining amount due',
                 loc=['amount'],
-                msg=(
-                    'amount must not be greater than '
-                    'deal remaining amount due'
-                ),
             )
 
         if dto.created_at < deal.created_at:
             raise InvalidError(
+                'created_at must be greater than deal created_at',
                 loc=['created_at'],
-                msg='created_at must be greater than deal created_at'
             )
 
         # >>> MAIN
@@ -75,8 +73,11 @@ class CreatePaymentUsecase:
         if deal.remaining_amount_due == 0:
             deal.closed_at = datetime.now()
 
-        if deal.installments:
-            deal.set_installment_expiration_date()
+        if (
+            deal.installments_total_amount
+            and deal.remaining_amount_due < deal.installments_total_amount
+        ):
+            deal.update_installment_expiration_date()
 
         deal.validate()
         await self.deal_repo.save(deal)

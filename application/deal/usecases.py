@@ -35,6 +35,8 @@ class CreateDealUsecase:
         self.deal_repo = deal_repo
     
     async def execute(self, dto: CreateDealUsecaseDto) -> Deal:
+        dto.validate()
+
         deal = Deal(
             id=0,
             company_id=dto.company_id,
@@ -45,6 +47,7 @@ class CreateDealUsecase:
             total_amount=dto.total_amount,
             remaining_amount_due=dto.remaining_amount_due,
             type=dto.type,
+            installments_total_amount=dto.installments_total_amount,
             installments=dto.installments,
             installment_amount=dto.installment_amount,
             installment_trifle=dto.installment_trifle,
@@ -54,8 +57,8 @@ class CreateDealUsecase:
             closed_at=dto.closed_at,
             note=dto.note,
         )
-        if deal.installments:
-            deal.set_installment_expiration_date()
+        if deal.installments_total_amount:
+            deal.update_installment_expiration_date()
 
         deal.validate()
         created_deal = await self.deal_repo.save(deal)

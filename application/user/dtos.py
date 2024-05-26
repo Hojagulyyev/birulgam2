@@ -20,6 +20,6 @@ class SignupUserUsecaseDto:
     def validate(self):
         if self.password != self.password_confirm:
             raise InvalidError(
-                loc=['body', 'password_confirm'], 
+                loc=['input', 'password_confirm'], 
                 msg='password mismatch',
             )

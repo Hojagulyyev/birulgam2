@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
+from core.errors import InvalidError
+
 
 @dataclass
 class GetDealsUsecaseDto:
@@ -20,6 +22,7 @@ class CreateDealUsecaseDto:
     remaining_amount_due: int
     type: str
 
+    installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0
     installment_trifle: int = 0
@@ -28,3 +31,10 @@ class CreateDealUsecaseDto:
     last_paid_at: datetime | None = None
     closed_at: datetime | None = None
     note: str | None = None
+
+    def validate(self):
+        if self.total_amount != self.remaining_amount_due:
+            raise InvalidError(
+                loc=['input', 'remaining_amount_due'], 
+                msg='remaining amount must be equal to total amount',
+            )

@@ -91,6 +91,7 @@ async def create_deal_resolver(
                     total_amount=input.total_amount,
                     remaining_amount_due=input.remaining_amount_due,
                     type=input.type,
+                    installments_total_amount=input.installments_total_amount,
                     installments=input.installments,
                     installment_amount=input.installment_amount,
                     installment_trifle=input.installment_trifle,

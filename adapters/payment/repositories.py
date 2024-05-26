@@ -1,5 +1,7 @@
 from asyncpg import Connection
+from asyncpg.exceptions import CheckViolationError
 
+from core.errors import InvalidError
 from domain.payment.interfaces import IPaymentRepository
 from domain.payment.entities import Payment, PaymentPage
 
@@ -7,7 +9,7 @@ from domain.payment.entities import Payment, PaymentPage
 class PaymentPgRepository(IPaymentRepository):
 
     class Constraints:
-        pass
+        ck_amount = 'payment_amount_check'
 
     columns = '''
         id,
@@ -144,6 +146,10 @@ class PaymentPgRepository(IPaymentRepository):
             payment_id = await self._conn.fetchval(stmt, *args)
             if not payment_id:
                 raise ValueError
+        except CheckViolationError as e:
+            if self.Constraints.ck_amount in str(e):
+                raise InvalidError(loc=['payment', 'amount'])
+            raise e
         except Exception as e:
             raise e
 

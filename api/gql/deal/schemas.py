@@ -21,6 +21,7 @@ class DealSchema:
     remaining_amount_due: int
     type: str
 
+    installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0
     installment_trifle: int = 0
