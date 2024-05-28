@@ -10,13 +10,14 @@ from ..contact.schemas import ContactSchema
  
 @strawberry.type
 class DealSchema:
-    id: int | None
+    id: int
     company_id: int
     store_id: int
     user_id: int
     seller_id: int | None
     buyer_id: int | None
 
+    code: str
     total_amount: int
     remaining_amount_due: int
     type: str

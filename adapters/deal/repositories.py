@@ -1,7 +1,7 @@
 from asyncpg import Connection
 from asyncpg.exceptions import ForeignKeyViolationError
 
-from core.errors import InvalidError
+from core.errors import InvalidError, UniqueError
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealPage
 
@@ -10,6 +10,7 @@ class DealPgRepository(IDealRepository):
 
     class Constraints:
         fk_store_id = 'deal_store_id_fkey'
+        uk_code = 'deal__uk__company_id__code'
 
     columns = '''
         id,
@@ -18,6 +19,7 @@ class DealPgRepository(IDealRepository):
         user_id,
         seller_id,
         buyer_id,
+        code,
         total_amount,
         remaining_amount_due,
         type,
@@ -74,22 +76,23 @@ class DealPgRepository(IDealRepository):
                 user_id=row[3],
                 seller_id=row[4],
                 buyer_id=row[5],
-                total_amount=row[6],
-                remaining_amount_due=row[7],
-                type=row[8],
-                installments_total_amount=row[9],
-                installments=row[10],
-                installment_amount=row[11],
-                installment_trifle=row[12],
-                installment_expiration_date=row[13],
-                created_at=row[14],
-                last_paid_at=row[15],
-                closed_at=row[16],
-                note=row[17],
+                code=row[6],
+                total_amount=row[7],
+                remaining_amount_due=row[8],
+                type=row[9],
+                installments_total_amount=row[10],
+                installments=row[11],
+                installment_amount=row[12],
+                installment_trifle=row[13],
+                installment_expiration_date=row[14],
+                created_at=row[15],
+                last_paid_at=row[16],
+                closed_at=row[17],
+                note=row[18],
             )
             for row in rows
         ]
-        total = rows[0][18] if rows else 0
+        total = rows[0][19] if rows else 0
         
         deal_page = DealPage(
             deals=deals,
@@ -144,7 +147,9 @@ class DealPgRepository(IDealRepository):
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                 $11, $12, $13, $14, $15, $16, $17
             )
-            RETURNING id
+            RETURNING
+                id, 
+                code
             '''
         )
         args = (
@@ -167,15 +172,18 @@ class DealPgRepository(IDealRepository):
                 deal.note,
         )
         try:
-            deal_id = await self._conn.fetchval(stmt, *args)
-            if not deal_id:
+            row = await self._conn.fetchrow(stmt, *args)
+            if not row:
                 raise ValueError
         except ForeignKeyViolationError as e:
             if self.Constraints.fk_store_id in str(e):
                 raise InvalidError(loc=['deal', 'store_id'])
+            if self.Constraints.uk_code in str(e):
+                raise UniqueError(loc=['deal', 'code'])
             raise e
 
-        deal.id = deal_id
+        deal.id = row[0]
+        deal.code = row[1]
         return deal
 
     async def _update(self, deal: Deal) -> Deal:
@@ -187,19 +195,20 @@ class DealPgRepository(IDealRepository):
                 user_id = $3,
                 seller_id = $4,
                 buyer_id = $5,
-                total_amount = $6,
-                remaining_amount_due = $7,
-                type = $8,
-                installments_total_amount = $9,
-                installments = $10,
-                installment_amount = $11,
-                installment_trifle = $12,
-                installment_expiration_date = $13,
-                created_at = $14,
-                last_paid_at = $15,
-                closed_at = $16,
-                note = $17
-            WHERE id = $18
+                code = $6,
+                total_amount = $7,
+                remaining_amount_due = $8,
+                type = $9,
+                installments_total_amount = $10,
+                installments = $11,
+                installment_amount = $12,
+                installment_trifle = $13,
+                installment_expiration_date = $14,
+                created_at = $15,
+                last_paid_at = $16,
+                closed_at = $17,
+                note = $18
+            WHERE id = $19
             '''
         )
         args = (
@@ -208,6 +217,7 @@ class DealPgRepository(IDealRepository):
             deal.user_id,
             deal.seller_id,
             deal.buyer_id,
+            deal.code,
             deal.total_amount,
             deal.remaining_amount_due,
             deal.type,

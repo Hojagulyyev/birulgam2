@@ -23,6 +23,7 @@ class Deal:
     remaining_amount_due: int
     type: str
 
+    code: str | None = None
     installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0

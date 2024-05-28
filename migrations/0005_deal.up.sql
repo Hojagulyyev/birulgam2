@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS deal (
     seller_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     buyer_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     
+    code VARCHAR(16) NOT NULL,
     total_amount INTEGER NOT NULL,
     remaining_amount_due INTEGER NOT NULL,
     type VARCHAR(16) NOT NULL,
@@ -18,5 +19,37 @@ CREATE TABLE IF NOT EXISTS deal (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_paid_at TIMESTAMP DEFAULT NULL,
     closed_at TIMESTAMP DEFAULT NULL,
-    note VARCHAR(255) DEFAULT NULL
+    note VARCHAR(255) DEFAULT NULL,
+
+    CONSTRAINT deal__uk__company_id__code UNIQUE (company_id, code)
 );
+
+
+CREATE FUNCTION increment_deal_code_by_store()
+    RETURNS TRIGGER AS $$
+DECLARE
+    deal_id_seq INT;
+    store_code VARCHAR(2);
+BEGIN
+    SELECT 
+        next_deal_id, code
+            INTO 
+        deal_id_seq, store_code
+    FROM store 
+        WHERE id = NEW.store_id;
+
+    UPDATE store 
+        SET next_deal_id = deal_id_seq + 1 
+    WHERE id = NEW.store_id;
+    
+    NEW.code := store_code || '-' || deal_id_seq;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- TODO: correct increment_deal_code_by_store if I wrong name it
+CREATE TRIGGER set_deal_code_before_insert
+    BEFORE INSERT ON deal
+FOR EACH ROW
+    EXECUTE PROCEDURE increment_deal_code_by_store();
