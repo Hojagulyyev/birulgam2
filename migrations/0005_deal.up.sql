@@ -25,29 +25,41 @@ CREATE TABLE IF NOT EXISTS deal (
 );
 
 
--- TODO: increment not sale code, purchase code instead of deal code
 CREATE FUNCTION increment_deal_code_by_store()
     RETURNS TRIGGER AS $$
 DECLARE
+    sale_id_seq INT;
+    purchase_id_seq INT;
     deal_id_seq INT;
     store_code VARCHAR(2);
     deal_type_code VARCHAR(16);
 BEGIN
     SELECT 
-        next_deal_id, code
+        next_sale_id,
+        next_purchase_id,
+        code
             INTO 
-        deal_id_seq, store_code
+        sale_id_seq,
+        purchase_id_seq,
+        store_code
     FROM store 
         WHERE id = NEW.store_id;
 
-    UPDATE store 
-        SET next_deal_id = deal_id_seq + 1 
-    WHERE id = NEW.store_id;
-
     IF NEW.type = 'sale' THEN
+        deal_id_seq := sale_id_seq;
         deal_type_code := LEFT(NEW.type, 2);
+
+        UPDATE store 
+            SET next_sale_id = sale_id_seq + 1 
+        WHERE id = NEW.store_id;
+
     ELSIF NEW.type = 'purchase' THEN
+        deal_id_seq := purchase_id_seq;
         deal_type_code := LEFT(NEW.type, 2);
+
+        UPDATE store 
+            SET next_purchase_id = purchase_id_seq + 1 
+        WHERE id = NEW.store_id;
     END IF;
     
     NEW.code := CONCAT(

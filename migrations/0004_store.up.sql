@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS store (
     
     name VARCHAR(26) NOT NULL,
     code VARCHAR(2) NOT NULL,
-    next_deal_id INTEGER NOT NULL DEFAULT 1,
+    next_sale_id INTEGER NOT NULL DEFAULT 1,
+    next_purchase_id INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT store__uk__company_id__name UNIQUE (company_id, name),
     CONSTRAINT store__uk__company_id__code UNIQUE (company_id, code)
