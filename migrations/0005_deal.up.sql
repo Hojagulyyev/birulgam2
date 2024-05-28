@@ -25,11 +25,13 @@ CREATE TABLE IF NOT EXISTS deal (
 );
 
 
+-- TODO: increment not sale code, purchase code instead of deal code
 CREATE FUNCTION increment_deal_code_by_store()
     RETURNS TRIGGER AS $$
 DECLARE
     deal_id_seq INT;
     store_code VARCHAR(2);
+    deal_type_code VARCHAR(16);
 BEGIN
     SELECT 
         next_deal_id, code
@@ -41,8 +43,18 @@ BEGIN
     UPDATE store 
         SET next_deal_id = deal_id_seq + 1 
     WHERE id = NEW.store_id;
+
+    IF NEW.type = 'sale' THEN
+        deal_type_code := LEFT(NEW.type, 2);
+    ELSIF NEW.type = 'purchase' THEN
+        deal_type_code := LEFT(NEW.type, 2);
+    END IF;
     
-    NEW.code := store_code || '-' || deal_id_seq;
+    NEW.code := CONCAT(
+        UPPER(deal_type_code), '-', 
+        UPPER(store_code), '-', 
+        CAST(deal_id_seq AS TEXT)
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
