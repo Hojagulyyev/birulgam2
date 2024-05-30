@@ -1,0 +1,25 @@
+from application.user.usecases import (
+    SigninUserUsecase,
+    SignupUserUsecase,
+)
+
+from adapters.company.repositories import CompanyPgRepository
+from adapters.user.repositories import UserPgRepository
+from adapters.store.repositories import StorePgRepository
+from adapters.user.services import UserPasswordService
+
+
+def make_signup_user_usecase(conn):
+    return SignupUserUsecase(
+        user_repo=UserPgRepository(conn),
+        user_password_service=UserPasswordService(),
+        company_repo=CompanyPgRepository(conn),
+        store_repo=StorePgRepository(conn),
+    )
+
+
+def make_signin_user_usecase(conn):
+    return SigninUserUsecase(
+        user_repo=UserPgRepository(conn),
+        user_password_service=UserPasswordService(),
+    )
