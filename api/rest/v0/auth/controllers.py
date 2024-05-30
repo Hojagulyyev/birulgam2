@@ -18,6 +18,7 @@ from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 
+from adapters.user_session.map import UserSessionMap
 from adapters.otp.repositories import OtpRedisRepository
 from adapters.company.repositories import CompanyPgRepository
 from adapters.user.repositories import UserPgRepository
@@ -125,14 +126,7 @@ async def signin_controller(
     )
     return {
         'access_token': access_token, 
-        'user_session': {
-            'user_id': user_session.user_id,
-            'company_id': (
-                user_session.company_id
-                if user_session.company_exists()
-                else 0
-            ),
-        }
+        'user_session': UserSessionMap.serialize_one(user_session),
     }
 
 
@@ -229,12 +223,5 @@ async def signin_by_otp_controller(
     
     return {
         'access_token': access_token, 
-        'user_session': {
-            'user_id': user_session.user_id,
-            'company_id': (
-                user_session.company_id
-                if user_session.company_exists()
-                else 0
-            ),
-        }
+        'user_session': UserSessionMap.serialize_one(user_session),
     }
