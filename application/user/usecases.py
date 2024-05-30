@@ -74,8 +74,6 @@ class SignupUserUsecase:
         return user
     
 
-# TODO: continue with update signin user controller code
-# TODO: then make signin by otp controller & use signup, signin usecases
 class SigninUserUsecase:
 
     def __init__(

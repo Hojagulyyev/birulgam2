@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import (
     APIRouter,
     status,
@@ -20,6 +18,7 @@ from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 
+from adapters.otp.repositories import OtpRedisRepository
 from adapters.company.repositories import CompanyPgRepository
 from adapters.user.repositories import UserPgRepository
 from adapters.store.repositories import StorePgRepository
@@ -137,9 +136,7 @@ async def signin_controller(
     }
 
 
-redis_otp_storage = {}
-
-
+# TODO: send otp to phone via email or sms service
 @router.post(
     path="/otp",
     status_code=status.HTTP_200_OK,
@@ -148,9 +145,13 @@ async def send_otp_controller(
     dto: SendOtpControllerDto,
 ):
     otp = generate_otp()
+    otp_repo = OtpRedisRepository()
+    otp_repo.set_by_phone(dto.phone, otp)
+    # otp_service.send_otp(otp) implement this service
     print('otp', otp)
-    redis_otp_storage[otp] = dto.phone
-    return {'phone': dto.phone}
+    return {
+        'phone': dto.phone
+    }
 
 
 @router.post(
@@ -164,10 +165,10 @@ async def signin_by_otp_controller(
     dto: SigninByOtpControllerDto,
     request: Request,
 ):  
-    print('redis_otp_storage', redis_otp_storage)
-    phone = redis_otp_storage.get(dto.otp, None)
+    otp_repo = OtpRedisRepository()
+    otp = otp_repo.get_by_phone(dto.phone)
     
-    if phone != dto.phone:
+    if not otp or otp != dto.otp:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="invalid otp",
