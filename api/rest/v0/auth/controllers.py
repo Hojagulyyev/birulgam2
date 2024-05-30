@@ -11,7 +11,6 @@ from core.random import generate_otp, generate_random_string
 
 from application.user.usecases import (
     GetUserByUsernameUsecase,
-    CheckUserPasswordUsecase,
 )
 from application.user.dtos import SignupUserUsecaseDto, SigninUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
@@ -25,7 +24,6 @@ from adapters.user_session.map import UserSessionMap
 from adapters.otp.repositories import OtpRedisRepository
 from adapters.user.repositories import UserPgRepository
 from adapters.user.map import UserMap
-from adapters.user.services import UserPasswordService
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 from .dtos import (
@@ -147,7 +145,7 @@ async def signin_by_otp_controller(
 ):  
     otp_repo = OtpRedisRepository()
     otp = otp_repo.get_by_phone(dto.phone)
-    
+
     if not otp or otp != dto.otp:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

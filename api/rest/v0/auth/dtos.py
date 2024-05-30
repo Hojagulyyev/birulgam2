@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from fastapi import HTTPException, status
 
+from core.phone import is_valid_phone, format_phone
 from domain.user.entities import User
 
 
@@ -36,11 +38,17 @@ class SigninControllerDto(BaseModel):
 
 
 class SendOtpControllerDto(BaseModel):
-    phone: str = Field(
-        ...,
-        min_length=User.USERNAME_MIN_LENGTH,
-        max_length=User.USERNAME_MAX_LENGTH,
-    )
+    phone: str
+
+    @field_validator('phone')
+    def validate_phone(cls, phone):
+        phone = format_phone(phone)
+        if not is_valid_phone(phone):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="invalid phone",
+            )
+        return phone
 
 
 class SigninByOtpControllerDto(BaseModel):
@@ -50,3 +58,13 @@ class SigninByOtpControllerDto(BaseModel):
         max_length=User.USERNAME_MAX_LENGTH,
     )
     otp: str
+
+    @field_validator('phone')
+    def validate_phone(cls, phone):
+        phone = format_phone(phone)
+        if not is_valid_phone(phone):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="invalid phone",
+            )
+        return phone
