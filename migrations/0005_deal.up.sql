@@ -72,7 +72,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- TODO: correct increment_deal_code_by_store if I wrong name it
 CREATE TRIGGER set_deal_code_before_insert
     BEFORE INSERT ON deal
 FOR EACH ROW

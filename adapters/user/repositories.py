@@ -15,7 +15,7 @@ class UserPgRepository(IUserRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def get_by_username(self, username: str) -> User:
+    async def get_by_username(self, username: str) -> User | None:
         stmt = (
             '''
             SELECT id, username, password FROM user_
@@ -25,7 +25,7 @@ class UserPgRepository(IUserRepository):
         )
         row = await self._conn.fetchrow(stmt, username)
         if row is None:
-            raise DoesNotExistError(loc=['user', 'username'])
+            return None
 
         user = User(
             id=row[0],
@@ -56,7 +56,7 @@ class UserPgRepository(IUserRepository):
             )
             for row in rows
         ]
-        user.companies =companies
+        user.companies = companies
         return user
         
     async def save(self, user: User) -> User:

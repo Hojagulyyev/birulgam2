@@ -23,3 +23,9 @@ class SignupUserUsecaseDto:
                 loc=['input', 'password_confirm'], 
                 msg='password mismatch',
             )
+
+
+@dataclass
+class SigninUserUsecaseDto:
+    username: str
+    password: str

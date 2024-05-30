@@ -39,3 +39,8 @@ class DoesNotExistError(Error):
 class PermissionDeniedError(Error):
     def __init__(self, *args, **kwargs):
         super().__init__(type="permission_denied", *args, **kwargs)
+
+
+class UnauthorizedError(Error):
+    def __init__(self, *args, **kwargs):
+        super().__init__(type="unauthorized", *args, **kwargs)

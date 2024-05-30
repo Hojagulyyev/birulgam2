@@ -1,5 +1,6 @@
 from core.random import generate_random_string
 
+from core.errors import DoesNotExistError, UnauthorizedError
 from domain.user.entities import User
 from domain.user.interfaces import (
     IUserRepository, 
@@ -13,6 +14,7 @@ from domain.store.interfaces import IStoreRepository
 from .dtos import (
     SignupUserUsecaseDto,
     CreateUserUsecaseDto,
+    SigninUserUsecaseDto,
 )
 
 
@@ -70,6 +72,34 @@ class SignupUserUsecase:
         # >>> RESPONSE
         user.companies = companies
         return user
+    
+
+# TODO: continue with update signin user controller code
+# TODO: then make signin by otp controller & use signup, signin usecases
+class SigninUserUsecase:
+
+    def __init__(
+        self, 
+        user_repo: IUserRepository,
+        user_password_service: IUserPasswordService,
+    ):
+        self.user_repo = user_repo
+        self.user_password_service = user_password_service
+
+    async def execute(self, dto: SigninUserUsecaseDto) -> User:
+        user = await self.user_repo.get_by_username(dto.username)
+        if not user:
+            raise DoesNotExistError(loc=['user', 'username'])
+
+        password_match = (
+            self.user_password_service
+            .check_password(dto.password, user.password)
+        )
+        if not password_match:
+            raise UnauthorizedError('invalid authentication credentials')
+        
+        await self.user_repo.join_companies(user)
+        return user
 
 
 class GetUserByUsernameUsecase:
@@ -82,6 +112,9 @@ class GetUserByUsernameUsecase:
 
     async def execute(self, username: str) -> User:
         user = await self.user_repo.get_by_username(username)
+        if not user:
+            raise DoesNotExistError(loc=['user', 'username'])
+        
         await self.user_repo.join_companies(user)
         return user
 

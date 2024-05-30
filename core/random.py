@@ -7,3 +7,8 @@ def generate_random_string(length: int = 6):
         random.sample(string.ascii_lowercase, length)
     )
     return random_generated_string
+
+
+def generate_otp() -> str:
+    otp = random.randint(10000, 99999)
+    return str(otp)
