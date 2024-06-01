@@ -57,7 +57,11 @@ class SigninByOtpControllerDto(BaseModel):
         min_length=User.USERNAME_MIN_LENGTH,
         max_length=User.USERNAME_MAX_LENGTH,
     )
-    otp: str
+    otp: str = Field(
+        ...,
+        min_length=OTP_LENGTH,
+        max_length=OTP_LENGTH,
+    )
 
     @field_validator('phone')
     def validate_phone(cls, phone):
