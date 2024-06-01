@@ -1,7 +1,7 @@
 from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
 
-from core.errors import UniqueError, DoesNotExistError
+from core.errors import UniqueError
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User
 from domain.company.entities import Company
@@ -60,10 +60,17 @@ class UserPgRepository(IUserRepository):
         return user
         
     async def save(self, user: User) -> User:
-        if not user.id:
-            user = await self._insert(user)
-        else:
-            user = await self._update(user)
+        try:
+            if not user.id:
+                user = await self._insert(user)
+            else:
+                user = await self._update(user)
+
+        except UniqueViolationError as e:
+            if self.Constraints.uk_username in str(e):
+                raise UniqueError(loc=['user', 'username'])
+            raise e
+        
         return user
     
     async def _insert(self, user: User) -> User:
@@ -84,16 +91,11 @@ class UserPgRepository(IUserRepository):
             user.username, 
             user.password,
         )
-        try:
-            user_id = await self._conn.fetchval(stmt, *args)
-            if not user_id:
-                raise ValueError
-        except UniqueViolationError as e:
-            if self.Constraints.uk_username in str(e):
-                raise UniqueError(loc=['user', 'username'])
-            raise e
+        user_id = await self._conn.fetchval(stmt, *args)
+        if not user_id:
+            raise ValueError
         
-        # >>> M2M: user.companies
+        # >>> M2M: user.company_ids
         if user.company_ids:
             stmt = (
                 f'''
@@ -109,14 +111,14 @@ class UserPgRepository(IUserRepository):
                 '''
             )
             args = (company_id for company_id in user.company_ids)
-            await self._conn.fetchval(stmt, *args)
+            await self._conn.execute(stmt, *args)
 
         # >>> REPSONSE
         user.id = user_id
         return user
 
-    # TODO: implement M2M: user.companies
     async def _update(self, user: User) -> User:
+        # >>> MAIN
         stmt = (
             '''
             UPDATE user_ SET 
@@ -131,4 +133,42 @@ class UserPgRepository(IUserRepository):
             user.id,
         )
         await self._conn.execute(stmt, *args)
+        
+        # >>> M2M: user.company_ids
+        if user.company_ids:
+            stmt = (
+                f'''
+                DELETE FROM user_company
+                WHERE
+                    user_id = $1
+                AND 
+                    company_id IN ({
+                        ', '.join([
+                            f'${i+2}' 
+                            for i in range(len(user.company_ids))
+                        ])
+                    })
+                '''
+            )
+            args = (
+                user.id,
+                *(company_id for company_id in user.company_ids),
+            )
+            await self._conn.execute(stmt, *args)
+
+            stmt = (
+                f'''
+                INSERT INTO user_company
+                (
+                    user_id,
+                    company_id
+                ) VALUES 
+                {', '.join([
+                    f'({user.id}, ${i+1})'
+                    for i in range(len(user.company_ids))
+                ])}
+                '''
+            )
+            args = (company_id for company_id in user.company_ids)
+            await self._conn.execute(stmt, *args)
         return user
