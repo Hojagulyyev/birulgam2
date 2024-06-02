@@ -53,7 +53,7 @@ async def get_user_session_by_authorization(
     access_token = authorization.replace("Bearer ", "")
     try:
         expired = TokenService.is_token_expired(access_token)
-    except jwt.DecodeError as e:
+    except jwt.DecodeError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=(

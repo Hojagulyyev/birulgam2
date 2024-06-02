@@ -7,6 +7,7 @@ from core.errors import PermissionDeniedError
 class UserSession:
     _user_id: int
     _company_id: int
+    _access_token: str
 
     def validate(self) -> None:
         if not isinstance(self._user_id, int):
@@ -26,6 +27,16 @@ class UserSession:
 
     def user_exists(self):
         return self._user_id != 0
+    
+    @property
+    def access_token(self):
+        if not self._access_token:
+            raise PermissionDeniedError('user is not authenticated')
+        return self._access_token
+    
+    @access_token.setter
+    def access_token(self, value):
+        self._access_token = value
 
     @property
     def company_id(self):

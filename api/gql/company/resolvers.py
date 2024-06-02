@@ -1,4 +1,10 @@
+from typing import Annotated
+
+import strawberry
 from strawberry.types import Info
+
+from core.errors import Error, PermissionDeniedError
+from domain.user_session.entities import UserSession
 
 from application.company.usecases import (
     CreateCompanyUsecase,
@@ -6,26 +12,45 @@ from application.company.usecases import (
 from application.company.dtos import (
     CreateCompanyUsecaseDto,
 )
+
+from adapters.user_session.repositories import UserSessionRedisRepository
+from adapters.user.repositories import UserPgRepository
 from adapters.company.map import CompanyMap
 from adapters.company.repositories import CompanyPgRepository
 
+from ..error.schemas import ErrorSchema
 from .schemas import CompanySchema
 from . import inputs
 
 
+create_company_response = Annotated[
+    CompanySchema | ErrorSchema,
+    strawberry.union('CreateCompanyResponse'),
+]
 async def create_company_resolver(
     info: Info,
     input: inputs.CreateCompanyInput,
-) -> CompanySchema:
-    raise NotImplementedError('resolver\' s aim not declared yet')
+) -> create_company_response:
+    user_session: UserSession = info.context["user_session"]
+    if user_session.company_exists():
+        raise PermissionDeniedError('user already has a company')
+    
+    try:
+        async with info.context["pgpool"].acquire() as conn:
+            create_company_usecase = CreateCompanyUsecase(
+                company_repo=CompanyPgRepository(conn),
+                user_repo=UserPgRepository(conn),
+                user_session_repo=UserSessionRedisRepository(),
+            )
+            company = await create_company_usecase.execute(
+                CreateCompanyUsecaseDto(
+                    user_id=user_session.user_id,
+                    access_token=user_session.access_token,
+                    name=input.name,
+                ),
+            )
+    except Error as e:
+        return ErrorSchema(**e.serialize())
 
-    async with info.context["pgpool"].acquire() as conn:
-        company_repo = CompanyPgRepository(conn=conn)
-        create_company_usecase = CreateCompanyUsecase(
-            company_repo=company_repo,
-        )
-        company = await create_company_usecase.execute(
-            CreateCompanyUsecaseDto(name=input.name),
-        )
     response = CompanyMap.to_gql_schema(company)
     return response

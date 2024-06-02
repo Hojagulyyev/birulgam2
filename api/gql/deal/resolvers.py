@@ -35,7 +35,6 @@ async def get_deals_resolver(
     input: GetDealsInput,
 ) -> get_deals_response:
     user_session: UserSession = info.context["user_session"]
-
     try:
         company_id: int = user_session.company_id
 

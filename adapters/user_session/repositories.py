@@ -14,7 +14,8 @@ class UserSessionRedisRepository(IUserSessionRepository):
         user_session_in_dict = json.loads(str(user_session_in_str))
         user_session = UserSession(
             _user_id=user_session_in_dict["user_id"],
-            _company_id=user_session_in_dict["company_id"]
+            _company_id=user_session_in_dict["company_id"],
+            _access_token=access_token,
         )
         return user_session
         
@@ -26,6 +27,7 @@ class UserSessionRedisRepository(IUserSessionRepository):
                 if user_session.company_exists()
                 else 0
             ),
+            "access_token": user_session.access_token,
         }
         user_session_in_str = json.dumps(user_session_in_dict)
         cache.set(
@@ -39,4 +41,5 @@ class UserSessionRedisRepository(IUserSessionRepository):
         return UserSession(
             _user_id=0,
             _company_id=0,
+            _access_token="",
         )

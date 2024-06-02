@@ -26,6 +26,7 @@ class CreateUserSessionUsecase:
         user_session = UserSession(
             _user_id=dto.user_id,
             _company_id=dto.company_id,
+            _access_token=access_token,
         )
         user_session.validate()
         created_user_session = await (
