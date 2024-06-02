@@ -17,6 +17,7 @@ from adapters.user_session.repositories import UserSessionRedisRepository
 from adapters.user.repositories import UserPgRepository
 from adapters.company.map import CompanyMap
 from adapters.company.repositories import CompanyPgRepository
+from adapters.store.repositories import StorePgRepository
 
 from ..error.schemas import ErrorSchema
 from .schemas import CompanySchema
@@ -40,6 +41,7 @@ async def create_company_resolver(
             create_company_usecase = CreateCompanyUsecase(
                 company_repo=CompanyPgRepository(conn),
                 user_repo=UserPgRepository(conn),
+                store_repo=StorePgRepository(conn),
                 user_session_repo=UserSessionRedisRepository(),
             )
             company = await create_company_usecase.execute(
