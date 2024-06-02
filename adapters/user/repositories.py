@@ -67,6 +67,18 @@ class UserPgRepository(IUserRepository):
             total=total,
         )
         return user_page
+    
+    async def get_by_id(
+        self, 
+        id: int,
+    ) -> User | None:
+        user_page = await self.list(
+            ids=[id],
+        )
+        if user_page.total == 0:
+            return None
+        
+        return user_page.users[0]
 
     async def get_by_username(self, username: str) -> User | None:
         stmt = (
