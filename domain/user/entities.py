@@ -47,3 +47,9 @@ class User:
             or password_len > self.PASSWORD_MAX_LENGTH
         ):
             raise InvalidError(f'user password\'s length must be between {self.PASSWORD_MIN_LENGTH} and {self.PASSWORD_MAX_LENGTH}')
+
+
+@dataclass
+class UserPage:
+    users: list[User]
+    total: int

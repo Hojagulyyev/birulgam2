@@ -3,7 +3,7 @@ from asyncpg.exceptions import UniqueViolationError
 
 from core.errors import UniqueError
 from domain.user.interfaces import IUserRepository
-from domain.user.entities import User
+from domain.user.entities import User, UserPage
 from domain.company.entities import Company
 
 
@@ -12,13 +12,70 @@ class UserPgRepository(IUserRepository):
     class Constraints:
         uk_username = 'user__uk__username'
 
+    columns = '''
+        id,
+        username,
+        password
+    '''
+
     def __init__(self, conn: Connection):
         self._conn = conn
+
+    async def list(
+        self, 
+        ids: list[int] | None = None,
+        username: str | None = None,
+    ) -> UserPage:
+        stmt = (
+            '''
+            SELECT
+            '''
+            + self.columns + 
+            '''
+                ,
+                COUNT(*) OVER() AS total
+            FROM user_
+            WHERE
+                1 = 1
+            '''
+        )
+        args = []
+
+        if ids:
+            args += ids
+            ids_placeholder = ', '.join([f'${i+1}' for i in range(len(ids))])
+            stmt += f'AND id IN ({ids_placeholder})'
+
+        if username:
+            args.append(username)
+            stmt += f'AND username = ${len(args)}'
+
+        rows = await self._conn.fetch(stmt, *args)
+
+        users: list[User] = [
+            User(
+                id=row[0],
+                username=row[1],
+                password=row[2],
+            )
+            for row in rows
+        ]
+        total = rows[0][3] if rows else 0
+
+        user_page = UserPage(
+            users=users,
+            total=total,
+        )
+        return user_page
 
     async def get_by_username(self, username: str) -> User | None:
         stmt = (
             '''
-            SELECT id, username, password FROM user_
+            SELECT
+            '''
+            + self.columns + 
+            '''
+            FROM user_
             WHERE
                 username = $1
             '''
