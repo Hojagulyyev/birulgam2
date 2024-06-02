@@ -24,7 +24,6 @@ class UserPgRepository(IUserRepository):
     async def list(
         self, 
         ids: list[int] | None = None,
-        username: str | None = None,
     ) -> UserPage:
         stmt = (
             '''
@@ -46,10 +45,6 @@ class UserPgRepository(IUserRepository):
             ids_placeholder = ', '.join([f'${i+1}' for i in range(len(ids))])
             stmt += f'AND id IN ({ids_placeholder})'
 
-        if username:
-            args.append(username)
-            stmt += f'AND username = ${len(args)}'
-
         rows = await self._conn.fetch(stmt, *args)
 
         users: list[User] = [
@@ -68,16 +63,11 @@ class UserPgRepository(IUserRepository):
         )
         return user_page
     
-    async def get_by_id(
-        self, 
-        id: int,
-    ) -> User | None:
-        user_page = await self.list(
-            ids=[id],
-        )
+    # TODO: perf: use get by id stmt directly instead of using list()
+    async def get_by_id(self, id: int) -> User | None:
+        user_page = await self.list(ids=[id])
         if user_page.total == 0:
             return None
-        
         return user_page.users[0]
 
     async def get_by_username(self, username: str) -> User | None:
