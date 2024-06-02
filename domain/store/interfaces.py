@@ -6,7 +6,7 @@ from .entities import Store
 class IStoreRepository(ABC):
     
     @abstractmethod
-    async def get_by_id(self, id: int) -> Store | None:
+    async def get_by_id(self, company_id: int | None, id: int) -> Store | None:
         raise NotImplementedError
     
     @abstractmethod

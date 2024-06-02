@@ -7,6 +7,7 @@ from core.errors import (
 from domain.payment.entities import Payment
 from domain.payment.interfaces import IPaymentRepository
 from domain.deal.interfaces import IDealRepository
+from domain.store.interfaces import IStoreRepository
 
 from .dtos import (
     CreatePaymentUsecaseDto,
@@ -19,9 +20,11 @@ class CreatePaymentUsecase:
         self, 
         payment_repo: IPaymentRepository,
         deal_repo: IDealRepository,
+        store_repo: IStoreRepository,
     ):
         self.payment_repo = payment_repo
         self.deal_repo = deal_repo
+        self.store_repo = store_repo
     
     async def execute(self, dto: CreatePaymentUsecaseDto) -> Payment:
         # >>> SECURITY
@@ -30,7 +33,14 @@ class CreatePaymentUsecase:
             id=dto.deal_id,
         )
         if not deal:
-            raise DoesNotExistError(loc=['deal_id'])
+            raise DoesNotExistError(loc=['input', 'deal_id'])
+        
+        store = await self.store_repo.get_by_id(
+            company_id=dto.company_id,
+            id=dto.store_id,
+        )
+        if not store:
+            raise DoesNotExistError(loc=['input', 'store_id'])
         
         # >>> VALIDATION
         if dto.amount > deal.remaining_amount_due:
@@ -39,7 +49,7 @@ class CreatePaymentUsecase:
                 'deal remaining amount due',
                 loc=['amount'],
             )
-
+        
         if dto.created_at < deal.created_at:
             raise InvalidError(
                 'created_at must be greater than deal created_at',

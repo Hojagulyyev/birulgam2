@@ -24,7 +24,7 @@ class StorePgRepository(IStoreRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def get_by_id(self, id: int) -> Store | None:
+    async def get_by_id(self, company_id: int | None, id: int) -> Store | None:
         stmt = (
             '''
             SELECT
@@ -36,7 +36,14 @@ class StorePgRepository(IStoreRepository):
                 id = $1
             '''
         )
-        row = await self._conn.fetchrow(stmt, id)
+
+        args = [id, ]
+
+        if company_id:
+            args.append(company_id)
+            stmt += f'AND company_id = ${len(args)}'
+
+        row = await self._conn.fetchrow(stmt, *args)
         if row is None:
             return None
 

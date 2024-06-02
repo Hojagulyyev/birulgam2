@@ -19,6 +19,7 @@ from api.gql.utils import get_selected_fields
 from adapters.payment.map import PaymentMap
 from adapters.payment.repositories import PaymentPgRepository
 from adapters.deal.repositories import DealPgRepository
+from adapters.store.repositories import StorePgRepository
 
 from ..error.schemas import ErrorSchema
 from .schemas import PaymentSchema
@@ -44,8 +45,9 @@ async def create_payment_resolver(
         
         async with info.context["pgpool"].acquire() as conn:
             create_payment_usecase = CreatePaymentUsecase(
-                payment_repo=PaymentPgRepository(conn=conn),
-                deal_repo=DealPgRepository(conn=conn),
+                payment_repo=PaymentPgRepository(conn),
+                deal_repo=DealPgRepository(conn),
+                store_repo=StorePgRepository(conn),
             )
             payment = await create_payment_usecase.execute(
                 CreatePaymentUsecaseDto(
