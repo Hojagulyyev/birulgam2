@@ -1,5 +1,7 @@
+from core.errors import DoesNotExistError
 from domain.deal.entities import Deal, DealPage
 from domain.deal.interfaces import IDealRepository
+from domain.store.interfaces import IStoreRepository
 
 from .dtos import (
     GetDealsUsecaseDto,
@@ -31,12 +33,24 @@ class CreateDealUsecase:
     def __init__(
         self, 
         deal_repo: IDealRepository,
+        store_repo: IStoreRepository,
     ):
         self.deal_repo = deal_repo
+        self.store_repo = store_repo
     
     async def execute(self, dto: CreateDealUsecaseDto) -> Deal:
+        # >>> SECURITY
+        store = await self.store_repo.get_by_id(
+            company_id=dto.company_id,
+            id=dto.store_id,
+        )
+        if not store:
+            raise DoesNotExistError(loc=['input', 'store_id'])
+        
+        # >>> VALIDATION
         dto.validate()
 
+        # >>> MAIN
         deal = Deal(
             id=0,
             company_id=dto.company_id,
@@ -62,4 +76,6 @@ class CreateDealUsecase:
 
         deal.validate()
         created_deal = await self.deal_repo.save(deal)
+
+        # >>> RESPONSE
         return created_deal

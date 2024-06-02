@@ -17,6 +17,7 @@ from application.deal.dtos import (
 
 from adapters.deal.map import DealMap
 from adapters.deal.repositories import DealPgRepository
+from adapters.store.repositories import StorePgRepository
 
 from ..error.schemas import ErrorSchema
 from .schemas import DealSchema, DealPageSchema
@@ -78,7 +79,8 @@ async def create_deal_resolver(
             company_id: int = user_session.company_id
 
             create_deal_usecase = CreateDealUsecase(
-                deal_repo=DealPgRepository(conn=conn),
+                deal_repo=DealPgRepository(conn),
+                store_repo=StorePgRepository(conn),
             )
             deal = await create_deal_usecase.execute(
                 CreateDealUsecaseDto(
