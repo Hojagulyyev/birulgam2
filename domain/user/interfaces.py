@@ -1,13 +1,20 @@
 from abc import ABC, abstractmethod
 
-from .entities import User
+from .entities import User, UserPage
 
 
 class IUserRepository(ABC):
 
-    # @abstractmethod
-    # async def list(self):
-    #     raise NotImplementedError
+    @abstractmethod
+    async def list(
+        self, 
+        ids: list[int] | None = None,
+    ) -> UserPage:
+        raise NotImplementedError
+    
+    @abstractmethod
+    async def get_by_id(self, id: int) -> User | None:
+        raise NotImplementedError
 
     @abstractmethod
     async def get_by_username(self, username: str) -> User | None:
