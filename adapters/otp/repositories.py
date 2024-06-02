@@ -17,3 +17,6 @@ class OtpRedisRepository:
             ex=env.OTP_TTL,
         )
         return otp
+    
+    def remove_by_phone(self, phone: str) -> None:
+        cache.delete(f"otp{phone}")

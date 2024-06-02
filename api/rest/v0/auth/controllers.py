@@ -152,6 +152,7 @@ async def signin_by_otp_controller(
             detail="invalid otp",
         )
     
+    otp_repo.remove_by_phone(dto.phone)
     try:
         async with request.state.pgpool.acquire() as conn:
             get_user_by_username_usecase = GetUserByUsernameUsecase(
@@ -185,7 +186,6 @@ async def signin_by_otp_controller(
                 company_id=company_id,
             ),
         )
-
     except Error as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
