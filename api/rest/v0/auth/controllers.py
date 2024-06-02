@@ -160,9 +160,7 @@ async def signin_by_otp_controller(
             try:
                 user = await get_user_by_username_usecase.execute(dto.phone)
             except DoesNotExistError:
-                # >>> SIGNUP
                 signup_user_usecase = make_signup_user_usecase(conn)
-
                 random_generated_password = generate_random_string()
                 user = await signup_user_usecase.execute(
                     dto=SignupUserUsecaseDto(
@@ -172,16 +170,10 @@ async def signin_by_otp_controller(
                         create_company=False,
                     )
                 )
-                return JSONResponse(
-                    status_code=status.HTTP_201_CREATED,
-                    content=UserMap.serialize_one(user),
-                )
             
-        # >>> SIGNIN
         create_user_session_usecase = CreateUserSessionUsecase(
             user_session_repo=UserSessionRedisRepository(),
         )
-
         if not user.companies:
             company_id: int = 0
         else:
