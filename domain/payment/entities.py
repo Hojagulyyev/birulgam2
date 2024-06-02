@@ -23,6 +23,7 @@ class Payment:
         CASH = "cash"
         ONLINE = "online"
 
+    # >>> RELATED
     id: int
     company_id: int
     store_id: int
@@ -30,14 +31,14 @@ class Payment:
     deal_id: int
     sender_id: int | None
     receiver_id: int | None
-
+    # >>> REQUIRED
     amount: int
     type: Type
     method: Method
     category: Deal.Type
-
+    # >>> OPTIONAL
     created_at: datetime = datetime.now()
-
+    # >>> MAP
     company: Company | None = None
     store: Store | None = None
     user: User | None = None

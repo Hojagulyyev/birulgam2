@@ -12,17 +12,18 @@ from domain.contact.entities import Contact
 
 @dataclass
 class Deal:
+    # >>> RELATED
     id: int
     company_id: int
     store_id: int
     user_id: int
     seller_id: int | None
     buyer_id: int | None
-
+    # >>> REQUIRED
     total_amount: int
     remaining_amount_due: int
     type: str
-
+    # >>> OPTIONAL
     code: str | None = None
     installments_total_amount: int = 0
     installments: int = 0
@@ -33,7 +34,7 @@ class Deal:
     last_paid_at: datetime | None = None
     closed_at: datetime | None = None
     note: str | None = None
-
+    # >>> MAP
     company: Company | None = None
     store: Store | None = None
     user: User | None = None

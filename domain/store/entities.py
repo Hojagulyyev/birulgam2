@@ -5,9 +5,10 @@ from core.errors import InvalidError
 
 @dataclass
 class Store:
+    # >>> RELATED
     id: int
     company_id: int
-
+    # >>> REQUIRED
     name: str
     code: str
 

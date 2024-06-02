@@ -14,8 +14,39 @@ class StorePgRepository(IStoreRepository):
         uk_name = 'store__uk__company_id__name'
         uk_code = 'store__uk__company_id__code'
 
+    columns = '''
+        id,
+        company_id,
+        name,
+        code
+    '''
+
     def __init__(self, conn: Connection):
         self._conn = conn
+
+    async def get_by_id(self, id: int) -> Store | None:
+        stmt = (
+            '''
+            SELECT
+            '''
+            + self.columns + 
+            '''
+            FROM store
+            WHERE
+                id = $1
+            '''
+        )
+        row = await self._conn.fetchrow(stmt, id)
+        if row is None:
+            return None
+
+        store = Store(
+            id=row[0],
+            company_id=row[1],
+            name=row[2],
+            code=row[3],
+        )
+        return store
         
     async def save(self, store: Store) -> Store:
         if not store.id:
