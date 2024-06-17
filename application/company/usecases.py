@@ -43,7 +43,7 @@ class CreateCompanyUsecase:
         store = Store(
             id=0,
             company_id=company.id,
-            name=generate_random_string(),
+            name=generate_random_string(Store.NAME_RANDOM_LENGTH),
             code=generate_random_string(Store.CODE_MAX_LENGTH),
         )
         store.validate()

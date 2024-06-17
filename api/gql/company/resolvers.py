@@ -33,10 +33,10 @@ async def create_company_resolver(
     input: inputs.CreateCompanyInput,
 ) -> create_company_response:
     user_session: UserSession = info.context["user_session"]
-    if user_session.company_exists():
-        raise PermissionDeniedError('user already has a company')
-    
     try:
+        if user_session.company_exists():
+            raise PermissionDeniedError('user already has a company')
+    
         async with info.context["pgpool"].acquire() as conn:
             create_company_usecase = CreateCompanyUsecase(
                 company_repo=CompanyPgRepository(conn),
