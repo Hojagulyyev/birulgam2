@@ -15,7 +15,6 @@ class SignupUserUsecaseDto:
     username: str
     password: str
     password_confirm: str
-    create_company: bool = False
 
     def validate(self):
         if self.password != self.password_confirm:

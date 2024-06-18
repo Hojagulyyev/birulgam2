@@ -120,7 +120,6 @@ async def signin_by_otp_controller(
                         username=dto.phone,
                         password=random_generated_password,
                         password_confirm=random_generated_password,
-                        create_company=False,
                     )
                 )
             

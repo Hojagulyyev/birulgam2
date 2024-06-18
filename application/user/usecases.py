@@ -43,25 +43,6 @@ class SignupUserUsecase:
         dto.validate()
 
         # >>> MAIN
-        companies: list[Company] = []
-        if dto.create_company:
-            company = Company(
-                id=0, 
-                name=generate_random_string(),
-            )
-            company.validate()
-            company = await self.company_repo.save(company)
-            companies.append(company)
-            
-            store = Store(
-                id=0,
-                company_id=company.id,
-                name=generate_random_string(),
-                code=generate_random_string(Store.CODE_MAX_LENGTH),
-            )
-            store.validate()
-            store = await self.store_repo.save(store)
-
         hashed_password = (
             self.user_password_service
             .hash_password(dto.password)
@@ -70,13 +51,11 @@ class SignupUserUsecase:
             id=0,
             username=dto.username,
             password=hashed_password,
-            company_ids=[company.id for company in companies],
         )
         user.validate()
         user = await self.user_repo.save(user)
 
         # >>> RESPONSE
-        user.companies = companies
         return user
     
 
