@@ -7,7 +7,7 @@ from adapters.token.services import TokenService
 
 from .dtos import (
     CreateUserSessionUsecaseDto,
-) 
+)
 
 
 class CreateUserSessionUsecase:

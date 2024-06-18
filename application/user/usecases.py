@@ -1,6 +1,10 @@
 from core.random import generate_random_string
 
 from core.errors import DoesNotExistError, UnauthorizedError
+from domain.user_session.entities import UserSession
+from domain.user_session.interfaces import (
+    IUserSessionRepository,
+)
 from domain.user.entities import User
 from domain.user.interfaces import (
     IUserRepository, 
@@ -10,6 +14,8 @@ from domain.company.entities import Company
 from domain.company.interfaces import ICompanyRepository
 from domain.store.entities import Store
 from domain.store.interfaces import IStoreRepository
+
+from adapters.token.services import TokenService
 
 from .dtos import (
     SignupUserUsecaseDto,
@@ -80,11 +86,16 @@ class SigninUserUsecase:
         self, 
         user_repo: IUserRepository,
         user_password_service: IUserPasswordService,
+        user_session_repo: IUserSessionRepository,
     ):
         self.user_repo = user_repo
         self.user_password_service = user_password_service
+        self.user_session_repo = user_session_repo
 
-    async def execute(self, dto: SigninUserUsecaseDto) -> User:
+    async def execute(
+        self, 
+        dto: SigninUserUsecaseDto,
+    ) -> tuple[str, UserSession]:
         user = await self.user_repo.get_by_username(dto.username)
         if not user:
             raise DoesNotExistError(loc=['user', 'username'])
@@ -97,7 +108,20 @@ class SigninUserUsecase:
             raise UnauthorizedError('invalid authentication credentials')
         
         await self.user_repo.join_companies(user)
-        return user
+
+        access_token = TokenService.generate_token_by_user_id(user.id)
+        user_session = UserSession(
+            _user_id=user.id,
+            _company_id=user.get_first_company_id(),
+            _access_token=access_token,
+        )
+        user_session.validate()
+        created_user_session = await (
+            self.user_session_repo
+            .set_by_access_token(access_token, user_session)
+        )
+
+        return access_token, created_user_session
 
 
 class GetUserByUsernameUsecase:

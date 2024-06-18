@@ -79,29 +79,17 @@ async def signin_controller(
     try:
         async with request.state.pgpool.acquire() as conn:
             signin_user_usecase = make_signin_user_usecase(conn)
-            user = await signin_user_usecase.execute(
+            access_token, user_session = await signin_user_usecase.execute(
                 dto=SigninUserUsecaseDto(
                     username=dto.username,
                     password=dto.password,
                 )
             )
-
-        create_user_session_usecase = CreateUserSessionUsecase(
-            user_session_repo=UserSessionRedisRepository(),
-        )
-
-        access_token, user_session = await create_user_session_usecase.execute(
-            CreateUserSessionUsecaseDto(
-                user_id=user.id,
-                company_id=user.get_first_company_id(),
-            ),
-        )
     except Error as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=e.serialize(),
         )
-    
     return {
         'access_token': access_token, 
         'user_session': UserSessionMap.serialize_one(user_session),
