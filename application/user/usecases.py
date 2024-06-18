@@ -74,7 +74,7 @@ class SigninUserUsecase:
     async def execute(
         self, 
         dto: SigninUserUsecaseDto,
-    ) -> tuple[str, UserSession]:
+    ) -> UserSession:
         user = await self.user_repo.get_by_username(dto.username)
         if not user:
             raise DoesNotExistError(loc=['user', 'username'])
@@ -100,7 +100,7 @@ class SigninUserUsecase:
             .set_by_access_token(access_token, user_session)
         )
 
-        return access_token, created_user_session
+        return created_user_session
 
 
 class GetUserByUsernameUsecase:

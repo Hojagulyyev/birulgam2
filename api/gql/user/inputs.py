@@ -6,3 +6,9 @@ class SignupUserInput:
     username: str
     password: str
     password_confirm: str
+
+
+@strawberry.input
+class SigninUserInput:
+    username: str
+    password: str

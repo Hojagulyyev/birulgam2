@@ -14,6 +14,8 @@ class UserSession:
             raise TypeError
         if not isinstance(self._company_id, int):
             raise TypeError
+        if not isinstance(self._access_token, str):
+            raise TypeError
 
     @property
     def user_id(self):

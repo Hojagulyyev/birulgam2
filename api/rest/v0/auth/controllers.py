@@ -26,7 +26,6 @@ from adapters.user.map import UserMap
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 from .dtos import (
-    SigninControllerDto,
     SendOtpControllerDto,
     SigninByOtpControllerDto,
 )
@@ -36,34 +35,6 @@ router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
-
-
-@router.post(
-    path="/signin",
-    status_code=status.HTTP_200_OK,
-)
-async def signin_controller(
-    dto: SigninControllerDto,
-    request: Request,
-):
-    try:
-        async with request.state.pgpool.acquire() as conn:
-            signin_user_usecase = make_signin_user_usecase(conn)
-            access_token, user_session = await signin_user_usecase.execute(
-                dto=SigninUserUsecaseDto(
-                    username=dto.username,
-                    password=dto.password,
-                )
-            )
-    except Error as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=e.serialize(),
-        )
-    return {
-        'access_token': access_token, 
-        'user_session': UserSessionMap.serialize_one(user_session),
-    }
 
 
 # TODO: send otp to phone via email or sms service
