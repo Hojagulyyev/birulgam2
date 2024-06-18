@@ -1,5 +1,9 @@
 import strawberry
 
+from .user.resolvers import (
+    signup_user_resolver,
+    signup_user_response,
+)
 from .company.resolvers import (
     create_company_resolver,
     create_company_response,
@@ -20,6 +24,8 @@ from .payment.resolvers import (
 
 @strawberry.type
 class Mutation:
+    signup_user: signup_user_response = strawberry.mutation(
+        resolver=signup_user_resolver)
     create_company: create_company_response = strawberry.mutation(
         resolver=create_company_resolver)
     create_contact: create_contact_response = strawberry.mutation(

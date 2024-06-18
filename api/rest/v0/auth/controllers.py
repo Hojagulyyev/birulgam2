@@ -26,7 +26,6 @@ from adapters.user.map import UserMap
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 from .dtos import (
-    SignupControllerDto, 
     SigninControllerDto,
     SendOtpControllerDto,
     SigninByOtpControllerDto,
@@ -37,35 +36,6 @@ router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
-
-
-@router.post(
-    path="/signup",
-    status_code=status.HTTP_201_CREATED,
-)
-async def signup_controller(
-    dto: SignupControllerDto,
-    request: Request,
-):
-    async with request.state.pgpool.acquire() as conn:
-        signup_user_usecase = make_signup_user_usecase(conn)
-        try:
-            user = await signup_user_usecase.execute(
-                dto=SignupUserUsecaseDto(
-                    username=dto.username,
-                    password=dto.password,
-                    password_confirm=dto.password_confirm,
-                    create_company=dto.create_company,
-                )
-            )
-        except Error as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=e.serialize(),
-            )
-
-    response = UserMap.serialize_one(user)
-    return response
 
 
 @router.post(

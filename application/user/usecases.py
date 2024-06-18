@@ -39,7 +39,7 @@ class SignupUserUsecase:
         self.store_repo = store_repo
 
     async def execute(self, dto: SignupUserUsecaseDto) -> User:
-        # >>> VALIDATE
+        # >>> VALIDATION
         dto.validate()
 
         # >>> MAIN
