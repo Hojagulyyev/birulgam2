@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Annotated
 
 import strawberry
 

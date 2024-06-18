@@ -4,7 +4,6 @@ from fastapi import (
     Request,
     HTTPException,
 )
-from fastapi.responses import JSONResponse
 
 from core.errors import Error, DoesNotExistError
 from core.random import generate_otp, generate_random_string
@@ -91,15 +90,10 @@ async def signin_controller(
             user_session_repo=UserSessionRedisRepository(),
         )
 
-        if not user.companies:
-            company_id: int = 0
-        else:
-            company_id: int = user.companies[0].id if len(user.companies) else 0
-
         access_token, user_session = await create_user_session_usecase.execute(
             CreateUserSessionUsecaseDto(
                 user_id=user.id,
-                company_id=company_id,
+                company_id=user.get_first_company_id(),
             ),
         )
     except Error as e:
@@ -175,15 +169,10 @@ async def signin_by_otp_controller(
         create_user_session_usecase = CreateUserSessionUsecase(
             user_session_repo=UserSessionRedisRepository(),
         )
-        if not user.companies:
-            company_id: int = 0
-        else:
-            company_id: int = user.companies[0].id if len(user.companies) else 0
-        
         access_token, user_session = await create_user_session_usecase.execute(
             CreateUserSessionUsecaseDto(
                 user_id=user.id,
-                company_id=company_id,
+                company_id=user.get_first_company_id(),
             ),
         )
     except Error as e:

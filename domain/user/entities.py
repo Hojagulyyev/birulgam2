@@ -48,7 +48,13 @@ class User:
         ):
             raise InvalidError(f'user password\'s length must be between {self.PASSWORD_MIN_LENGTH} and {self.PASSWORD_MAX_LENGTH}')
 
-
+    def get_first_company_id(self) -> int:
+        if not self.companies:
+            return 0
+        if not len(self.companies):
+            return 0
+        return self.companies[0].id
+    
 @dataclass
 class UserPage:
     users: list[User]
