@@ -18,7 +18,7 @@ class DealSchema:
     seller_id: int | None
     buyer_id: int | None
 
-    code: str
+    code_number: int
     total_amount: Decimal
     remaining_amount_due: Decimal
     type: str

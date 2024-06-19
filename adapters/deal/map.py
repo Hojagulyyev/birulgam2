@@ -9,7 +9,7 @@ class DealMap:
     def to_gql_schema(cls, deal: Deal):
         if not deal.id:
             raise TypeError
-        if not deal.code:
+        if not deal.code_number:
             raise TypeError
         
         return DealSchema(
@@ -20,7 +20,7 @@ class DealMap:
             seller_id=deal.seller_id,
             buyer_id=deal.buyer_id,
 
-            code=deal.code,
+            code_number=deal.code_number,
             total_amount=deal.total_amount,
             remaining_amount_due=deal.remaining_amount_due,
             type=deal.type,

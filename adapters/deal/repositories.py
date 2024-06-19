@@ -10,7 +10,6 @@ class DealPgRepository(IDealRepository):
 
     class Constraints:
         fk_store_id = 'deal_store_id_fkey'
-        uk_code = 'deal__uk__company_id__code'
 
     columns = '''
         id,
@@ -19,7 +18,7 @@ class DealPgRepository(IDealRepository):
         user_id,
         seller_id,
         buyer_id,
-        code,
+        code_number,
         total_amount,
         remaining_amount_due,
         type,
@@ -76,7 +75,7 @@ class DealPgRepository(IDealRepository):
                 user_id=row[3],
                 seller_id=row[4],
                 buyer_id=row[5],
-                code=row[6],
+                code_number=row[6],
                 total_amount=row[7],
                 remaining_amount_due=row[8],
                 type=row[9],
@@ -149,7 +148,7 @@ class DealPgRepository(IDealRepository):
             )
             RETURNING
                 id, 
-                code
+                code_number
             '''
         )
         args = (
@@ -178,12 +177,10 @@ class DealPgRepository(IDealRepository):
         except ForeignKeyViolationError as e:
             if self.Constraints.fk_store_id in str(e):
                 raise InvalidError(loc=['deal', 'store_id'])
-            if self.Constraints.uk_code in str(e):
-                raise UniqueError(loc=['deal', 'code'])
             raise e
 
         deal.id = row[0]
-        deal.code = row[1]
+        deal.code_number = row[1]
         return deal
 
     async def _update(self, deal: Deal) -> Deal:
@@ -195,7 +192,7 @@ class DealPgRepository(IDealRepository):
                 user_id = $3,
                 seller_id = $4,
                 buyer_id = $5,
-                code = $6,
+                code_number = $6,
                 total_amount = $7,
                 remaining_amount_due = $8,
                 type = $9,
@@ -217,7 +214,7 @@ class DealPgRepository(IDealRepository):
             deal.user_id,
             deal.seller_id,
             deal.buyer_id,
-            deal.code,
+            deal.code_number,
             deal.total_amount,
             deal.remaining_amount_due,
             deal.type,
