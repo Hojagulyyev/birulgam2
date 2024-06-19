@@ -103,7 +103,7 @@ class UserPgRepository(IUserRepository):
             LEFT JOIN company ON 
                 company.id = user_company.company_id
             WHERE
-                user_id = $1
+                user_company.user_id = $1
             '''
         )
         rows = await self._conn.fetch(stmt, user.id)
