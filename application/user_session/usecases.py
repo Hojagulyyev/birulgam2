@@ -21,7 +21,7 @@ class CreateUserSessionUsecase:
     async def execute(
         self, 
         dto: CreateUserSessionUsecaseDto,
-    ) -> tuple[str, UserSession]:
+    ) -> UserSession:
         access_token = TokenService.generate_token_by_user_id(dto.user_id)
         user_session = UserSession(
             _user_id=dto.user_id,
@@ -33,4 +33,4 @@ class CreateUserSessionUsecase:
             self.user_session_repo
             .set_by_access_token(access_token, user_session)
         )
-        return access_token, created_user_session
+        return created_user_session

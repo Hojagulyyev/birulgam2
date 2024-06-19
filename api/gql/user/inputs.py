@@ -12,3 +12,9 @@ class SignupUserInput:
 class SigninUserInput:
     username: str
     password: str
+
+
+@strawberry.input
+class SigninByOtpUserInput:
+    phone: str
+    otp: str

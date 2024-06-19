@@ -3,11 +3,22 @@ from typing import Annotated
 import strawberry
 from strawberry.types import Info
 
-from core.errors import Error
+from core.errors import Error, DoesNotExistError
+from core.random import generate_random_string
 
 from application.user.dtos import (
     SignupUserUsecaseDto, 
     SigninUserUsecaseDto,
+)
+from application.user.usecases import (
+    GetUserByUsernameUsecase,
+)
+from application.user.dtos import SignupUserUsecaseDto
+from application.user_session.usecases import CreateUserSessionUsecase
+from application.user_session.dtos import CreateUserSessionUsecaseDto
+from application.otp.usecases import (
+    ExistOtpUsecase,
+    ExistOtpUsecaseDto,
 )
 
 from adapters.user.factories import (
@@ -16,6 +27,10 @@ from adapters.user.factories import (
 )
 from adapters.user_session.map import UserSessionMap
 from adapters.user.map import UserMap
+from adapters.user.factories import make_signup_user_usecase
+from adapters.user_session.map import UserSessionMap
+from adapters.user.repositories import UserPgRepository
+from adapters.user_session.repositories import UserSessionRedisRepository
 
 from ..error.schemas import ErrorSchema
 from ..user_session.schemas import UserSessionSchema
@@ -23,6 +38,7 @@ from .schemas import UserSchema
 from .inputs import (
     SignupUserInput,
     SigninUserInput,
+    SigninByOtpUserInput,
 )
 
 
@@ -68,6 +84,58 @@ async def signin_user_resolver(
                     password=input.password,
                 )
             )
+    except Error as e:
+        return ErrorSchema(**e.serialize())
+    
+    user_session_schema = UserSessionMap.to_gql_schema(user_session)
+    return user_session_schema
+
+
+signin_user_by_otp_response = Annotated[
+    UserSessionSchema | ErrorSchema,
+    strawberry.union('SigninUserResponse'),
+]
+async def signin_user_by_otp_resolver(
+    info: Info,
+    input: SigninByOtpUserInput,
+) -> signin_user_by_otp_response:
+    try:
+        otp_exists = await ExistOtpUsecase().execute(
+            dto=ExistOtpUsecaseDto(input.phone, input.otp),
+        )
+        if not otp_exists:
+            return ErrorSchema(
+                loc=['input', 'otp'], 
+                type='does_not_exist',
+            )
+    
+        async with info.context["pgpool"].acquire() as conn:
+            get_user_by_username_usecase = GetUserByUsernameUsecase(
+                UserPgRepository(conn=conn),
+            )
+            try:
+                user = await get_user_by_username_usecase.execute(input.phone)
+            except DoesNotExistError:
+                signup_user_usecase = make_signup_user_usecase(conn)
+                random_generated_password = generate_random_string()
+                user = await signup_user_usecase.execute(
+                    dto=SignupUserUsecaseDto(
+                        username=input.phone,
+                        password=random_generated_password,
+                        password_confirm=random_generated_password,
+                    )
+                )
+
+        create_user_session_usecase = CreateUserSessionUsecase(
+            user_session_repo=UserSessionRedisRepository(),
+        )
+        user_session = await create_user_session_usecase.execute(
+            CreateUserSessionUsecaseDto(
+                user_id=user.id,
+                company_id=user.get_first_company_id(),
+            ),
+        )
+
     except Error as e:
         return ErrorSchema(**e.serialize())
     

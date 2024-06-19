@@ -9,6 +9,8 @@ from .user.resolvers import (
     signup_user_response,
     signin_user_resolver,
     signin_user_response,
+    signin_user_by_otp_resolver,
+    signin_user_by_otp_response,
 )
 from .company.resolvers import (
     create_company_resolver,
@@ -30,12 +32,14 @@ from .payment.resolvers import (
 
 @strawberry.type
 class Mutation:
-    send_otp: send_otp_response = strawberry.mutation(
-        resolver=send_otp_resolver)
     signup_user: signup_user_response = strawberry.mutation(
         resolver=signup_user_resolver)
     signin_user: signin_user_response = strawberry.mutation(
         resolver=signin_user_resolver)
+    send_otp: send_otp_response = strawberry.mutation(
+        resolver=send_otp_resolver)
+    signin_user_by_otp: signin_user_by_otp_response = strawberry.mutation(
+        resolver=signin_user_by_otp_resolver)
     create_company: create_company_response = strawberry.mutation(
         resolver=create_company_resolver)
     create_contact: create_contact_response = strawberry.mutation(
