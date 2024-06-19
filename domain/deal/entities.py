@@ -2,6 +2,7 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
 from enum import Enum, unique
+from decimal import Decimal
 
 from core.errors import InvalidError
 from domain.company.entities import Company
@@ -20,8 +21,8 @@ class Deal:
     seller_id: int | None
     buyer_id: int | None
     # >>> REQUIRED
-    total_amount: int
-    remaining_amount_due: int
+    total_amount: Decimal
+    remaining_amount_due: Decimal
     type: str
     # >>> OPTIONAL
     code: str | None = None
@@ -61,7 +62,7 @@ class Deal:
             raise TypeError
         if not isinstance(self.buyer_id, int | None):
             raise TypeError
-        if not isinstance(self.total_amount, int):
+        if not isinstance(self.total_amount, Decimal):
             raise TypeError
         if not isinstance(self.installments, int):
             raise TypeError
@@ -107,7 +108,7 @@ class Deal:
         ).date()
 
     def _validate_remaining_amount_due(self):
-        if not isinstance(self.remaining_amount_due, int):
+        if not isinstance(self.remaining_amount_due, Decimal):
             raise TypeError
         
         if self.remaining_amount_due < 0:

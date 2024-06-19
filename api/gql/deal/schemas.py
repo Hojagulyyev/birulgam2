@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 
 import strawberry
 
@@ -18,8 +19,8 @@ class DealSchema:
     buyer_id: int | None
 
     code: str
-    total_amount: int
-    remaining_amount_due: int
+    total_amount: Decimal
+    remaining_amount_due: Decimal
     type: str
 
     installments_total_amount: int = 0

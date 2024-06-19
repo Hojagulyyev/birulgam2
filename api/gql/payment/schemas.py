@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 import strawberry
 
@@ -19,7 +20,7 @@ class PaymentSchema:
     sender_id: int | None
     receiver_id: int | None
 
-    amount: int
+    amount: Decimal
     type: str
     method: str
     category: str

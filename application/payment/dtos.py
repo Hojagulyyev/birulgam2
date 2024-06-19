@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from decimal import Decimal
 
 from domain.payment.entities import Payment
 from domain.deal.entities import Deal
@@ -16,7 +17,7 @@ class CreatePaymentUsecaseDto:
     sender_id: int | None
     receiver_id: int | None
 
-    amount: int
+    amount: Decimal
     type: Payment.Type
     method: Payment.Method
     category: Deal.Type

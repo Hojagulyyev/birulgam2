@@ -1,6 +1,7 @@
 from datetime import datetime, date
 from dataclasses import dataclass
 from enum import Enum, unique
+from decimal import Decimal
 
 from core.errors import InvalidError
 from domain.company.entities import Company
@@ -32,7 +33,7 @@ class Payment:
     sender_id: int | None
     receiver_id: int | None
     # >>> REQUIRED
-    amount: int
+    amount: Decimal
     type: Type
     method: Method
     category: Deal.Type
@@ -61,7 +62,7 @@ class Payment:
             raise TypeError
         if not isinstance(self.receiver_id, int | None):
             raise TypeError
-        if not isinstance(self.amount, int):
+        if not isinstance(self.amount, Decimal):
             raise TypeError
         if not isinstance(self.created_at, datetime):
             raise TypeError

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from decimal import Decimal
 
 import strawberry
 
@@ -13,7 +13,7 @@ class CreatePaymentInput:
     sender_id: int | None = None
     receiver_id: int | None = None
 
-    amount: int
+    amount: Decimal
     type: str
     method: str
     category: str

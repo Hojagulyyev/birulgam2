@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS payment (
     sender_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     receiver_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     
-    amount INTEGER NOT NULL CHECK (amount > 0),
+    amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
     type VARCHAR(16) NOT NULL,
     method VARCHAR(16) NOT NULL,
     category VARCHAR(16) NOT NULL,

@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS deal (
     buyer_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     
     code VARCHAR(16) NOT NULL,
-    total_amount INTEGER NOT NULL,
-    remaining_amount_due INTEGER NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    remaining_amount_due DECIMAL(10, 2) NOT NULL,
     type VARCHAR(16) NOT NULL,
 
     installments_total_amount INTEGER NOT NULL DEFAULT 0,
@@ -63,8 +63,8 @@ BEGIN
     END IF;
     
     NEW.code := CONCAT(
-        UPPER(deal_type_code), '-', 
-        UPPER(store_code), '-', 
+        deal_type_code, '-', 
+        store_code, '-', 
         CAST(deal_id_seq AS TEXT)
     );
     RETURN NEW;
