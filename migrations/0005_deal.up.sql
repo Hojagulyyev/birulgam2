@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS deal (
     seller_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     buyer_id BIGINT DEFAULT NULL REFERENCES contact(id) ON DELETE CASCADE,
     
+    store_code VARCHAR(2) NOT NULL,
     code_number INTEGER NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
     remaining_amount_due DECIMAL(10, 2) NOT NULL,

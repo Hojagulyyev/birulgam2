@@ -20,6 +20,7 @@ class DealMap:
             seller_id=deal.seller_id,
             buyer_id=deal.buyer_id,
 
+            store_code=deal.store_code,
             code_number=deal.code_number,
             total_amount=deal.total_amount,
             remaining_amount_due=deal.remaining_amount_due,

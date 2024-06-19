@@ -58,6 +58,8 @@ class CreateDealUsecase:
             user_id=dto.user_id,
             seller_id=dto.seller_id,
             buyer_id=dto.buyer_id,
+            store_code=store.code,
+            code_number=0,
             total_amount=dto.total_amount,
             remaining_amount_due=dto.remaining_amount_due,
             type=dto.type,

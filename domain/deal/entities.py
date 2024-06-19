@@ -21,11 +21,12 @@ class Deal:
     seller_id: int | None
     buyer_id: int | None
     # >>> REQUIRED
+    store_code: str
+    code_number: int
     total_amount: Decimal
     remaining_amount_due: Decimal
     type: str
     # >>> OPTIONAL
-    code_number: int | None = None
     installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0

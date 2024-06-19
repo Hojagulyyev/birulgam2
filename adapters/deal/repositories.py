@@ -18,6 +18,7 @@ class DealPgRepository(IDealRepository):
         user_id,
         seller_id,
         buyer_id,
+        store_code,
         code_number,
         total_amount,
         remaining_amount_due,
@@ -75,23 +76,24 @@ class DealPgRepository(IDealRepository):
                 user_id=row[3],
                 seller_id=row[4],
                 buyer_id=row[5],
-                code_number=row[6],
-                total_amount=row[7],
-                remaining_amount_due=row[8],
-                type=row[9],
-                installments_total_amount=row[10],
-                installments=row[11],
-                installment_amount=row[12],
-                installment_trifle=row[13],
-                installment_expiration_date=row[14],
-                created_at=row[15],
-                last_paid_at=row[16],
-                closed_at=row[17],
-                note=row[18],
+                store_code=row[6],
+                code_number=row[7],
+                total_amount=row[8],
+                remaining_amount_due=row[9],
+                type=row[10],
+                installments_total_amount=row[11],
+                installments=row[12],
+                installment_amount=row[13],
+                installment_trifle=row[14],
+                installment_expiration_date=row[15],
+                created_at=row[16],
+                last_paid_at=row[17],
+                closed_at=row[18],
+                note=row[19],
             )
             for row in rows
         ]
-        total = rows[0][19] if rows else 0
+        total = rows[0][20] if rows else 0
         
         deal_page = DealPage(
             deals=deals,
@@ -130,6 +132,7 @@ class DealPgRepository(IDealRepository):
                 user_id,
                 seller_id,
                 buyer_id,
+                store_code,
                 total_amount,
                 remaining_amount_due,
                 type,
@@ -144,7 +147,7 @@ class DealPgRepository(IDealRepository):
                 note
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15, $16, $17
+                $11, $12, $13, $14, $15, $16, $17, $18
             )
             RETURNING
                 id, 
@@ -157,6 +160,7 @@ class DealPgRepository(IDealRepository):
                 deal.user_id,
                 deal.seller_id,
                 deal.buyer_id,
+                deal.store_code,
                 deal.total_amount,
                 deal.remaining_amount_due,
                 deal.type,
