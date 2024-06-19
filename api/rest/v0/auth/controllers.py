@@ -15,20 +15,16 @@ from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 from application.otp.usecases import (
-    SendOtpUsecase,
-    SendOtpUsecaseDto,
     ExistOtpUsecase,
     ExistOtpUsecaseDto,
 )
 
 from adapters.user.factories import make_signup_user_usecase
 from adapters.user_session.map import UserSessionMap
-from adapters.otp.repositories import OtpRedisRepository
 from adapters.user.repositories import UserPgRepository
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 from .dtos import (
-    SendOtpControllerDto,
     SigninByOtpControllerDto,
 )
 
@@ -37,21 +33,6 @@ router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
-
-
-# TODO: use below controller as gql resolver
-# TODO: send otp to phone via email or sms service
-@router.post(
-    path="/otp",
-    status_code=status.HTTP_200_OK,
-)
-async def send_otp_controller(
-    dto: SendOtpControllerDto,
-):
-    phone = await SendOtpUsecase().execute(SendOtpUsecaseDto(dto.phone))
-    return {
-        'phone': dto.phone
-    }
 
 
 # TODO: use below controller as gql resolver

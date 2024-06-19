@@ -8,13 +8,10 @@ from domain.user.interfaces import (
     IUserRepository, 
     IUserPasswordService,
 )
-from domain.company.entities import Company
 from domain.company.interfaces import ICompanyRepository
-from domain.store.entities import Store
 from domain.store.interfaces import IStoreRepository
 
 from adapters.token.services import TokenService
-from adapters.otp.repositories import OtpRedisRepository
 
 from .dtos import (
     SignupUserUsecaseDto,

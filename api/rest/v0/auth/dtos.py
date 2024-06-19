@@ -8,10 +8,6 @@ from domain.user.entities import User
 OTP_LENGTH = 5
 
 
-class SendOtpControllerDto(BaseModel):
-    phone: str
-
-
 class SigninByOtpControllerDto(BaseModel):
     phone: str = Field(
         ...,
