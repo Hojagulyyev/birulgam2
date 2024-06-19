@@ -15,3 +15,17 @@ class SendOtpUsecaseDto:
                 loc=['input', 'phone'], 
             )
         return phone
+
+
+@dataclass
+class ExistOtpUsecaseDto:
+    phone: str
+    otp: str
+
+    def validate(self):
+        phone = format_phone(self.phone)
+        if not is_valid_phone(phone):
+            raise InvalidError(
+                loc=['input', 'phone'], 
+            )
+        return phone

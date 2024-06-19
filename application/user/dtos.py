@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from core.errors import InvalidError
+from core.phone import is_valid_phone, format_phone
 
 
 @dataclass

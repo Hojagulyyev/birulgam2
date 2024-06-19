@@ -6,7 +6,7 @@ from fastapi import (
 )
 
 from core.errors import Error, DoesNotExistError
-from core.random import generate_otp, generate_random_string
+from core.random import generate_random_string
 
 from application.user.usecases import (
     GetUserByUsernameUsecase,
@@ -14,7 +14,12 @@ from application.user.usecases import (
 from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
-from application.otp.usecases import SendOtpUsecase, SendOtpUsecaseDto
+from application.otp.usecases import (
+    SendOtpUsecase,
+    SendOtpUsecaseDto,
+    ExistOtpUsecase,
+    ExistOtpUsecaseDto,
+)
 
 from adapters.user.factories import make_signup_user_usecase
 from adapters.user_session.map import UserSessionMap
@@ -61,16 +66,15 @@ async def signin_by_otp_controller(
     dto: SigninByOtpControllerDto,
     request: Request,
 ):  
-    otp_repo = OtpRedisRepository()
-    otp = otp_repo.get_by_phone(dto.phone)
-
-    if not otp or otp != dto.otp:
+    otp_exists = await ExistOtpUsecase().execute(
+        dto=ExistOtpUsecaseDto(dto.phone, dto.otp),
+    )
+    if not otp_exists:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="invalid otp",
+            detail='otp does not exist',
         )
-    
-    otp_repo.remove_by_phone(dto.phone)
+
     try:
         async with request.state.pgpool.acquire() as conn:
             get_user_by_username_usecase = GetUserByUsernameUsecase(

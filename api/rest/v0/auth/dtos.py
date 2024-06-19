@@ -11,16 +11,6 @@ OTP_LENGTH = 5
 class SendOtpControllerDto(BaseModel):
     phone: str
 
-    @field_validator('phone')
-    def validate_phone(cls, phone):
-        phone = format_phone(phone)
-        if not is_valid_phone(phone):
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="invalid phone",
-            )
-        return phone
-
 
 class SigninByOtpControllerDto(BaseModel):
     phone: str = Field(

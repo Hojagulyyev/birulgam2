@@ -1,5 +1,3 @@
-from core.random import generate_random_string
-
 from core.errors import DoesNotExistError, UnauthorizedError
 from domain.user_session.entities import UserSession
 from domain.user_session.interfaces import (
@@ -16,6 +14,7 @@ from domain.store.entities import Store
 from domain.store.interfaces import IStoreRepository
 
 from adapters.token.services import TokenService
+from adapters.otp.repositories import OtpRedisRepository
 
 from .dtos import (
     SignupUserUsecaseDto,
@@ -101,7 +100,7 @@ class SigninUserUsecase:
         )
 
         return created_user_session
-
+    
 
 class GetUserByUsernameUsecase:
 
