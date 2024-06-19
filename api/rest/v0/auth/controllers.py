@@ -11,18 +11,15 @@ from core.random import generate_otp, generate_random_string
 from application.user.usecases import (
     GetUserByUsernameUsecase,
 )
-from application.user.dtos import SignupUserUsecaseDto, SigninUserUsecaseDto
+from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
+from application.otp.usecases import SendOtpUsecase, SendOtpUsecaseDto
 
-from adapters.user.factories import (
-    make_signin_user_usecase,
-    make_signup_user_usecase,
-)
+from adapters.user.factories import make_signup_user_usecase
 from adapters.user_session.map import UserSessionMap
 from adapters.otp.repositories import OtpRedisRepository
 from adapters.user.repositories import UserPgRepository
-from adapters.user.map import UserMap
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 from .dtos import (
@@ -37,6 +34,7 @@ router = APIRouter(
 )
 
 
+# TODO: use below controller as gql resolver
 # TODO: send otp to phone via email or sms service
 @router.post(
     path="/otp",
@@ -45,16 +43,13 @@ router = APIRouter(
 async def send_otp_controller(
     dto: SendOtpControllerDto,
 ):
-    otp = generate_otp()
-    otp_repo = OtpRedisRepository()
-    otp_repo.set_by_phone(dto.phone, otp)
-    # otp_service.send_otp(otp) implement this service
-    print('otp', otp)
+    phone = await SendOtpUsecase().execute(SendOtpUsecaseDto(dto.phone))
     return {
         'phone': dto.phone
     }
 
 
+# TODO: use below controller as gql resolver
 @router.post(
     path="/signin-otp",
     responses={
