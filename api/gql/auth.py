@@ -41,12 +41,11 @@ def authenticate_api_docs_user(
 
 # TODO: add docs security by authenticate_api_docs_user function
 async def get_user_session_by_authorization(
-    access_token: str = Header(None),
+    authorization: str = Header(None),
 ) -> UserSession:
-    authorization = access_token
     user_session_repo = UserSessionRedisRepository()
     
-    if not authorization:
+    if not authorization and not "Bearer " in authorization:
         user_session = await user_session_repo.make_empty()
         return user_session
     
