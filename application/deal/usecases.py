@@ -61,7 +61,7 @@ class CreateDealUsecase:
             store_code=store.code,
             code_number=0,
             total_amount=dto.total_amount,
-            remaining_amount_due=dto.remaining_amount_due,
+            remaining_amount_due=dto.total_amount,
             type=dto.type,
             installments_total_amount=dto.installments_total_amount,
             installments=dto.installments,

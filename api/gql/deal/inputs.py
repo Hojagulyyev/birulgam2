@@ -18,7 +18,6 @@ class CreateDealInput:
     buyer_id: int | None = None
 
     total_amount: Decimal
-    remaining_amount_due: Decimal
     type: str
 
     installments_total_amount: int = 0

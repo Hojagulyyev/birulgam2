@@ -20,7 +20,6 @@ class CreateDealUsecaseDto:
     buyer_id: int | None
 
     total_amount: Decimal
-    remaining_amount_due: Decimal
     type: str
 
     installments_total_amount: int = 0
@@ -34,8 +33,8 @@ class CreateDealUsecaseDto:
     note: str | None = None
 
     def validate(self):
-        if self.total_amount != self.remaining_amount_due:
+        if self.total_amount < self.installments_total_amount:
             raise InvalidError(
-                loc=['input', 'remaining_amount_due'], 
-                msg='remaining amount must be equal to total amount',
+                loc=['input', 'installments_total_amount'], 
+                msg='installments total amount must be less than total amount',
             )
