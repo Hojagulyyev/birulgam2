@@ -87,27 +87,6 @@ class Deal:
         if self.note:
             self._validate_note()
 
-    def update_installment_expiration_date(self):
-        if self.remaining_amount_due == 0:
-            self.installment_expiration_date = None
-            return
-        
-        paid_amount = self.installments_total_amount - self.remaining_amount_due
-        
-        if paid_amount <= self.installment_trifle:
-            next_month = 1
-            self.installment_expiration_date = (
-                self.created_at + relativedelta(months=next_month)
-            ).date()
-            return
-        
-        paid_amount_without_trifle = paid_amount - self.installment_trifle
-        diff_in_months = int(paid_amount_without_trifle / self.installment_amount)
-        next_month_from_month_diff = diff_in_months + 1
-        self.installment_expiration_date = (
-            self.created_at + relativedelta(months=next_month_from_month_diff)
-        ).date()
-
     def _validate_remaining_amount_due(self):
         if not isinstance(self.remaining_amount_due, Decimal):
             raise TypeError
@@ -141,6 +120,27 @@ class Deal:
         )
         if calculated_total_amount != self.installments_total_amount:
             raise InvalidError('deal installments data is inconsistent')
+        
+    def update_installment_expiration_date(self):
+        if self.remaining_amount_due == 0:
+            self.installment_expiration_date = None
+            return
+        
+        paid_amount = self.installments_total_amount - self.remaining_amount_due
+        
+        if paid_amount <= self.installment_trifle:
+            next_month = 1
+            self.installment_expiration_date = (
+                self.created_at + relativedelta(months=next_month)
+            ).date()
+            return
+        
+        paid_amount_without_trifle = paid_amount - self.installment_trifle
+        diff_in_months = int(paid_amount_without_trifle / self.installment_amount)
+        next_month_from_month_diff = diff_in_months + 1
+        self.installment_expiration_date = (
+            self.created_at + relativedelta(months=next_month_from_month_diff)
+        ).date()
 
 
 @dataclass

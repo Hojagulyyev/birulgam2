@@ -11,7 +11,6 @@ class CreatePaymentUsecaseDto:
     selected_fields: dict
 
     company_id: int
-    store_id: int
     user_id: int
     deal_id: int
     sender_id: int | None

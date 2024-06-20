@@ -35,13 +35,6 @@ class CreatePaymentUsecase:
         if not deal:
             raise DoesNotExistError(loc=['input', 'deal_id'])
         
-        store = await self.store_repo.get_by_id(
-            company_id=dto.company_id,
-            id=dto.store_id,
-        )
-        if not store:
-            raise DoesNotExistError(loc=['input', 'store_id'])
-        
         # >>> VALIDATION
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
@@ -60,7 +53,7 @@ class CreatePaymentUsecase:
         payment = Payment(
             id=0,
             company_id=dto.company_id,
-            store_id=dto.store_id,
+            store_id=deal.store_id,
             user_id=dto.user_id,
             deal_id=dto.deal_id,
             sender_id=dto.sender_id,

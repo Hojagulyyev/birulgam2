@@ -53,7 +53,6 @@ async def create_payment_resolver(
                 CreatePaymentUsecaseDto(
                     selected_fields=selected_fields,
                     company_id=company_id,
-                    store_id=input.store_id,
                     user_id=user_id,
                     deal_id=input.deal_id,
                     sender_id=input.sender_id,
