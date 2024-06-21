@@ -31,7 +31,7 @@ class UserSession:
         return self._user_id != 0
     
     @property
-    def access_token(self):
+    def access_token(self) -> str:
         if not self._access_token:
             raise PermissionDeniedError('user is not authenticated')
         return self._access_token

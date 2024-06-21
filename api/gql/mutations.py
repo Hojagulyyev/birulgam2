@@ -11,6 +11,8 @@ from .user.resolvers import (
     signin_user_response,
     signin_user_by_otp_resolver,
     signin_user_by_otp_response,
+    signout_user_resolver,
+    signout_user_response,
 )
 from .company.resolvers import (
     create_company_resolver,
@@ -40,6 +42,8 @@ class Mutation:
         resolver=send_otp_resolver)
     signin_user_by_otp: signin_user_by_otp_response = strawberry.mutation(
         resolver=signin_user_by_otp_resolver)
+    signout_user: signout_user_response = strawberry.mutation(
+        resolver=signout_user_resolver)
     create_company: create_company_response = strawberry.mutation(
         resolver=create_company_resolver)
     create_contact: create_contact_response = strawberry.mutation(

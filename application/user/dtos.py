@@ -29,3 +29,8 @@ class SignupUserUsecaseDto:
 class SigninUserUsecaseDto:
     username: str
     password: str
+
+
+@dataclass
+class SignoutUserUsecaseDto:
+    access_token: str

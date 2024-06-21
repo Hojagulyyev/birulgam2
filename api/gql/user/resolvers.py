@@ -5,10 +5,12 @@ from strawberry.types import Info
 
 from core.errors import Error, DoesNotExistError
 from core.random import generate_random_string
+from domain.user_session.entities import UserSession
 
 from application.user.dtos import (
     SignupUserUsecaseDto, 
     SigninUserUsecaseDto,
+    SignoutUserUsecaseDto,
 )
 from application.user.usecases import (
     GetUserByUsernameUsecase,
@@ -24,11 +26,10 @@ from application.otp.usecases import (
 from adapters.user.factories import (
     make_signin_user_usecase,
     make_signup_user_usecase,
+    make_signout_user_usecase,
 )
 from adapters.user_session.map import UserSessionMap
 from adapters.user.map import UserMap
-from adapters.user.factories import make_signup_user_usecase
-from adapters.user_session.map import UserSessionMap
 from adapters.user.repositories import UserPgRepository
 from adapters.user_session.repositories import UserSessionRedisRepository
 
@@ -90,6 +91,28 @@ async def signin_user_resolver(
     user_session_schema = UserSessionMap.to_gql_schema(user_session)
     return user_session_schema
 
+
+signout_user_response = Annotated[
+    UserSessionSchema | ErrorSchema,
+    strawberry.union('SignoutUserResponse'),
+]
+async def signout_user_resolver(
+    info: Info,
+) -> signout_user_response:
+    user_session: UserSession = info.context["user_session"]
+    try:
+        signout_user_usecase = make_signout_user_usecase()
+        await signout_user_usecase.execute(
+            dto=SignoutUserUsecaseDto(
+                access_token=user_session.access_token,
+            )
+        )
+    except Error as e:
+        return ErrorSchema(**e.serialize())
+    
+    user_session_schema = UserSessionMap.to_gql_schema(user_session)
+    return user_session_schema
+    
 
 signin_user_by_otp_response = Annotated[
     UserSessionSchema | ErrorSchema,

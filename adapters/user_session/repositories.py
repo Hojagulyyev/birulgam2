@@ -9,8 +9,11 @@ from infrastructure.redis import cache
 
 class UserSessionRedisRepository(IUserSessionRepository):
 
-    async def get_by_access_token(self, access_token: str) -> UserSession:
+    async def get_by_access_token(self, access_token: str) -> UserSession | None:
         user_session_in_str = cache.get(f"access_tokens{access_token}")
+        if not user_session_in_str:
+            return None
+        
         user_session_in_dict = json.loads(str(user_session_in_str))
         user_session = UserSession(
             _user_id=user_session_in_dict["user_id"],
@@ -36,6 +39,9 @@ class UserSessionRedisRepository(IUserSessionRepository):
             ex=env.ACCESS_TOKEN_TTL,
         )
         return user_session
+    
+    async def delete_by_access_token(self, access_token: str) -> None:
+        cache.delete(f"access_tokens{access_token}")
     
     async def make_empty(self) -> UserSession:
         return UserSession(

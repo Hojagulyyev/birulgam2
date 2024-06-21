@@ -17,6 +17,7 @@ from .dtos import (
     SignupUserUsecaseDto,
     CreateUserUsecaseDto,
     SigninUserUsecaseDto,
+    SignoutUserUsecaseDto,
 )
 
 
@@ -98,6 +99,24 @@ class SigninUserUsecase:
 
         return created_user_session
     
+
+class SignoutUserUsecase:
+
+    def __init__(
+        self,
+        user_session_repo: IUserSessionRepository,
+    ):
+        self.user_session_repo = user_session_repo
+
+    async def execute(
+        self, 
+        dto: SignoutUserUsecaseDto,
+    ) -> None:
+        await (
+            self.user_session_repo
+            .delete_by_access_token(dto.access_token)
+        )
+        
 
 class GetUserByUsernameUsecase:
 

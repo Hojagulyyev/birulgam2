@@ -45,7 +45,7 @@ async def get_user_session_by_authorization(
 ) -> UserSession:
     user_session_repo = UserSessionRedisRepository()
     
-    if not authorization and not "Bearer " in authorization:
+    if not authorization or not "Bearer " in authorization:
         user_session = await user_session_repo.make_empty()
         return user_session
     
@@ -73,4 +73,7 @@ async def get_user_session_by_authorization(
         )
     
     user_session = await user_session_repo.get_by_access_token(access_token)
+    if not user_session:
+        user_session = await user_session_repo.make_empty()
+        
     return user_session
