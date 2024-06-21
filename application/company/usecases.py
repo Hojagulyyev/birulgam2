@@ -50,6 +50,9 @@ class CreateCompanyUsecase:
         store = await self.store_repo.save(store)
 
         user_session = await self.user_session_repo.get_by_access_token(dto.access_token)
+        if not user_session:
+            raise DoesNotExistError(loc=['user_session', 'access_token'])
+        
         user_session.company_id = company.id
         await self.user_session_repo.set_by_access_token(dto.access_token, user_session)
 
