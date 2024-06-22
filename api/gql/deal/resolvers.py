@@ -58,6 +58,7 @@ async def get_deals_resolver(
     ]
     response = DealPageSchema(
         deals=deal_schema_list,
+        count=deal_page.count,
         total=deal_page.total,
     )
     return response

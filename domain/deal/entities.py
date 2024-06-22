@@ -146,4 +146,5 @@ class Deal:
 @dataclass
 class DealPage:
     deals: list[Deal]
+    count: int
     total: int

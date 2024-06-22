@@ -1,7 +1,8 @@
 from asyncpg import Connection
 from asyncpg.exceptions import ForeignKeyViolationError
 
-from core.errors import InvalidError, UniqueError
+from core.errors import InvalidError
+from core.pagination import MAX_LIMIT
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealPage
 
@@ -41,6 +42,8 @@ class DealPgRepository(IDealRepository):
         self,
         ids: list[int] | None = None,
         company_id: int | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> DealPage:
         stmt = (
             '''
@@ -65,6 +68,16 @@ class DealPgRepository(IDealRepository):
         if company_id:
             args.append(company_id)
             stmt += f'AND company_id = ${len(args)}'
+
+        if not limit or limit <= 0:
+            limit = MAX_LIMIT
+        args.append(limit)
+        stmt += f'LIMIT ${len(args)}'
+
+        if not offset or offset < 0:
+            offset = 0
+        args.append(offset)
+        stmt += f'OFFSET ${len(args)}'
 
         rows = await self._conn.fetch(stmt, *args)
         
@@ -97,6 +110,7 @@ class DealPgRepository(IDealRepository):
         
         deal_page = DealPage(
             deals=deals,
+            count=len(deals),
             total=total,
         )
         return deal_page
