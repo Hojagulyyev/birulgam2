@@ -6,6 +6,7 @@ from core.errors import (
 )
 from domain.payment.entities import Payment
 from domain.payment.interfaces import IPaymentRepository
+from domain.deal.entities import Deal
 from domain.deal.interfaces import IDealRepository
 from domain.store.interfaces import IStoreRepository
 
@@ -38,18 +39,29 @@ class CreatePaymentUsecase:
         # >>> VALIDATION
         if dto.amount > deal.remaining_amount_due:
             raise InvalidError(
-                'amount must not be greater than '
+                'payment amount must not be greater than '
                 'deal remaining amount due',
                 loc=['amount'],
             )
         
         if dto.created_at < deal.created_at:
             raise InvalidError(
-                'created_at must be greater than deal created_at',
+                'payment created_at must be greater than deal created_at',
                 loc=['created_at'],
             )
 
         # >>> MAIN
+        type = (
+            Payment.Type.INCOME 
+            if deal.type == Deal.Type.SALE
+            else Payment.Type.EXPENSE
+        )
+        category = (
+            Deal.Type.SALE 
+            if deal.type == Deal.Type.SALE
+            else Deal.Type.PURCHASE
+        )
+
         payment = Payment(
             id=0,
             company_id=dto.company_id,
@@ -58,12 +70,10 @@ class CreatePaymentUsecase:
             deal_id=dto.deal_id,
             sender_id=dto.sender_id,
             receiver_id=dto.receiver_id,
-
             amount=dto.amount,
-            type=dto.type,
+            type=Payment.Type(type),
             method=dto.method,
-            category=dto.category,
-
+            category=Deal.Type(category),
             created_at=dto.created_at,
         )
         payment.validate()

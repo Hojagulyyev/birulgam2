@@ -6,7 +6,6 @@ from strawberry.types import Info
 from core.errors import Error
 from domain.user_session.entities import UserSession
 from domain.payment.entities import Payment
-from domain.deal.entities import Deal
 
 from application.payment.usecases import (
     CreatePaymentUsecase,
@@ -58,9 +57,7 @@ async def create_payment_resolver(
                     sender_id=input.sender_id,
                     receiver_id=input.receiver_id,
                     amount=input.amount,
-                    type=Payment.Type(input.type),
                     method=Payment.Method(input.method),
-                    category=Deal.Type(input.category),
                     created_at=input.created_at,
                 ),
             )
