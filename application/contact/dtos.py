@@ -5,6 +5,9 @@ from datetime import date
 @dataclass
 class GetContactsUsecaseDto:
     company_id: int
+    limit: int | None = None
+    offset: int | None = None
+    order_by: str | None = None
 
 
 @dataclass

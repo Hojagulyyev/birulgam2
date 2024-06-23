@@ -28,4 +28,5 @@ class ContactSchema:
 @strawberry.type
 class ContactsConnectionSchema:
     contacts: list[ContactSchema]
+    count: int
     total: int

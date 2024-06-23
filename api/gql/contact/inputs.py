@@ -4,11 +4,6 @@ import strawberry
 
 
 @strawberry.input
-class GetContactsInput:
-    search: str | None = None
-
-
-@strawberry.input
 class CreateContactInput:
     first_name: str
     surname: str | None = None

@@ -41,8 +41,8 @@ class DealPgRepository(PgRepository, IDealRepository):
 
     async def list(
         self,
-        ids: list[int] | None = None,
         company_id: int | None = None,
+        ids: list[int] | None = None,
         limit: int | None = None,
         offset: int | None = None,
         order_by: str | None = None,
@@ -72,12 +72,11 @@ class DealPgRepository(PgRepository, IDealRepository):
             ids_placeholder = ', '.join([f'${i+param_position}' for i in range(len(ids))])
             stmt += f'AND id IN ({ids_placeholder})'
 
-        stmt, args = super().order_by(order_by, stmt, args)
+        stmt, args = super().order_by(order_by, stmt, args, self.columns)
         stmt, args = super().limit(limit, stmt, args)
         stmt, args = super().offset(offset, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
-        
         deals: list[Deal] = [
             Deal(
                 id=row[0],

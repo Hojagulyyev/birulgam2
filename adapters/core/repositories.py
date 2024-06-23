@@ -3,17 +3,16 @@ from core.pagination import MAX_LIMIT
 
 class PgRepository:
 
-    columns = ""
-
     def order_by(
         self,
         order_by: str | None,
         stmt: str,
         args: list,
+        columns: str,
     ):
         if order_by:
             order_field = order_by[1:] if order_by.startswith('-') else order_by
-            order_field = order_field if order_field in self.columns else 'id'
+            order_field = order_field if order_field in columns else 'id'
             stmt += f'ORDER BY {order_field} '
 
             order_type = 'DESC ' if order_by.startswith('-') else 'ASC '

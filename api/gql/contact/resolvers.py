@@ -21,7 +21,6 @@ from adapters.contact.repositories import ContactPgRepository
 from ..error.schemas import ErrorSchema
 from .schemas import ContactSchema, ContactsConnectionSchema
 from .inputs import (
-    GetContactsInput,
     CreateContactInput,
 )
 
@@ -32,7 +31,9 @@ get_contacts_response = Annotated[
 ]
 async def get_contacts_resolver(
     info: Info,
-    input: GetContactsInput,
+    limit: int | None = None,
+    offset: int | None = None,
+    order_by: str | None = None,
 ) -> get_contacts_response:
     user_session: UserSession = info.context["user_session"]
 
@@ -47,6 +48,9 @@ async def get_contacts_resolver(
             contacts_connection = await get_contacts_usecase.execute(
                 dto=GetContactsUsecaseDto(
                     company_id=company_id,
+                    limit=limit,
+                    offset=offset,
+                    order_by=order_by,
                 )
             )
     except Error as e:
@@ -59,6 +63,7 @@ async def get_contacts_resolver(
     ]
     response = ContactsConnectionSchema(
         contacts=contact_schema_list,
+        count=contacts_connection.count,
         total=contacts_connection.total,
     )
     return response

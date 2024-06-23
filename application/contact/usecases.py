@@ -20,7 +20,12 @@ class GetContactsUsecase:
     async def execute(self, dto: GetContactsUsecaseDto) -> ContactsConnection:
         contacts_connection = await (
             self.contact_repo
-            .list(company_id=dto.company_id)
+            .list(
+                company_id=dto.company_id,
+                limit=dto.limit,
+                offset=dto.offset,
+                order_by=dto.order_by,
+            )
         )
         return contacts_connection
 

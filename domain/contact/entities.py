@@ -179,4 +179,5 @@ class Contact:
 @dataclass
 class ContactsConnection:
     contacts: list[Contact]
+    count: int
     total: int

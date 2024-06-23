@@ -8,8 +8,8 @@ class IDealRepository(ABC):
     @abstractmethod
     async def list(
         self,
-        ids: list[int] | None = None,
         company_id: int | None = None,
+        ids: list[int] | None = None,
         limit: int | None = None,
         offset: int | None = None,
         order_by: str | None = None,

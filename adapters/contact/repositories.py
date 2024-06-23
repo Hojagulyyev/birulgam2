@@ -7,47 +7,65 @@ from core.errors import (
 from domain.contact.interfaces import IContactRepository
 from domain.contact.entities import Contact, ContactsConnection
 
+from adapters.core.repositories import PgRepository
 
-class ContactPgRepository(IContactRepository):
+
+class ContactPgRepository(PgRepository, IContactRepository):
 
     class Constraints:
         uk_phone = 'contact__uk__company_id__phone'
 
+    columns = '''
+        id,
+        company_id,
+        first_name,
+        surname,
+        patronymic,
+        phone,
+        address,
+        birthday,
+        gender,
+        workplace,
+        job_title,
+        passport,
+        passport_issued_date,
+        passport_issued_place
+    '''
+
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def list(self, company_id: int | None) -> ContactsConnection:
+    async def list(
+        self, 
+        company_id: int | None,
+        limit: int | None = None,
+        offset: int | None = None,
+        order_by: str | None = None,
+    ) -> ContactsConnection:
         stmt = (
             '''
             SELECT
-                id,
-                company_id,
-                first_name,
-                surname,
-                patronymic,
-                phone,
-                address,
-                birthday,
-                gender,
-                workplace,
-                job_title,
-                passport,
-                passport_issued_date,
-                passport_issued_place,
+            '''
+            + self.columns + 
+            '''
+                ,
                 COUNT(*) OVER() AS total
             FROM contact
             WHERE 
-                1 = 1 AND
+                1 = 1
             '''
         )
         args = []
 
         if company_id:
             args.append(company_id)
-            stmt += f'company_id = ${len(args)}'
+            stmt += f'AND company_id = ${len(args)}'
+
+        stmt, args = super().order_by(order_by, stmt, args, self.columns)
+        stmt, args = super().limit(limit, stmt, args)
+        stmt, args = super().offset(offset, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
-
         contacts: list[Contact] = [
             Contact(
                 id=row[0],
@@ -71,6 +89,7 @@ class ContactPgRepository(IContactRepository):
         
         contacts_connection = ContactsConnection(
             contacts=contacts,
+            count=len(contacts),
             total=total,
         )
         return contacts_connection
