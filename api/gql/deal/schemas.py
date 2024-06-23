@@ -42,7 +42,7 @@ class DealSchema:
 
 
 @strawberry.type
-class DealPageSchema:
+class DealsConnectionSchema:
     deals: list[DealSchema]
     count: int
     total: int

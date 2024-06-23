@@ -4,7 +4,7 @@ from asyncpg.exceptions import ForeignKeyViolationError
 from core.errors import InvalidError
 from core.pagination import MAX_LIMIT
 from domain.deal.interfaces import IDealRepository
-from domain.deal.entities import Deal, DealPage
+from domain.deal.entities import Deal, DealsConnection
 
 
 class DealPgRepository(IDealRepository):
@@ -44,7 +44,7 @@ class DealPgRepository(IDealRepository):
         company_id: int | None = None,
         limit: int | None = None,
         offset: int | None = None,
-    ) -> DealPage:
+    ) -> DealsConnection:
         stmt = (
             '''
             SELECT
@@ -108,7 +108,7 @@ class DealPgRepository(IDealRepository):
         ]
         total = rows[0][20] if rows else 0
         
-        deal_page = DealPage(
+        deal_page = DealsConnection(
             deals=deals,
             count=len(deals),
             total=total,

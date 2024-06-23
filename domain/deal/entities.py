@@ -144,7 +144,7 @@ class Deal:
 
 
 @dataclass
-class DealPage:
+class DealsConnection:
     deals: list[Deal]
     count: int
     total: int

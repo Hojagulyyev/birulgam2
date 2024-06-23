@@ -20,20 +20,21 @@ from adapters.deal.repositories import DealPgRepository
 from adapters.store.repositories import StorePgRepository
 
 from ..error.schemas import ErrorSchema
-from .schemas import DealSchema, DealPageSchema
+from .schemas import DealSchema, DealsConnectionSchema
 from .inputs import (
-    GetDealsInput,
     CreateDealInput,
 )
 
 
 get_deals_response = Annotated[
-    DealPageSchema | ErrorSchema,
+    DealsConnectionSchema | ErrorSchema,
     strawberry.union('GetDealsResponse'),
 ]
 async def get_deals_resolver(
     info: Info,
-    input: GetDealsInput,
+    ids: list[int] | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> get_deals_response:
     user_session: UserSession = info.context["user_session"]
     try:
@@ -46,7 +47,9 @@ async def get_deals_resolver(
             deal_page = await get_deals_usecase.execute(
                 dto=GetDealsUsecaseDto(
                     company_id=company_id,
-                    ids=input.ids,
+                    ids=ids,
+                    limit=limit,
+                    offset=offset,
                 )
             )
     except Error as e:
@@ -56,7 +59,7 @@ async def get_deals_resolver(
         DealMap.to_gql_schema(deal)
         for deal in deal_page.deals
     ]
-    response = DealPageSchema(
+    response = DealsConnectionSchema(
         deals=deal_schema_list,
         count=deal_page.count,
         total=deal_page.total,

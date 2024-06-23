@@ -6,11 +6,6 @@ import strawberry
 
 
 @strawberry.input
-class GetDealsInput:
-    ids: list[int] | None = None
-
-
-@strawberry.input
 class CreateDealInput:
     store_id: int
     

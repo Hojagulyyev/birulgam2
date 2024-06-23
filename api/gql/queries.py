@@ -14,5 +14,5 @@ from .deal.resolvers import (
 class Query:
     contact_page: get_contacts_response = strawberry.field(
         resolver=get_contacts_resolver)
-    deal_page: get_deals_response = strawberry.field(
+    deals_connection: get_deals_response = strawberry.field(
         resolver=get_deals_resolver)

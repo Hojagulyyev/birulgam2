@@ -1,5 +1,5 @@
 from core.errors import DoesNotExistError
-from domain.deal.entities import Deal, DealPage
+from domain.deal.entities import Deal, DealsConnection
 from domain.deal.interfaces import IDealRepository
 from domain.store.interfaces import IStoreRepository
 
@@ -17,15 +17,17 @@ class GetDealsUsecase:
     ):
         self.deal_repo = deal_repo
 
-    async def execute(self, dto: GetDealsUsecaseDto) -> DealPage:
-        deal_page = await (
+    async def execute(self, dto: GetDealsUsecaseDto) -> DealsConnection:
+        deals_connection = await (
             self.deal_repo
             .list(
                 ids=dto.ids, 
                 company_id=dto.company_id,
+                limit=dto.limit,
+                offset=dto.offset,
             )
         )
-        return deal_page
+        return deals_connection
 
 
 class CreateDealUsecase:

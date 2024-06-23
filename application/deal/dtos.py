@@ -9,6 +9,8 @@ from core.errors import InvalidError
 class GetDealsUsecaseDto:
     company_id: int
     ids: list[int] | None = None
+    limit: int | None = None
+    offset: int | None = None
 
 
 @dataclass

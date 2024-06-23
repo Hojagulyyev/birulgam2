@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .entities import Deal, DealPage
+from .entities import Deal, DealsConnection
 
 
 class IDealRepository(ABC):
@@ -10,7 +10,9 @@ class IDealRepository(ABC):
         self,
         ids: list[int] | None = None,
         company_id: int | None = None,
-    ) -> DealPage:
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> DealsConnection:
         raise NotImplementedError
     
     @abstractmethod
