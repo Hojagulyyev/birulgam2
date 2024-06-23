@@ -26,13 +26,13 @@ class Deal:
     total_amount: Decimal
     remaining_amount_due: Decimal
     type: str
+    created_at: datetime
     # >>> OPTIONAL
     installments_total_amount: int = 0
     installments: int = 0
     installment_amount: int = 0
     installment_trifle: int = 0
     installment_expiration_date: date | None = None
-    created_at: datetime = datetime.now()
     last_paid_at: datetime | None = None
     closed_at: datetime | None = None
     note: str | None = None

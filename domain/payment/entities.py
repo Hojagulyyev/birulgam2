@@ -37,8 +37,7 @@ class Payment:
     type: Type
     method: Method
     category: Deal.Type
-    # >>> OPTIONAL
-    created_at: datetime = datetime.now()
+    created_at: datetime
     # >>> MAP
     company: Company | None = None
     store: Store | None = None

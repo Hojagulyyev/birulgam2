@@ -24,8 +24,7 @@ class PaymentSchema:
     type: str
     method: str
     category: str
-
-    created_at: datetime = datetime.now()
+    created_at: datetime
 
     company: CompanySchema | None = None
     store: StoreSchema | None = None

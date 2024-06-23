@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import datetime
 
 import strawberry
 from strawberry.types import Info
@@ -100,7 +101,7 @@ async def create_deal_resolver(
                     installment_amount=input.installment_amount,
                     installment_trifle=input.installment_trifle,
                     installment_expiration_date=input.installment_expiration_date,
-                    created_at=input.created_at,
+                    created_at=input.created_at or datetime.now(),
                     last_paid_at=input.last_paid_at,
                     closed_at=input.closed_at,
                     note=input.note,

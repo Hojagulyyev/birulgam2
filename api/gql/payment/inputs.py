@@ -11,4 +11,4 @@ class CreatePaymentInput:
     receiver_id: int | None = None
     amount: Decimal
     method: str
-    created_at: datetime = datetime.now()
+    created_at: datetime | None = None

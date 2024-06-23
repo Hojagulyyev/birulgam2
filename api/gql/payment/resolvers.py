@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import datetime
 
 import strawberry
 from strawberry.types import Info
@@ -58,7 +59,7 @@ async def create_payment_resolver(
                     receiver_id=input.receiver_id,
                     amount=input.amount,
                     method=Payment.Method(input.method),
-                    created_at=input.created_at,
+                    created_at=input.created_at or datetime.now(),
                 ),
             )
     except Error as e:

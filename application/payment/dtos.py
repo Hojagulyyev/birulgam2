@@ -16,4 +16,4 @@ class CreatePaymentUsecaseDto:
     receiver_id: int | None
     amount: Decimal
     method: Payment.Method
-    created_at: datetime = datetime.now()
+    created_at: datetime

@@ -26,7 +26,7 @@ class CreateDealInput:
         )] = 0
     installment_trifle: int = 0
     installment_expiration_date: date | None = None
-    created_at: datetime = datetime.now()
+    created_at: datetime | None = None
     last_paid_at: datetime | None = None
     closed_at: datetime | None = None
     note: str | None = None
