@@ -2,12 +2,13 @@ from asyncpg import Connection
 from asyncpg.exceptions import ForeignKeyViolationError
 
 from core.errors import InvalidError
-from core.pagination import MAX_LIMIT
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealsConnection
 
+from adapters.core.repositories import PgRepository
 
-class DealPgRepository(IDealRepository):
+
+class DealPgRepository(PgRepository, IDealRepository):
 
     class Constraints:
         fk_store_id = 'deal_store_id_fkey'
@@ -71,23 +72,9 @@ class DealPgRepository(IDealRepository):
             ids_placeholder = ', '.join([f'${i+param_position}' for i in range(len(ids))])
             stmt += f'AND id IN ({ids_placeholder})'
 
-        if order_by:
-            order_field = order_by[1:] if order_by.startswith('-') else order_by
-            order_field = order_field if order_field in self.columns else 'id'
-            stmt += f'ORDER BY {order_field} '
-
-            order_type = 'DESC ' if order_by.startswith('-') else 'ASC '
-            stmt += order_type
-
-        if not limit or limit <= 0:
-            limit = MAX_LIMIT
-        args.append(limit)
-        stmt += f'LIMIT ${len(args)}'
-
-        if not offset or offset < 0:
-            offset = 0
-        args.append(offset)
-        stmt += f'OFFSET ${len(args)}'
+        stmt, args = super().order_by(order_by, stmt, args)
+        stmt, args = super().limit(limit, stmt, args)
+        stmt, args = super().offset(offset, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
         
