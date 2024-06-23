@@ -3,7 +3,7 @@ from asyncpg.exceptions import UniqueViolationError
 
 from core.errors import UniqueError
 from domain.user.interfaces import IUserRepository
-from domain.user.entities import User, UserPage
+from domain.user.entities import User, UsersConnection
 from domain.company.entities import Company
 
 
@@ -24,7 +24,7 @@ class UserPgRepository(IUserRepository):
     async def list(
         self, 
         ids: list[int] | None = None,
-    ) -> UserPage:
+    ) -> UsersConnection:
         stmt = (
             '''
             SELECT
@@ -57,18 +57,18 @@ class UserPgRepository(IUserRepository):
         ]
         total = rows[0][3] if rows else 0
 
-        user_page = UserPage(
+        users_connection = UsersConnection(
             users=users,
             total=total,
         )
-        return user_page
+        return users_connection
     
     # TODO: perf: use get by id stmt directly instead of using list()
     async def get_by_id(self, id: int) -> User | None:
-        user_page = await self.list(ids=[id])
-        if user_page.total == 0:
+        users_connection = await self.list(ids=[id])
+        if users_connection.total == 0:
             return None
-        return user_page.users[0]
+        return users_connection.users[0]
 
     async def get_by_username(self, username: str) -> User | None:
         stmt = (

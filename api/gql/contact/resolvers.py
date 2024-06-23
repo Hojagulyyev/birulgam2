@@ -19,7 +19,7 @@ from adapters.contact.map import ContactMap
 from adapters.contact.repositories import ContactPgRepository
 
 from ..error.schemas import ErrorSchema
-from .schemas import ContactSchema, ContactPageSchema
+from .schemas import ContactSchema, ContactsConnectionSchema
 from .inputs import (
     GetContactsInput,
     CreateContactInput,
@@ -27,7 +27,7 @@ from .inputs import (
 
 
 get_contacts_response = Annotated[
-    ContactPageSchema | ErrorSchema,
+    ContactsConnectionSchema | ErrorSchema,
     strawberry.union('GetContactsResponse'),
 ]
 async def get_contacts_resolver(
@@ -44,7 +44,7 @@ async def get_contacts_resolver(
             get_contacts_usecase = GetContactsUsecase(
                 contact_repo=contact_repo,
             )
-            contact_page = await get_contacts_usecase.execute(
+            contacts_connection = await get_contacts_usecase.execute(
                 dto=GetContactsUsecaseDto(
                     company_id=company_id,
                 )
@@ -55,11 +55,11 @@ async def get_contacts_resolver(
     
     contact_schema_list = [
         ContactMap.to_gql_schema(contact)
-        for contact in contact_page.contacts
+        for contact in contacts_connection.contacts
     ]
-    response = ContactPageSchema(
+    response = ContactsConnectionSchema(
         contacts=contact_schema_list,
-        total=contact_page.total,
+        total=contacts_connection.total,
     )
     return response
 

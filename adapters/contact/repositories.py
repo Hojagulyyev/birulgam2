@@ -5,7 +5,7 @@ from core.errors import (
     UniqueError,
 )
 from domain.contact.interfaces import IContactRepository
-from domain.contact.entities import Contact, ContactPage
+from domain.contact.entities import Contact, ContactsConnection
 
 
 class ContactPgRepository(IContactRepository):
@@ -16,7 +16,7 @@ class ContactPgRepository(IContactRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    async def list(self, company_id: int | None) -> ContactPage:
+    async def list(self, company_id: int | None) -> ContactsConnection:
         stmt = (
             '''
             SELECT
@@ -69,11 +69,11 @@ class ContactPgRepository(IContactRepository):
         ]
         total = rows[0][14] if rows else 0
         
-        contact_page = ContactPage(
+        contacts_connection = ContactsConnection(
             contacts=contacts,
             total=total,
         )
-        return contact_page
+        return contacts_connection
         
     async def save(self, contact: Contact) -> Contact:
         if not contact.id:

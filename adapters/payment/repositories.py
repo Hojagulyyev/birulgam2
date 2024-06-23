@@ -3,7 +3,7 @@ from asyncpg.exceptions import CheckViolationError
 
 from core.errors import InvalidError
 from domain.payment.interfaces import IPaymentRepository
-from domain.payment.entities import Payment, PaymentPage
+from domain.payment.entities import Payment, PaymentsConnection
 
 
 class PaymentPgRepository(IPaymentRepository):
@@ -33,7 +33,7 @@ class PaymentPgRepository(IPaymentRepository):
         self,
         ids: list[int] | None = None,
         company_id: int | None = None,
-    ) -> PaymentPage:
+    ) -> PaymentsConnection:
         stmt = (
             '''
             SELECT
@@ -79,25 +79,25 @@ class PaymentPgRepository(IPaymentRepository):
         ]
         total = rows[0][12] if rows else 0
         
-        payment_page = PaymentPage(
+        payments_connection = PaymentsConnection(
             payments=payments,
             total=total,
         )
-        return payment_page
+        return payments_connection
     
     async def get_by_id(
         self, 
         id: int, 
         company_id: int | None = None,
     ) -> Payment | None:
-        payment_page = await self.list(
+        payments_connection = await self.list(
             ids=[id],
             company_id=company_id,
         )
-        if payment_page.total == 0:
+        if payments_connection.total == 0:
             return None
         
-        return payment_page.payments[0]
+        return payments_connection.payments[0]
         
     async def save(self, payment: Payment) -> Payment:
         if not payment.id:

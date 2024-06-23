@@ -15,6 +15,6 @@ class StoreSchema:
 
 
 @strawberry.type
-class StorePageSchema:
+class StoresConnectionSchema:
     stores: list[StoreSchema]
     total: int

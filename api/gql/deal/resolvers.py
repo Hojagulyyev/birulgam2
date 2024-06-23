@@ -44,7 +44,7 @@ async def get_deals_resolver(
             get_deals_usecase = GetDealsUsecase(
                 DealPgRepository(conn=conn),
             )
-            deal_page = await get_deals_usecase.execute(
+            deals_connection = await get_deals_usecase.execute(
                 dto=GetDealsUsecaseDto(
                     company_id=company_id,
                     ids=ids,
@@ -57,12 +57,12 @@ async def get_deals_resolver(
     
     deal_schema_list = [
         DealMap.to_gql_schema(deal)
-        for deal in deal_page.deals
+        for deal in deals_connection.deals
     ]
     response = DealsConnectionSchema(
         deals=deal_schema_list,
-        count=deal_page.count,
-        total=deal_page.total,
+        count=deals_connection.count,
+        total=deals_connection.total,
     )
     return response
 

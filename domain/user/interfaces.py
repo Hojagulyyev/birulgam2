@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .entities import User, UserPage
+from .entities import User, UsersConnection
 
 
 class IUserRepository(ABC):
@@ -9,7 +9,7 @@ class IUserRepository(ABC):
     async def list(
         self, 
         ids: list[int] | None = None,
-    ) -> UserPage:
+    ) -> UsersConnection:
         raise NotImplementedError
     
     @abstractmethod

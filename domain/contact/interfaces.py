@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .entities import Contact, ContactPage
+from .entities import Contact, ContactsConnection
 
 
 class IContactRepository(ABC):
@@ -9,7 +9,7 @@ class IContactRepository(ABC):
     async def list(
         self, 
         company_id: int | None,
-    ) -> ContactPage:
+    ) -> ContactsConnection:
         raise NotImplementedError
     
     @abstractmethod

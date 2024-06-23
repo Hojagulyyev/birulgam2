@@ -56,6 +56,6 @@ class User:
         return self.companies[0].id
     
 @dataclass
-class UserPage:
+class UsersConnection:
     users: list[User]
     total: int

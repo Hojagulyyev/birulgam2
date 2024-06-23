@@ -85,6 +85,6 @@ class Payment:
     
 
 @dataclass
-class PaymentPage:
+class PaymentsConnection:
     payments: list[Payment]
     total: int

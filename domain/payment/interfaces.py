@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .entities import Payment, PaymentPage
+from .entities import Payment, PaymentsConnection
 
 
 class IPaymentRepository(ABC):
@@ -10,7 +10,7 @@ class IPaymentRepository(ABC):
         self,
         ids: list[int] | None = None,
         company_id: int | None = None,
-    ) -> PaymentPage:
+    ) -> PaymentsConnection:
         raise NotImplementedError
     
     @abstractmethod

@@ -177,6 +177,6 @@ class Contact:
 
 
 @dataclass
-class ContactPage:
+class ContactsConnection:
     contacts: list[Contact]
     total: int

@@ -12,7 +12,7 @@ from .deal.resolvers import (
 
 @strawberry.type
 class Query:
-    contact_page: get_contacts_response = strawberry.field(
+    contacts_connection: get_contacts_response = strawberry.field(
         resolver=get_contacts_resolver)
     deals_connection: get_deals_response = strawberry.field(
         resolver=get_deals_resolver)

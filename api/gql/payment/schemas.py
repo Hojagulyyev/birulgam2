@@ -36,6 +36,6 @@ class PaymentSchema:
 
 
 @strawberry.type
-class PaymentPageSchema:
+class PaymentsConnectionSchema:
     payments: list[PaymentSchema]
     total: int

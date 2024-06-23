@@ -26,6 +26,6 @@ class ContactSchema:
 
 
 @strawberry.type
-class ContactPageSchema:
+class ContactsConnectionSchema:
     contacts: list[ContactSchema]
     total: int
