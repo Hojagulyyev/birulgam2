@@ -12,6 +12,7 @@ class IDealRepository(ABC):
         company_id: int | None = None,
         limit: int | None = None,
         offset: int | None = None,
+        order_by: str | None = None,
     ) -> DealsConnection:
         raise NotImplementedError
     

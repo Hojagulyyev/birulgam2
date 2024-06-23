@@ -25,6 +25,7 @@ class GetDealsUsecase:
                 company_id=dto.company_id,
                 limit=dto.limit,
                 offset=dto.offset,
+                order_by=dto.order_by,
             )
         )
         return deals_connection

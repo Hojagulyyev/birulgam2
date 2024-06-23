@@ -44,6 +44,7 @@ class DealPgRepository(IDealRepository):
         company_id: int | None = None,
         limit: int | None = None,
         offset: int | None = None,
+        order_by: str | None = None,
     ) -> DealsConnection:
         stmt = (
             '''
@@ -60,14 +61,23 @@ class DealPgRepository(IDealRepository):
         )
         args = []
 
-        if ids:
-            args += ids
-            ids_placeholder = ', '.join([f'${i+1}' for i in range(len(ids))])
-            stmt += f'AND id IN ({ids_placeholder})'
-
         if company_id:
             args.append(company_id)
             stmt += f'AND company_id = ${len(args)}'
+
+        if ids:
+            param_position = len(args)+1
+            args += ids
+            ids_placeholder = ', '.join([f'${i+param_position}' for i in range(len(ids))])
+            stmt += f'AND id IN ({ids_placeholder})'
+
+        if order_by:
+            order_field = order_by[1:] if order_by.startswith('-') else order_by
+            order_field = order_field if order_field in self.columns else 'id'
+            stmt += f'ORDER BY {order_field} '
+
+            order_type = 'DESC ' if order_by.startswith('-') else 'ASC '
+            stmt += order_type
 
         if not limit or limit <= 0:
             limit = MAX_LIMIT

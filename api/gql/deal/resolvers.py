@@ -36,6 +36,7 @@ async def get_deals_resolver(
     ids: list[int] | None = None,
     limit: int | None = None,
     offset: int | None = None,
+    order_by: str | None = None,
 ) -> get_deals_response:
     user_session: UserSession = info.context["user_session"]
     try:
@@ -51,6 +52,7 @@ async def get_deals_resolver(
                     ids=ids,
                     limit=limit,
                     offset=offset,
+                    order_by=order_by,
                 )
             )
     except Error as e:

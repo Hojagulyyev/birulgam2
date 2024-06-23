@@ -11,6 +11,7 @@ class GetDealsUsecaseDto:
     ids: list[int] | None = None
     limit: int | None = None
     offset: int | None = None
+    order_by: str | None = None
 
 
 @dataclass
