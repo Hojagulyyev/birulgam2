@@ -8,11 +8,11 @@ class PgRepository:
         order_by: str | None,
         stmt: str,
         args: list,
-        columns: str,
+        available_columns: str,
     ):
         if order_by:
             order_field = order_by[1:] if order_by.startswith('-') else order_by
-            order_field = order_field if order_field in columns else 'id'
+            order_field = order_field if order_field in available_columns else 'id'
             stmt += f'ORDER BY {order_field} '
 
             order_type = 'DESC ' if order_by.startswith('-') else 'ASC '
