@@ -22,8 +22,8 @@ class GetContactsUsecase:
             self.contact_repo
             .list(
                 company_id=dto.company_id,
-                limit=dto.limit,
-                offset=dto.offset,
+                first=dto.first,
+                skip=dto.skip,
                 order_by=dto.order_by,
             )
         )

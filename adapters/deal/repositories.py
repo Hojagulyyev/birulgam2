@@ -43,8 +43,8 @@ class DealPgRepository(PgRepository, IDealRepository):
         self,
         company_id: int | None = None,
         ids: list[int] | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
+        first: int | None = None,
+        skip: int | None = None,
         order_by: str | None = None,
     ) -> DealsConnection:
         stmt = (
@@ -73,8 +73,8 @@ class DealPgRepository(PgRepository, IDealRepository):
             stmt += f'AND id IN ({ids_placeholder})'
 
         stmt, args = super().order_by(order_by, stmt, args, self.columns)
-        stmt, args = super().limit(limit, stmt, args)
-        stmt, args = super().offset(offset, stmt, args)
+        stmt, args = super().limit(first, stmt, args)
+        stmt, args = super().offset(skip, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
         deals: list[Deal] = [

@@ -31,8 +31,8 @@ get_contacts_response = Annotated[
 ]
 async def get_contacts_resolver(
     info: Info,
-    limit: int | None = None,
-    offset: int | None = None,
+    first: int | None = None,
+    skip: int | None = None,
     order_by: str | None = None,
 ) -> get_contacts_response:
     user_session: UserSession = info.context["user_session"]
@@ -48,8 +48,8 @@ async def get_contacts_resolver(
             contacts_connection = await get_contacts_usecase.execute(
                 dto=GetContactsUsecaseDto(
                     company_id=company_id,
-                    limit=limit,
-                    offset=offset,
+                    first=first,
+                    skip=skip,
                     order_by=order_by,
                 )
             )

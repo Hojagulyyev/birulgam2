@@ -9,8 +9,8 @@ class IContactRepository(ABC):
     async def list(
         self, 
         company_id: int | None,
-        limit: int | None = None,
-        offset: int | None = None,
+        first: int | None = None,
+        skip: int | None = None,
         order_by: str | None = None,
     ) -> ContactsConnection:
         raise NotImplementedError

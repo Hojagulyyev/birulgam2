@@ -38,8 +38,8 @@ class ContactPgRepository(PgRepository, IContactRepository):
     async def list(
         self, 
         company_id: int | None,
-        limit: int | None = None,
-        offset: int | None = None,
+        first: int | None = None,
+        skip: int | None = None,
         order_by: str | None = None,
     ) -> ContactsConnection:
         stmt = (
@@ -62,8 +62,8 @@ class ContactPgRepository(PgRepository, IContactRepository):
             stmt += f'AND company_id = ${len(args)}'
 
         stmt, args = super().order_by(order_by, stmt, args, self.columns)
-        stmt, args = super().limit(limit, stmt, args)
-        stmt, args = super().offset(offset, stmt, args)
+        stmt, args = super().limit(first, stmt, args)
+        stmt, args = super().offset(skip, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
         contacts: list[Contact] = [
