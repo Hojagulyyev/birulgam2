@@ -14,46 +14,10 @@ from domain.store.interfaces import IStoreRepository
 from adapters.token.services import TokenService
 
 from .dtos import (
-    SignupUserUsecaseDto,
     CreateUserUsecaseDto,
     SigninUserUsecaseDto,
     SignoutUserUsecaseDto,
 )
-
-
-class SignupUserUsecase:
-
-    def __init__(
-        self, 
-        user_repo: IUserRepository,
-        user_password_service: IUserPasswordService,
-        company_repo: ICompanyRepository,
-        store_repo: IStoreRepository,
-    ):
-        self.user_repo = user_repo
-        self.user_password_service = user_password_service
-        self.company_repo = company_repo
-        self.store_repo = store_repo
-
-    async def execute(self, dto: SignupUserUsecaseDto) -> User:
-        # >>> VALIDATION
-        dto.validate()
-
-        # >>> MAIN
-        hashed_password = (
-            self.user_password_service
-            .hash_password(dto.password)
-        )
-        user = User(
-            id=0,
-            username=dto.username,
-            password=hashed_password,
-        )
-        user.validate()
-        user = await self.user_repo.save(user)
-
-        # >>> RESPONSE
-        return user
     
 
 class SigninUserUsecase:
@@ -133,6 +97,23 @@ class GetUserByUsernameUsecase:
         
         await self.user_repo.join_companies(user)
         return user
+    
+
+class GetUserByPhoneUsecase:
+
+    def __init__(
+        self, 
+        user_repo: IUserRepository,
+    ):
+        self.user_repo = user_repo
+
+    async def execute(self, phone: str) -> User:
+        user = await self.user_repo.get_by_phone(phone)
+        if not user:
+            raise DoesNotExistError(loc=['user', 'phone'])
+        
+        await self.user_repo.join_companies(user)
+        return user
 
 
 class CreateUserUsecase:
@@ -154,6 +135,7 @@ class CreateUserUsecase:
             id=0,
             username=dto.username,
             password=hashed_password,
+            phone=dto.phone,
             company_ids=dto.company_ids,
         )
         user.validate()

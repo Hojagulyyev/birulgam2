@@ -99,6 +99,31 @@ class UserPgRepository(IUserRepository):
                 phone=row[c.auto()],
             )
             return user
+        
+    async def get_by_phone(self, phone: str) -> User | None:
+        stmt = (
+            '''
+            SELECT
+            '''
+            + self.columns + 
+            '''
+            FROM user_
+            WHERE
+                phone = $1
+            '''
+        )
+        row = await self._conn.fetchrow(stmt, phone)
+        if row is None:
+            return None
+
+        with Counter() as c:
+            user = User(
+                id=row[c.auto()],
+                username=row[c.auto()],
+                password=row[c.auto()],
+                phone=row[c.auto()],
+            )
+            return user
     
     async def join_companies(self, user: User) -> User:
         stmt = (

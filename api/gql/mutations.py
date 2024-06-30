@@ -5,8 +5,6 @@ from .otp.resolvers import (
     send_otp_response,
 )
 from .user.resolvers import (
-    signup_user_resolver,
-    signup_user_response,
     signin_user_resolver,
     signin_user_response,
     signin_user_by_otp_resolver,
@@ -34,8 +32,6 @@ from .payment.resolvers import (
 
 @strawberry.type
 class Mutation:
-    signup_user: signup_user_response = strawberry.mutation(
-        resolver=signup_user_resolver)
     signin_user: signin_user_response = strawberry.mutation(
         resolver=signin_user_resolver)
     send_otp: send_otp_response = strawberry.mutation(

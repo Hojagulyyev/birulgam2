@@ -8,14 +8,13 @@ from core.random import generate_random_string
 from domain.user_session.entities import UserSession
 
 from application.user.dtos import (
-    SignupUserUsecaseDto, 
     SigninUserUsecaseDto,
     SignoutUserUsecaseDto,
+    CreateUserUsecaseDto,
 )
 from application.user.usecases import (
-    GetUserByUsernameUsecase,
+    GetUserByPhoneUsecase,
 )
-from application.user.dtos import SignupUserUsecaseDto
 from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 from application.otp.usecases import (
@@ -24,8 +23,8 @@ from application.otp.usecases import (
 )
 
 from adapters.user.factories import (
+    make_create_user_usecase,
     make_signin_user_usecase,
-    make_signup_user_usecase,
     make_signout_user_usecase,
 )
 from adapters.user_session.map import UserSessionMap
@@ -41,31 +40,6 @@ from .inputs import (
     SigninUserInput,
     SigninByOtpUserInput,
 )
-
-
-signup_user_response = Annotated[
-    UserSchema | ErrorSchema,
-    strawberry.union('SignupUserResponse'),
-]
-async def signup_user_resolver(
-    info: Info,
-    input: SignupUserInput,
-) -> signup_user_response:
-    try:
-        async with info.context["pgpool"].acquire() as conn:
-            signup_user_usecase = make_signup_user_usecase(conn)
-            user = await signup_user_usecase.execute(
-                dto=SignupUserUsecaseDto(
-                    username=input.username,
-                    password=input.password,
-                    password_confirm=input.password_confirm,
-                )
-            )
-    except Error as e:
-        return ErrorSchema(**e.serialize())
-    
-    user_schema = UserMap.to_gql_schema(user)
-    return user_schema
 
 
 signin_user_response = Annotated[
@@ -133,19 +107,20 @@ async def signin_user_by_otp_resolver(
             )
     
         async with info.context["pgpool"].acquire() as conn:
-            get_user_by_username_usecase = GetUserByUsernameUsecase(
+            get_user_by_phone_usecase = GetUserByPhoneUsecase(
                 UserPgRepository(conn=conn),
             )
             try:
-                user = await get_user_by_username_usecase.execute(input.phone)
+                user = await get_user_by_phone_usecase.execute(input.phone)
             except DoesNotExistError:
-                signup_user_usecase = make_signup_user_usecase(conn)
+                signup_user_usecase = make_create_user_usecase(conn)
                 random_generated_password = generate_random_string()
                 user = await signup_user_usecase.execute(
-                    dto=SignupUserUsecaseDto(
+                    dto=CreateUserUsecaseDto(
                         username=input.phone,
                         password=random_generated_password,
-                        password_confirm=random_generated_password,
+                        phone=input.phone,
+                        company_ids=[],
                     )
                 )
 

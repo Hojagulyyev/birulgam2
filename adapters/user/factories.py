@@ -1,22 +1,18 @@
 from application.user.usecases import (
     SigninUserUsecase,
-    SignupUserUsecase,
     SignoutUserUsecase,
+    CreateUserUsecase,
 )
 
-from adapters.company.repositories import CompanyPgRepository
 from adapters.user.repositories import UserPgRepository
-from adapters.store.repositories import StorePgRepository
 from adapters.user.services import UserPasswordService
 from adapters.user_session.repositories import UserSessionRedisRepository
 
 
-def make_signup_user_usecase(conn):
-    return SignupUserUsecase(
+def make_create_user_usecase(conn):
+    return CreateUserUsecase(
         user_repo=UserPgRepository(conn),
         user_password_service=UserPasswordService(),
-        company_repo=CompanyPgRepository(conn),
-        store_repo=StorePgRepository(conn),
     )
 
 

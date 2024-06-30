@@ -21,6 +21,10 @@ class IUserRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
+    async def get_by_phone(self, phone: str) -> User | None:
+        raise NotImplementedError
+    
+    @abstractmethod
     async def join_companies(self, user: User) -> User:
         raise NotImplementedError
     
