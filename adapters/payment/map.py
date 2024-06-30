@@ -8,9 +8,6 @@ class PaymentMap:
     
     @classmethod
     def to_gql_schema(cls, payment: Payment):
-        if payment.id is None:
-            raise TypeError
-        
         return PaymentSchema(
             id=payment.id,
             company_id=payment.company_id,

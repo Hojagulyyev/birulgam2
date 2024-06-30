@@ -56,11 +56,11 @@ class UserPgRepository(IUserRepository):
                     id=row[c.auto()],
                     username=row[c.auto()],
                     password=row[c.auto()],
-                    phone=row[c.auto()],
+                    phone=row[c.end()],
                 )
                 for row in rows
             ]
-            total = rows[0][c.auto()] if rows else 0
+            total = rows[0][4] if rows else 0
 
         users_connection = UsersConnection(
             users=users,

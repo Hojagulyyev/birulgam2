@@ -22,3 +22,12 @@ class Counter:
     def auto(self):
         self.value += 1
         return self.value - 1
+
+    def start(self, value):
+       self.value = value + 1
+       return self.value - 1
+    
+    def end(self):
+        value = self.value
+        self.reset()
+        return value

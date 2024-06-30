@@ -6,12 +6,7 @@ from api.gql.deal.schemas import DealSchema
 class DealMap:
     
     @classmethod
-    def to_gql_schema(cls, deal: Deal):
-        if not deal.id:
-            raise TypeError
-        if not deal.code_number:
-            raise TypeError
-        
+    def to_gql_schema(cls, deal: Deal):        
         return DealSchema(
             id=deal.id,
             company_id=deal.company_id,

@@ -48,12 +48,13 @@ class StorePgRepository(IStoreRepository):
         if row is None:
             return None
 
-        store = Store(
-            id=row[0],
-            company_id=row[1],
-            name=row[2],
-            code=row[3],
-        )
+        with Counter() as c:
+            store = Store(
+                id=row[c.auto()],
+                company_id=row[c.auto()],
+                name=row[c.auto()],
+                code=row[c.auto()],
+            )
         return store
         
     async def save(self, store: Store) -> Store:

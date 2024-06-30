@@ -101,11 +101,11 @@ class DealPgRepository(PgRepository, IDealRepository):
                     created_at=row[c.auto()],
                     last_paid_at=row[c.auto()],
                     closed_at=row[c.auto()],
-                    note=row[c.auto()],
+                    note=row[c.end()],
                 )
                 for row in rows
             ]
-            total = rows[0][c.auto()] if rows else 0
+            total = rows[0][20] if rows else 0
         
         deals_connection = DealsConnection(
             deals=deals,
@@ -130,8 +130,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         
     async def save(self, deal: Deal) -> Deal:
         if not deal.id:
-            if store_id := deal.store_id:
-                deal = await self._increment_code_number(deal, store_id)
+            deal = await self._increment_code_number_by_store_id(deal)
             deal = await self._insert(deal)
         else:
             deal = await self._update(deal)
@@ -148,6 +147,7 @@ class DealPgRepository(PgRepository, IDealRepository):
                 seller_id,
                 buyer_id,
                 store_code,
+                code_number,
                 total_amount,
                 remaining_amount_due,
                 type,
@@ -162,7 +162,7 @@ class DealPgRepository(PgRepository, IDealRepository):
                 note
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15, $16, $17, $18
+                $11, $12, $13, $14, $15, $16, $17, $18, $19
             )
             RETURNING
                 id, 
@@ -176,6 +176,7 @@ class DealPgRepository(PgRepository, IDealRepository):
                 deal.seller_id,
                 deal.buyer_id,
                 deal.store_code,
+                deal.code_number,
                 deal.total_amount,
                 deal.remaining_amount_due,
                 deal.type,
@@ -252,7 +253,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         await self._conn.execute(stmt, *args)
         return deal
 
-    async def _increment_code_number(self, deal: Deal, store_id: int) -> Deal:
+    async def _increment_code_number_by_store_id(self, deal: Deal) -> Deal:
         '''
         This function increments the deal code number by store.
 
@@ -263,14 +264,12 @@ class DealPgRepository(PgRepository, IDealRepository):
             f'''
             UPDATE store SET
                 next_{deal.type}_id = next_{deal.type}_id + 1
-            FROM
-                store
             WHERE id = $1
             RETURNING
                 next_{deal.type}_id
             '''
         )
-        new_code_number = await self._conn.fetchval(stmt, store_id)
+        new_code_number = await self._conn.fetchval(stmt, deal.store_id)
         if not new_code_number:
                 raise ValueError
 
