@@ -2,6 +2,7 @@ from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
 
 from core.errors import UniqueError
+from core.counter import Counter
 from domain.user.interfaces import IUserRepository
 from domain.user.entities import User, UsersConnection
 from domain.company.entities import Company
@@ -49,16 +50,17 @@ class UserPgRepository(IUserRepository):
 
         rows = await self._conn.fetch(stmt, *args)
 
-        users: list[User] = [
-            User(
-                id=row[0],
-                username=row[1],
-                password=row[2],
-                phone=row[3],
-            )
-            for row in rows
-        ]
-        total = rows[0][4] if rows else 0
+        with Counter() as c:
+            users: list[User] = [
+                User(
+                    id=row[c.auto()],
+                    username=row[c.auto()],
+                    password=row[c.auto()],
+                    phone=row[c.auto()],
+                )
+                for row in rows
+            ]
+            total = rows[0][c.auto()] if rows else 0
 
         users_connection = UsersConnection(
             users=users,
@@ -89,13 +91,14 @@ class UserPgRepository(IUserRepository):
         if row is None:
             return None
 
-        user = User(
-            id=row[0],
-            username=row[1],
-            password=row[2],
-            phone=row[3],
-        )
-        return user
+        with Counter() as c:
+            user = User(
+                id=row[c.auto()],
+                username=row[c.auto()],
+                password=row[c.auto()],
+                phone=row[c.auto()],
+            )
+            return user
     
     async def join_companies(self, user: User) -> User:
         stmt = (
@@ -186,15 +189,16 @@ class UserPgRepository(IUserRepository):
 
     async def _update(self, user: User) -> User:
         # >>> MAIN
-        stmt = (
-            '''
-            UPDATE user_ SET 
-                username = $1,
-                password = $2,
-                phone = $3
-            WHERE id = $4
-            '''
-        )
+        with Counter() as c:
+            stmt = (
+                f'''
+                UPDATE user_ SET 
+                    username = ${c.auto()},
+                    password = ${c.auto()},
+                    phone = ${c.auto()}
+                WHERE id = ${c.auto()}
+                '''
+            )
         args = (
             user.username, 
             user.password, 
