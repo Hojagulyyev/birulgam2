@@ -2,11 +2,13 @@ from asyncpg import Connection
 from asyncpg.exceptions import ForeignKeyViolationError
 
 from core.errors import InvalidError
+from core.counter import Counter
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealsConnection
+from domain.store.entities import Store
 
 from adapters.core.repositories import PgRepository
-
+from adapters.store.repositories import StorePgRepository
 
 class DealPgRepository(PgRepository, IDealRepository):
 
@@ -77,32 +79,33 @@ class DealPgRepository(PgRepository, IDealRepository):
         stmt, args = super().offset(skip, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
-        deals: list[Deal] = [
-            Deal(
-                id=row[0],
-                company_id=row[1],
-                store_id=row[2],
-                user_id=row[3],
-                seller_id=row[4],
-                buyer_id=row[5],
-                store_code=row[6],
-                code_number=row[7],
-                total_amount=row[8],
-                remaining_amount_due=row[9],
-                type=row[10],
-                installments_total_amount=row[11],
-                installments=row[12],
-                installment_amount=row[13],
-                installment_trifle=row[14],
-                installment_expiration_date=row[15],
-                created_at=row[16],
-                last_paid_at=row[17],
-                closed_at=row[18],
-                note=row[19],
-            )
-            for row in rows
-        ]
-        total = rows[0][20] if rows else 0
+        with Counter() as c:
+            deals: list[Deal] = [
+                Deal(
+                    id=row[c.auto()],
+                    company_id=row[c.auto()],
+                    store_id=row[c.auto()],
+                    user_id=row[c.auto()],
+                    seller_id=row[c.auto()],
+                    buyer_id=row[c.auto()],
+                    store_code=row[c.auto()],
+                    code_number=row[c.auto()],
+                    total_amount=row[c.auto()],
+                    remaining_amount_due=row[c.auto()],
+                    type=row[c.auto()],
+                    installments_total_amount=row[c.auto()],
+                    installments=row[c.auto()],
+                    installment_amount=row[c.auto()],
+                    installment_trifle=row[c.auto()],
+                    installment_expiration_date=row[c.auto()],
+                    created_at=row[c.auto()],
+                    last_paid_at=row[c.auto()],
+                    closed_at=row[c.auto()],
+                    note=row[c.auto()],
+                )
+                for row in rows
+            ]
+            total = rows[0][c.auto()] if rows else 0
         
         deals_connection = DealsConnection(
             deals=deals,
@@ -127,6 +130,8 @@ class DealPgRepository(PgRepository, IDealRepository):
         
     async def save(self, deal: Deal) -> Deal:
         if not deal.id:
+            if store_id := deal.store_id:
+                deal = await self._increment_code_number(deal, store_id)
             deal = await self._insert(deal)
         else:
             deal = await self._update(deal)
@@ -198,30 +203,31 @@ class DealPgRepository(PgRepository, IDealRepository):
         return deal
 
     async def _update(self, deal: Deal) -> Deal:
-        stmt = (
-            '''
-            UPDATE deal SET 
-                company_id = $1,
-                store_id = $2,
-                user_id = $3,
-                seller_id = $4,
-                buyer_id = $5,
-                code_number = $6,
-                total_amount = $7,
-                remaining_amount_due = $8,
-                type = $9,
-                installments_total_amount = $10,
-                installments = $11,
-                installment_amount = $12,
-                installment_trifle = $13,
-                installment_expiration_date = $14,
-                created_at = $15,
-                last_paid_at = $16,
-                closed_at = $17,
-                note = $18
-            WHERE id = $19
-            '''
-        )
+        with Counter(1) as c:
+            stmt = (
+                f'''
+                UPDATE deal SET 
+                    company_id = ${c.auto()},
+                    store_id = ${c.auto()},
+                    user_id = ${c.auto()},
+                    seller_id = ${c.auto()},
+                    buyer_id = ${c.auto()},
+                    code_number = ${c.auto()},
+                    total_amount = ${c.auto()},
+                    remaining_amount_due = ${c.auto()},
+                    type = ${c.auto()},
+                    installments_total_amount = ${c.auto()},
+                    installments = ${c.auto()},
+                    installment_amount = ${c.auto()},
+                    installment_trifle = ${c.auto()},
+                    installment_expiration_date = ${c.auto()},
+                    created_at = ${c.auto()},
+                    last_paid_at = ${c.auto()},
+                    closed_at = ${c.auto()},
+                    note = ${c.auto()}
+                WHERE id = ${c.auto()}
+                '''
+            )
         args = (
             deal.company_id,
             deal.store_id,
@@ -244,4 +250,29 @@ class DealPgRepository(PgRepository, IDealRepository):
             deal.id,
         )
         await self._conn.execute(stmt, *args)
+        return deal
+
+    async def _increment_code_number(self, deal: Deal, store_id: int) -> Deal:
+        '''
+        This function increments the deal code number by store.
+
+        Use with caution due to (potential 
+        for errors due to not clean query).
+        '''
+        stmt = (
+            f'''
+            UPDATE store SET
+                next_{deal.type}_id = next_{deal.type}_id + 1
+            FROM
+                store
+            WHERE id = $1
+            RETURNING
+                next_{deal.type}_id
+            '''
+        )
+        new_code_number = await self._conn.fetchval(stmt, store_id)
+        if not new_code_number:
+                raise ValueError
+
+        deal.code_number = new_code_number - 1
         return deal

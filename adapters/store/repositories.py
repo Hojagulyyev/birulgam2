@@ -4,6 +4,7 @@ from asyncpg.exceptions import UniqueViolationError
 from core.errors import (
     UniqueError,
 )
+from core.counter import Counter
 from domain.store.interfaces import IStoreRepository
 from domain.store.entities import Store
 
@@ -96,15 +97,16 @@ class StorePgRepository(IStoreRepository):
         return store
 
     async def _update(self, store: Store) -> Store:
-        stmt = (
-            '''
-            UPDATE store SET 
-                company_id = $1,
-                name = $2,
-                code = $3
-            WHERE id = $4
-            '''
-        )
+        with Counter(1) as c:
+            stmt = (
+                f'''
+                UPDATE store SET 
+                    company_id = ${c.auto()},
+                    name = ${c.auto()},
+                    code = ${c.auto()}
+                WHERE id = ${c.auto()}
+                '''
+            )
         args = (
             store.company_id,
             store.name,

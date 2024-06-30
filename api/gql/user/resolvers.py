@@ -5,6 +5,7 @@ from strawberry.types import Info
 
 from core.errors import Error, DoesNotExistError
 from core.random import generate_random_string
+from core.phone import format_phone
 from domain.user_session.entities import UserSession
 
 from application.user.dtos import (
@@ -117,7 +118,7 @@ async def signin_user_by_otp_resolver(
                 random_generated_password = generate_random_string()
                 user = await signup_user_usecase.execute(
                     dto=CreateUserUsecaseDto(
-                        username=input.phone,
+                        username=format_phone(input.phone),
                         password=random_generated_password,
                         phone=input.phone,
                         company_ids=[],
