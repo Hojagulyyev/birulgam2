@@ -11,11 +11,13 @@ class UserPgRepository(IUserRepository):
 
     class Constraints:
         uk_username = 'user__uk__username'
+        uk_phone = 'user__uk__phone'
 
     columns = '''
         id,
         username,
-        password
+        password,
+        phone
     '''
 
     def __init__(self, conn: Connection):
@@ -52,10 +54,11 @@ class UserPgRepository(IUserRepository):
                 id=row[0],
                 username=row[1],
                 password=row[2],
+                phone=row[3],
             )
             for row in rows
         ]
-        total = rows[0][3] if rows else 0
+        total = rows[0][4] if rows else 0
 
         users_connection = UsersConnection(
             users=users,
@@ -90,6 +93,7 @@ class UserPgRepository(IUserRepository):
             id=row[0],
             username=row[1],
             password=row[2],
+            phone=row[3],
         )
         return user
     
@@ -128,6 +132,8 @@ class UserPgRepository(IUserRepository):
         except UniqueViolationError as e:
             if self.Constraints.uk_username in str(e):
                 raise UniqueError(loc=['user', 'username'])
+            if self.Constraints.uk_phone in str(e):
+                raise UniqueError(loc=['user', 'phone'])
             raise e
         
         return user
@@ -139,9 +145,10 @@ class UserPgRepository(IUserRepository):
             INSERT INTO user_
             (
                 username,
-                password
+                password,
+                phone
             ) VALUES (
-                $1, $2
+                $1, $2, $3
             )
             RETURNING id
             '''
@@ -149,6 +156,7 @@ class UserPgRepository(IUserRepository):
         args = (
             user.username, 
             user.password,
+            user.phone,
         )
         user_id = await self._conn.fetchval(stmt, *args)
         if not user_id:
@@ -182,13 +190,15 @@ class UserPgRepository(IUserRepository):
             '''
             UPDATE user_ SET 
                 username = $1,
-                password = $2
-            WHERE id = $3
+                password = $2,
+                phone = $3
+            WHERE id = $4
             '''
         )
         args = (
             user.username, 
             user.password, 
+            user.phone,
             user.id,
         )
         await self._conn.execute(stmt, *args)

@@ -2,6 +2,7 @@ from datetime import date
 from dataclasses import dataclass
 
 from core.errors import InvalidError
+from core.phone import format_phone, is_valid_phone
 from domain.company.entities import Company
 
 
@@ -34,6 +35,9 @@ class Contact:
     PATRONYMIC_MIN_LENGTH = 3
     PATRONYMIC_MAX_LENGTH = 24
 
+    PHONE_MIN_LENGTH = 11
+    PHONE_MAX_LENGTH = 11
+
     ADDRESS_MIN_LENGTH = 8
     ADDRESS_MAX_LENGTH = 255
 
@@ -59,6 +63,8 @@ class Contact:
             self._validate_surname()
         if self.patronymic:
             self._validate_patronymic()
+        if self.phone:
+            self._validate_phone()
         if self.address:
             self._validate_address()
         if self.gender:
@@ -112,6 +118,21 @@ class Contact:
             or patronymic_len > self.PATRONYMIC_MAX_LENGTH
         ):
             raise InvalidError(f'contact patronymic\'s length must be between {self.PATRONYMIC_MIN_LENGTH} and {self.PATRONYMIC_MAX_LENGTH}')
+        
+    def _validate_phone(self):
+        if not isinstance(self.phone, str):
+            raise TypeError
+        
+        self.phone = format_phone(self.phone)
+        if not is_valid_phone(self.phone):
+            raise InvalidError(loc=['contact', 'phone'])
+        
+        phone_len = len(self.phone)
+        if (
+            phone_len < self.PHONE_MIN_LENGTH
+            or phone_len > self.PHONE_MAX_LENGTH
+        ):
+            raise InvalidError(f'contact phone\'s length must be {self.PHONE_MAX_LENGTH}')
 
     def _validate_address(self):
         if not isinstance(self.address, str):

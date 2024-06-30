@@ -45,4 +45,4 @@ class Store:
             code_len < self.CODE_MIN_LENGTH
             or code_len > self.CODE_MAX_LENGTH
         ):
-            raise InvalidError(f'store code\'s length must be between {self.CODE_MIN_LENGTH} and {self.CODE_MAX_LENGTH}')
+            raise InvalidError(f'store code\'s length must be {self.CODE_MAX_LENGTH}')

@@ -1,17 +1,21 @@
 from dataclasses import dataclass
 
 from core.errors import InvalidError
+from core.phone import format_phone, is_valid_phone
 from domain.company.entities import Company
 
 
 @dataclass
 class User:
+    # >>> RELATED
     id: int
-
+    # >>> REQUIRED
     username: str
     password: str
-
+    phone: str
+    # >>> M2M
     company_ids: list[int] | None = None
+    # >>> MAP
     companies: list[Company] | None = None
 
     USERNAME_MIN_LENGTH = 3
@@ -20,11 +24,15 @@ class User:
     PASSWORD_MIN_LENGTH = 4
     PASSWORD_MAX_LENGTH = 128
 
+    PHONE_MIN_LENGTH = 11
+    PHONE_MAX_LENGTH = 11
+
     def validate(self):
         if not isinstance(self.id, int):
             raise TypeError
         self._validate_username()
         self._validate_password()
+        self._validate_phone()
         
     def _validate_username(self):
         if not isinstance(self.username, str):
@@ -47,6 +55,21 @@ class User:
             or password_len > self.PASSWORD_MAX_LENGTH
         ):
             raise InvalidError(f'user password\'s length must be between {self.PASSWORD_MIN_LENGTH} and {self.PASSWORD_MAX_LENGTH}')
+        
+    def _validate_phone(self):
+        if not isinstance(self.phone, str):
+            raise TypeError
+        
+        self.phone = format_phone(self.phone)
+        if not is_valid_phone(self.phone):
+            raise InvalidError(loc=['contact', 'phone'])
+        
+        phone_len = len(self.phone)
+        if (
+            phone_len < self.PHONE_MIN_LENGTH
+            or phone_len > self.PHONE_MAX_LENGTH
+        ):
+            raise InvalidError(f'user phone\'s length must be {self.PHONE_MAX_LENGTH}')
 
     def get_first_company_id(self) -> int:
         if not self.companies:

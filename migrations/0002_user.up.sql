@@ -3,8 +3,10 @@ CREATE TABLE IF NOT EXISTS user_ (
     
     username VARCHAR(16) NOT NULL,
     password VARCHAR(128) NOT NULL,
+    phone VARCHAR(11) NOT NULL,
     
-    CONSTRAINT user__uk__username UNIQUE (username)
+    CONSTRAINT user__uk__username UNIQUE (username),
+    CONSTRAINT user__uk__phone UNIQUE (phone)
 );
 
 CREATE TABLE IF NOT EXISTS user_company (
