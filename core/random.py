@@ -10,5 +10,5 @@ def generate_random_string(length: int = 6):
 
 
 def generate_otp() -> str:
-    otp = random.randint(10000, 99999)
+    otp = random.randint(100000, 999999)
     return str(otp)
