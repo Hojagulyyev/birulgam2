@@ -214,7 +214,7 @@ class UserPgRepository(IUserRepository):
 
     async def _update(self, user: User) -> User:
         # >>> MAIN
-        with Counter() as c:
+        with Counter(1) as c:
             stmt = (
                 f'''
                 UPDATE user_ SET 
