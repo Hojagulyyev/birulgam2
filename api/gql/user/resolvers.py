@@ -13,29 +13,25 @@ from application.user.dtos import (
     SignoutUserUsecaseDto,
     CreateUserUsecaseDto,
 )
-from application.user.usecases import (
-    GetUserByPhoneUsecase,
-)
-from application.user_session.usecases import CreateUserSessionUsecase
 from application.user_session.dtos import CreateUserSessionUsecaseDto
 from application.otp.usecases import (
     ExistOtpUsecase,
     ExistOtpUsecaseDto,
 )
+from application.company.dtos import CreateCompanyUsecaseDto
 
 from adapters.user.factories import (
     make_create_user_usecase,
     make_signin_user_usecase,
     make_signout_user_usecase,
+    make_get_user_by_phone_usecase,
 )
+from adapters.company.factories import make_create_company_usecase
+from adapters.user_session.factories import make_create_user_session_usecase
 from adapters.user_session.map import UserSessionMap
-from adapters.user.map import UserMap
-from adapters.user.repositories import UserPgRepository
-from adapters.user_session.repositories import UserSessionRedisRepository
 
 from ..error.schemas import ErrorSchema
 from ..user_session.schemas import UserSessionSchema
-from .schemas import UserSchema
 from .inputs import (
     SignupUserInput,
     SigninUserInput,
@@ -108,35 +104,51 @@ async def signin_user_by_otp_resolver(
             )
     
         async with info.context["pgpool"].acquire() as conn:
-            get_user_by_phone_usecase = GetUserByPhoneUsecase(
-                UserPgRepository(conn=conn),
-            )
             try:
-                user = await get_user_by_phone_usecase.execute(input.phone)
+                user = await (
+                    make_get_user_by_phone_usecase(conn)
+                    .execute(input.phone)
+                )
             except DoesNotExistError:
-                signup_user_usecase = make_create_user_usecase(conn)
-                random_generated_password = generate_random_string()
-                user = await signup_user_usecase.execute(
-                    dto=CreateUserUsecaseDto(
-                        username=format_phone(input.phone),
-                        password=random_generated_password,
-                        phone=input.phone,
-                        company_ids=[],
+                user = await (
+                    make_create_user_usecase(conn)
+                    .execute(
+                        dto=CreateUserUsecaseDto(
+                            username=format_phone(input.phone),
+                            password=generate_random_string(),
+                            phone=input.phone,
+                            company_ids=[],
+                        )
                     )
                 )
 
-        create_user_session_usecase = CreateUserSessionUsecase(
-            user_session_repo=UserSessionRedisRepository(),
-        )
-        user_session = await create_user_session_usecase.execute(
-            CreateUserSessionUsecaseDto(
-                user_id=user.id,
-                company_id=user.get_first_company_id(),
-            ),
-        )
-
+            user_session = await (
+                make_create_user_session_usecase()
+                .execute(
+                    CreateUserSessionUsecaseDto(
+                        user_id=user.id,
+                        company_id=user.get_first_company_id(),
+                    ),
+                )
+            )
+            
+            if not user.companies:
+                company = await (
+                    make_create_company_usecase(conn)
+                    .execute(
+                        dto=CreateCompanyUsecaseDto(
+                            user_id=user.id,
+                            access_token=user_session.access_token,
+                            name=user.username,
+                        )
+                    )
+                )
+                company_id = company.id
+            else:
+                company_id = user.get_first_company_id()
     except Error as e:
         return ErrorSchema(**e.serialize())
     
     user_session_schema = UserSessionMap.to_gql_schema(user_session)
+    user_session_schema.company_id = company_id
     return user_session_schema

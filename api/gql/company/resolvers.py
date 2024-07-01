@@ -45,7 +45,7 @@ async def create_company_resolver(
                 user_session_repo=UserSessionRedisRepository(),
             )
             company = await create_company_usecase.execute(
-                CreateCompanyUsecaseDto(
+                dto=CreateCompanyUsecaseDto(
                     user_id=user_session.user_id,
                     access_token=user_session.access_token,
                     name=input.name,

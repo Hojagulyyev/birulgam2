@@ -1,4 +1,5 @@
 from core.errors import DoesNotExistError, UnauthorizedError
+from core.phone import format_phone
 from domain.user_session.entities import UserSession
 from domain.user_session.interfaces import (
     IUserSessionRepository,
@@ -8,8 +9,6 @@ from domain.user.interfaces import (
     IUserRepository, 
     IUserPasswordService,
 )
-from domain.company.interfaces import ICompanyRepository
-from domain.store.interfaces import IStoreRepository
 
 from adapters.token.services import TokenService
 
@@ -108,7 +107,8 @@ class GetUserByPhoneUsecase:
         self.user_repo = user_repo
 
     async def execute(self, phone: str) -> User:
-        user = await self.user_repo.get_by_phone(phone)
+        formatted_phone = format_phone(phone)
+        user = await self.user_repo.get_by_phone(formatted_phone)
         if not user:
             raise DoesNotExistError(loc=['user', 'phone'])
         

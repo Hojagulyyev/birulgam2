@@ -2,6 +2,7 @@ from application.user.usecases import (
     SigninUserUsecase,
     SignoutUserUsecase,
     CreateUserUsecase,
+    GetUserByPhoneUsecase,
 )
 
 from adapters.user.repositories import UserPgRepository
@@ -27,4 +28,10 @@ def make_signin_user_usecase(conn):
 def make_signout_user_usecase():
     return SignoutUserUsecase(
         user_session_repo=UserSessionRedisRepository(),
+    )
+
+
+def make_get_user_by_phone_usecase(conn):
+    return GetUserByPhoneUsecase(
+        user_repo=UserPgRepository(conn),
     )
