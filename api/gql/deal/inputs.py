@@ -4,6 +4,8 @@ from decimal import Decimal
 
 import strawberry
 
+from .schemas import DealTypeSchema
+
 
 @strawberry.input
 class CreateDealInput:
@@ -13,7 +15,7 @@ class CreateDealInput:
     buyer_id: int | None = None
 
     total_amount: Decimal
-    type: str
+    type: DealTypeSchema
 
     installments_total_amount: int = 0
     installments: Annotated[

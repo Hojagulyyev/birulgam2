@@ -1,10 +1,10 @@
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
-from enum import Enum, unique
 from decimal import Decimal
 
 from core.errors import InvalidError
+from core.enum import *
 from domain.company.entities import Company
 from domain.store.entities import Store
 from domain.user.entities import User
@@ -43,10 +43,9 @@ class Deal:
     seller: Contact | None = None
     buyer: Contact | None = None
 
-    @unique
-    class Type(str, Enum):
-        SALE = "sale"
-        PURCHASE = "purchase"
+    class Type(EnumAutoName):
+        SALE = auto()
+        PURCHASE = auto()
 
     NOTE_MAX_LENGTH = 255
 
@@ -109,7 +108,9 @@ class Deal:
             )
         
     def _validate_type(self):
-        if self.type not in self.Type.__members__.values():
+        try:
+            self.Type(self.type)
+        except ValueError:
             raise InvalidError(f'deal type {self.type} does not allowed')
         
     def _validate_installments(self):

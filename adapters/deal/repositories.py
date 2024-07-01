@@ -5,10 +5,9 @@ from core.errors import InvalidError
 from core.counter import Counter
 from domain.deal.interfaces import IDealRepository
 from domain.deal.entities import Deal, DealsConnection
-from domain.store.entities import Store
 
 from adapters.core.repositories import PgRepository
-from adapters.store.repositories import StorePgRepository
+
 
 class DealPgRepository(PgRepository, IDealRepository):
 
@@ -45,6 +44,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         self,
         company_id: int | None = None,
         ids: list[int] | None = None,
+        type: str | None = None,
         first: int | None = None,
         skip: int | None = None,
         order_by: str | None = None,
@@ -67,6 +67,10 @@ class DealPgRepository(PgRepository, IDealRepository):
         if company_id:
             args.append(company_id)
             stmt += f'AND company_id = ${len(args)}'
+
+        if type:
+            args.append(type)
+            stmt += f'AND type = ${len(args)}'
 
         if ids:
             param_position = len(args)+1

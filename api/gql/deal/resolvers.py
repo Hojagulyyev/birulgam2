@@ -20,8 +20,14 @@ from adapters.deal.map import DealMap
 from adapters.deal.repositories import DealPgRepository
 from adapters.store.repositories import StorePgRepository
 
+from domain.deal.entities import Deal
+
 from ..error.schemas import ErrorSchema
-from .schemas import DealSchema, DealsConnectionSchema
+from .schemas import (
+    DealSchema, 
+    DealsConnectionSchema, 
+    DealTypeSchema,
+)
 from .inputs import (
     CreateDealInput,
 )
@@ -34,6 +40,7 @@ get_deals_response = Annotated[
 async def get_deals_resolver(
     info: Info,
     ids: list[int] | None = None,
+    type: DealTypeSchema | None = None,
     first: int | None = None,
     skip: int | None = None,
     order_by: str | None = None,
@@ -50,6 +57,7 @@ async def get_deals_resolver(
                 dto=GetDealsUsecaseDto(
                     company_id=company_id,
                     ids=ids,
+                    type=str(type.value) if type else None,
                     first=first,
                     skip=skip,
                     order_by=order_by,
@@ -79,7 +87,6 @@ async def create_deal_resolver(
     input: CreateDealInput,
 ) -> create_deal_response:
     user_session: UserSession = info.context["user_session"]
-
     try:
         async with info.context["pgpool"].acquire() as conn:
             user_id: int = user_session.user_id
@@ -97,7 +104,7 @@ async def create_deal_resolver(
                     seller_id=input.seller_id,
                     buyer_id=input.buyer_id,
                     total_amount=input.total_amount,
-                    type=input.type,
+                    type=str(input.type.value),
                     installments_total_amount=input.installments_total_amount,
                     installments=input.installments,
                     installment_amount=input.installment_amount,

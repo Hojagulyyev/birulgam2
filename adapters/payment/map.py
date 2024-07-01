@@ -20,7 +20,7 @@ class PaymentMap:
             amount=payment.amount,
             type=payment.type,
             method=payment.method,
-            category=payment.category,
+            category=str(payment.category),
 
             created_at=payment.created_at,
 

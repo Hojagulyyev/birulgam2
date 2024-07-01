@@ -1,6 +1,6 @@
 from domain.deal.entities import Deal
 
-from api.gql.deal.schemas import DealSchema
+from api.gql.deal.schemas import DealSchema, DealTypeSchema
 
 
 class DealMap:
@@ -19,7 +19,7 @@ class DealMap:
             code_number=deal.code_number,
             total_amount=deal.total_amount,
             remaining_amount_due=deal.remaining_amount_due,
-            type=deal.type,
+            type=DealTypeSchema(deal.type),
 
             installments_total_amount=deal.installments_total_amount,
             installments=deal.installments,

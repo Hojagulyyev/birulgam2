@@ -10,6 +10,7 @@ class IDealRepository(ABC):
         self,
         company_id: int | None = None,
         ids: list[int] | None = None,
+        type: str | None = None,
         first: int | None = None,
         skip: int | None = None,
         order_by: str | None = None,

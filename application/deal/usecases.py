@@ -23,6 +23,7 @@ class GetDealsUsecase:
             .list(
                 ids=dto.ids, 
                 company_id=dto.company_id,
+                type=dto.type,
                 first=dto.first,
                 skip=dto.skip,
                 order_by=dto.order_by,
@@ -51,6 +52,7 @@ class CreateDealUsecase:
             raise DoesNotExistError(loc=['input', 'store_id'])
         
         # >>> VALIDATION
+        print('dto.type', dto.type)
         dto.validate()
 
         # >>> MAIN

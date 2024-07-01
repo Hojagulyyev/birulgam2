@@ -3,11 +3,19 @@ from decimal import Decimal
 
 import strawberry
 
+from core.enum import *
+
 from ..company.schemas import CompanySchema
 from ..store.schemas import StoreSchema
 from ..user.schemas import UserSchema
 from ..contact.schemas import ContactSchema
  
+
+@strawberry.enum
+class DealTypeSchema(EnumAutoName):
+    SALE = auto()
+    PURCHASE = auto()
+
  
 @strawberry.type
 class DealSchema:
@@ -22,7 +30,7 @@ class DealSchema:
     code_number: int
     total_amount: Decimal
     remaining_amount_due: Decimal
-    type: str
+    type: DealTypeSchema
     created_at: datetime
 
     installments_total_amount: int = 0

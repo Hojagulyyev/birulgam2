@@ -3,12 +3,14 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from core.errors import InvalidError
+from domain.deal.entities import Deal
 
 
 @dataclass
 class GetDealsUsecaseDto:
     company_id: int
     ids: list[int] | None = None
+    type: str | None = None
     first: int | None = None
     skip: int | None = None
     order_by: str | None = None
