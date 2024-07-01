@@ -100,7 +100,7 @@ async def create_deal_resolver(
                 CreateDealUsecaseDto(
                     company_id=company_id,
                     store_id=input.store_id,
-                    user_id=user_id,
+                    created_by_id=user_id,
                     seller_id=input.seller_id,
                     buyer_id=input.buyer_id,
                     total_amount=input.total_amount,

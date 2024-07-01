@@ -18,7 +18,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         id,
         company_id,
         store_id,
-        user_id,
+        created_by_id,
         seller_id,
         buyer_id,
         store_code,
@@ -89,7 +89,7 @@ class DealPgRepository(PgRepository, IDealRepository):
                     id=row[c.start()],
                     company_id=row[c.auto()],
                     store_id=row[c.auto()],
-                    user_id=row[c.auto()],
+                    created_by_id=row[c.auto()],
                     seller_id=row[c.auto()],
                     buyer_id=row[c.auto()],
                     store_code=row[c.auto()],
@@ -147,7 +147,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             (
                 company_id,
                 store_id,
-                user_id,
+                created_by_id,
                 seller_id,
                 buyer_id,
                 store_code,
@@ -176,7 +176,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         args = (
                 deal.company_id,
                 deal.store_id,
-                deal.user_id,
+                deal.created_by_id,
                 deal.seller_id,
                 deal.buyer_id,
                 deal.store_code,
@@ -214,7 +214,7 @@ class DealPgRepository(PgRepository, IDealRepository):
                 UPDATE deal SET 
                     company_id = ${c.auto()},
                     store_id = ${c.auto()},
-                    user_id = ${c.auto()},
+                    created_by_id = ${c.auto()},
                     seller_id = ${c.auto()},
                     buyer_id = ${c.auto()},
                     code_number = ${c.auto()},
@@ -236,7 +236,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         args = (
             deal.company_id,
             deal.store_id,
-            deal.user_id,
+            deal.created_by_id,
             deal.seller_id,
             deal.buyer_id,
             deal.code_number,

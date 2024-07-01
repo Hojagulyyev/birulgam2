@@ -22,7 +22,7 @@ class DealSchema:
     id: int
     company_id: int
     store_id: int
-    user_id: int
+    created_by_id: int
     seller_id: int | None
     buyer_id: int | None
 
@@ -44,7 +44,7 @@ class DealSchema:
 
     company: CompanySchema | None = None
     store: StoreSchema | None = None
-    user: UserSchema | None = None
+    created_by: UserSchema | None = None
     seller: ContactSchema | None = None
     buyer: ContactSchema | None = None
 

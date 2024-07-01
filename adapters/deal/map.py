@@ -11,7 +11,7 @@ class DealMap:
             id=deal.id,
             company_id=deal.company_id,
             store_id=deal.store_id,
-            user_id=deal.user_id,
+            created_by_id=deal.created_by_id,
             seller_id=deal.seller_id,
             buyer_id=deal.buyer_id,
 

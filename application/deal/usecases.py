@@ -60,7 +60,7 @@ class CreateDealUsecase:
             id=0,
             company_id=dto.company_id,
             store_id=dto.store_id,
-            user_id=dto.user_id,
+            created_by_id=dto.created_by_id,
             seller_id=dto.seller_id,
             buyer_id=dto.buyer_id,
             store_code=store.code,

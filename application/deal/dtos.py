@@ -20,7 +20,7 @@ class GetDealsUsecaseDto:
 class CreateDealUsecaseDto:
     company_id: int
     store_id: int
-    user_id: int
+    created_by_id: int
     seller_id: int | None
     buyer_id: int | None
 

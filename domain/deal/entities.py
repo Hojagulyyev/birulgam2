@@ -22,7 +22,7 @@ class Deal:
     id: int
     company_id: int
     store_id: int
-    user_id: int
+    created_by_id: int
     seller_id: int | None
     buyer_id: int | None
     # >>> REQUIRED
@@ -44,7 +44,7 @@ class Deal:
     # >>> MAP
     company: Company | None = None
     store: Store | None = None
-    user: User | None = None
+    created_by: User | None = None
     seller: Contact | None = None
     buyer: Contact | None = None
 
@@ -57,7 +57,7 @@ class Deal:
             raise TypeError
         if not isinstance(self.store_id, int):
             raise TypeError
-        if not isinstance(self.user_id, int):
+        if not isinstance(self.created_by_id, int):
             raise TypeError
         if not isinstance(self.seller_id, int | None):
             raise TypeError
