@@ -3,8 +3,8 @@
 from enum import Enum, auto
 
 
-class EnumAutoName(Enum):
-    def _generate_next_value_(name, start, count, last_values):
+class EnumAutoName(str, Enum):
+    def _generate_next_value_(name, start, count, last_values) -> str:
         return name
 
 

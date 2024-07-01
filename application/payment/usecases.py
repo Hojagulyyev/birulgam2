@@ -52,14 +52,14 @@ class CreatePaymentUsecase:
 
         # >>> MAIN
         type = (
-            Payment.Type.INCOME 
-            if deal.type == Deal.Type.SALE
-            else Payment.Type.EXPENSE
+            Payment.Type.INCOME.value
+            if deal.type == Deal.Type.SALE.value
+            else Payment.Type.EXPENSE.value
         )
         category = (
-            Deal.Type.SALE 
-            if deal.type == Deal.Type.SALE
-            else Deal.Type.PURCHASE
+            Deal.Type.SALE.value
+            if deal.type == Deal.Type.SALE.value
+            else Deal.Type.PURCHASE.value
         )
 
         payment = Payment(
@@ -71,9 +71,9 @@ class CreatePaymentUsecase:
             sender_id=dto.sender_id,
             receiver_id=dto.receiver_id,
             amount=dto.amount,
-            type=Payment.Type(type),
+            type=type,
             method=dto.method,
-            category=Deal.Type(category),
+            category=category,
             created_at=dto.created_at,
         )
         payment.validate()

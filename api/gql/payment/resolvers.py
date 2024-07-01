@@ -58,7 +58,7 @@ async def create_payment_resolver(
                     sender_id=input.sender_id,
                     receiver_id=input.receiver_id,
                     amount=input.amount,
-                    method=Payment.Method(input.method),
+                    method=str(input.method.value),
                     created_at=input.created_at or datetime.now(),
                 ),
             )

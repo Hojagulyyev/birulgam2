@@ -13,6 +13,11 @@ from domain.contact.entities import Contact
 
 @dataclass
 class Deal:
+
+    class Type(EnumAutoName):
+        SALE = auto()
+        PURCHASE = auto()
+
     # >>> RELATED
     id: int
     company_id: int
@@ -42,10 +47,6 @@ class Deal:
     user: User | None = None
     seller: Contact | None = None
     buyer: Contact | None = None
-
-    class Type(EnumAutoName):
-        SALE = auto()
-        PURCHASE = auto()
 
     NOTE_MAX_LENGTH = 255
 

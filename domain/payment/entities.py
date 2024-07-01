@@ -1,9 +1,9 @@
-from datetime import datetime, date
+from datetime import datetime
 from dataclasses import dataclass
-from enum import Enum, unique
 from decimal import Decimal
 
 from core.errors import InvalidError
+from core.enum import *
 from domain.company.entities import Company
 from domain.store.entities import Store
 from domain.user.entities import User
@@ -14,15 +14,13 @@ from domain.deal.entities import Deal
 @dataclass
 class Payment:
 
-    @unique
-    class Type(str, Enum):
-        INCOME = "income"
-        EXPENSE = "expense"
+    class Type(EnumAutoName):
+        INCOME = auto()
+        EXPENSE = auto()
 
-    @unique
-    class Method(str, Enum):
-        CASH = "cash"
-        ONLINE = "online"
+    class Method(EnumAutoName):
+        CASH = auto()
+        ONLINE = auto()
 
     # >>> RELATED
     id: int
@@ -34,9 +32,9 @@ class Payment:
     receiver_id: int | None
     # >>> REQUIRED
     amount: Decimal
-    type: Type
-    method: Method
-    category: Deal.Type
+    type: str
+    method: str
+    category: str
     created_at: datetime
     # >>> MAP
     company: Company | None = None
@@ -71,17 +69,23 @@ class Payment:
         self._validate_category()
         
     def _validate_type(self):
-        if self.type not in self.Type.__members__.values():
+        try:
+            self.Type(self.type)
+        except ValueError:
             raise InvalidError(f'payment type {self.type} does not allowed')
         
     def _validate_method(self):
-        if self.method not in self.Method.__members__.values():
-            raise InvalidError(f'payment method {self.method} does not allowed')
+        try:
+            self.Method(self.method)
+        except ValueError:
+            raise InvalidError(f'payment method {self.type} does not allowed')
         
     def _validate_category(self):
-        if self.category not in Deal.Type.__members__.values():
-            raise InvalidError(f'payment category {self.category} does not allowed')
-    
+        try:
+            Deal.Type(self.category)
+        except ValueError:
+            raise InvalidError(f'payment category {self.type} does not allowed')
+        
 
 @dataclass
 class PaymentsConnection:

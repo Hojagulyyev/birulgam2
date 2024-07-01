@@ -1,6 +1,11 @@
 from domain.payment.entities import Payment
 
-from api.gql.payment.schemas import PaymentSchema
+from api.gql.payment.schemas import (
+    PaymentSchema,
+    PaymentTypeSchema,
+    PaymentMethodSchema,
+)
+from api.gql.deal.schemas import DealTypeSchema
 from adapters.deal.map import DealMap
 
 
@@ -18,9 +23,9 @@ class PaymentMap:
             receiver_id=payment.receiver_id,
 
             amount=payment.amount,
-            type=payment.type,
-            method=payment.method,
-            category=str(payment.category),
+            type=PaymentTypeSchema(payment.type),
+            method=PaymentMethodSchema(payment.method),
+            category=DealTypeSchema(payment.category),
 
             created_at=payment.created_at,
 

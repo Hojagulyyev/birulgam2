@@ -3,12 +3,26 @@ from decimal import Decimal
 
 import strawberry
 
+from core.enum import *
+
 from ..company.schemas import CompanySchema
 from ..store.schemas import StoreSchema
 from ..user.schemas import UserSchema
-from ..deal.schemas import DealSchema
+from ..deal.schemas import DealSchema, DealTypeSchema
 from ..contact.schemas import ContactSchema
  
+
+@strawberry.enum
+class PaymentTypeSchema(EnumAutoName):
+    INCOME = auto()
+    EXPENSE = auto()
+
+
+@strawberry.enum
+class PaymentMethodSchema(EnumAutoName):
+    CASH = auto()
+    ONLINE = auto()
+
  
 @strawberry.type
 class PaymentSchema:
@@ -21,9 +35,9 @@ class PaymentSchema:
     receiver_id: int | None
 
     amount: Decimal
-    type: str
-    method: str
-    category: str
+    type: PaymentTypeSchema
+    method: PaymentMethodSchema
+    category: DealTypeSchema
     created_at: datetime
 
     company: CompanySchema | None = None

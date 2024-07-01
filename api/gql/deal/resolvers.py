@@ -57,7 +57,7 @@ async def get_deals_resolver(
                 dto=GetDealsUsecaseDto(
                     company_id=company_id,
                     ids=ids,
-                    type=str(type.value) if type else None,
+                    type=type.value if type else None,
                     first=first,
                     skip=skip,
                     order_by=order_by,
@@ -104,7 +104,7 @@ async def create_deal_resolver(
                     seller_id=input.seller_id,
                     buyer_id=input.buyer_id,
                     total_amount=input.total_amount,
-                    type=str(input.type.value),
+                    type=input.type.value,
                     installments_total_amount=input.installments_total_amount,
                     installments=input.installments,
                     installment_amount=input.installment_amount,
