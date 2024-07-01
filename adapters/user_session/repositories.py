@@ -5,12 +5,13 @@ from domain.user_session.entities import UserSession
 
 from infrastructure import env
 from infrastructure.redis import cache
+from infrastructure.redis.collections import RedisCollection
 
 
 class UserSessionRedisRepository(IUserSessionRepository):
 
     async def get_by_access_token(self, access_token: str) -> UserSession | None:
-        user_session_in_str = cache.get(f"access_tokens{access_token}")
+        user_session_in_str = cache.get(f"{RedisCollection.ACCESS_TOKENS}{access_token}")
         if not user_session_in_str:
             return None
         
@@ -34,14 +35,14 @@ class UserSessionRedisRepository(IUserSessionRepository):
         }
         user_session_in_str = json.dumps(user_session_in_dict)
         cache.set(
-            f"access_tokens{access_token}",
+            f"{RedisCollection.ACCESS_TOKENS}{access_token}",
             user_session_in_str,
             ex=env.ACCESS_TOKEN_TTL,
         )
         return user_session
     
     async def delete_by_access_token(self, access_token: str) -> None:
-        cache.delete(f"access_tokens{access_token}")
+        cache.delete(f"{RedisCollection.ACCESS_TOKENS}{access_token}")
     
     async def make_empty(self) -> UserSession:
         return UserSession(
