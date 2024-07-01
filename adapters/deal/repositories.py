@@ -82,7 +82,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         with Counter() as c:
             deals: list[Deal] = [
                 Deal(
-                    id=row[c.auto()],
+                    id=row[c.start()],
                     company_id=row[c.auto()],
                     store_id=row[c.auto()],
                     user_id=row[c.auto()],
@@ -101,11 +101,11 @@ class DealPgRepository(PgRepository, IDealRepository):
                     created_at=row[c.auto()],
                     last_paid_at=row[c.auto()],
                     closed_at=row[c.auto()],
-                    note=row[c.end()],
+                    note=row[c.auto()],
                 )
                 for row in rows
             ]
-            total = rows[0][20] if rows else 0
+            total = rows[0][c.auto()] if rows else 0
         
         deals_connection = DealsConnection(
             deals=deals,

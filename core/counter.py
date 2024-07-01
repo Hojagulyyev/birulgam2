@@ -6,9 +6,10 @@ class Counter:
    
     def __init__(
         self,
-        value: int = 0,
+        initial_value: int = 0,
     ):
-        self.value = value
+        self.initial_value = initial_value
+        self.value = initial_value
 
     def __enter__(self):
         return self
@@ -17,17 +18,14 @@ class Counter:
         self.reset()
 
     def reset(self):
-       self.value = 0
+       self.value = self.initial_value
 
     def auto(self):
         self.value += 1
         return self.value - 1
 
-    def start(self, value):
-       self.value = value + 1
+    def start(self):
+       self.reset()
+       self.value += 1
        return self.value - 1
-    
-    def end(self):
-        value = self.value
-        self.reset()
-        return value
+  

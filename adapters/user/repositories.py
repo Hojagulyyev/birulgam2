@@ -53,14 +53,14 @@ class UserPgRepository(IUserRepository):
         with Counter() as c:
             users: list[User] = [
                 User(
-                    id=row[c.auto()],
+                    id=row[c.start()],
                     username=row[c.auto()],
                     password=row[c.auto()],
-                    phone=row[c.end()],
+                    phone=row[c.auto()],
                 )
                 for row in rows
             ]
-            total = rows[0][4] if rows else 0
+            total = rows[0][c.auto()] if rows else 0
 
         users_connection = UsersConnection(
             users=users,
