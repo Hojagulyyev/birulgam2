@@ -205,6 +205,6 @@ class Contact:
 
 @dataclass
 class ContactsConnection:
-    contacts: list[Contact]
+    nodes: list[Contact]
     count: int
     total: int

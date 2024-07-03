@@ -111,7 +111,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             total = rows[0][c.auto()] if rows else 0
         
         deals_connection = DealsConnection(
-            deals=deals,
+            nodes=deals,
             count=len(deals),
             total=total,
         )
@@ -129,7 +129,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         if deals_connection.total == 0:
             return None
         
-        return deals_connection.deals[0]
+        return deals_connection.nodes[0]
         
     async def save(self, deal: Deal) -> Deal:
         if not deal.id:

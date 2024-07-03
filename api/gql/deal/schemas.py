@@ -51,6 +51,6 @@ class DealSchema:
 
 @strawberry.type
 class DealsConnectionSchema:
-    deals: list[DealSchema]
+    nodes: list[DealSchema]
     count: int
     total: int

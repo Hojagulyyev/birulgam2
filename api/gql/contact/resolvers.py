@@ -59,10 +59,10 @@ async def get_contacts_resolver(
     
     contact_schema_list = [
         ContactMap.to_gql_schema(contact)
-        for contact in contacts_connection.contacts
+        for contact in contacts_connection.nodes
     ]
     response = ContactsConnectionSchema(
-        contacts=contact_schema_list,
+        nodes=contact_schema_list,
         count=contacts_connection.count,
         total=contacts_connection.total,
     )

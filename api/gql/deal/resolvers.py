@@ -68,10 +68,10 @@ async def get_deals_resolver(
     
     deal_schema_list = [
         DealMap.to_gql_schema(deal)
-        for deal in deals_connection.deals
+        for deal in deals_connection.nodes
     ]
     response = DealsConnectionSchema(
-        deals=deal_schema_list,
+        nodes=deal_schema_list,
         count=deals_connection.count,
         total=deals_connection.total,
     )

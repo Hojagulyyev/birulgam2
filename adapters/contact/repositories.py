@@ -93,7 +93,7 @@ class ContactPgRepository(PgRepository, IContactRepository):
             total = rows[0][c.auto()] if rows else 0
         
         contacts_connection = ContactsConnection(
-            contacts=contacts,
+            nodes=contacts,
             count=len(contacts),
             total=total,
         )

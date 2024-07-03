@@ -147,6 +147,6 @@ class Deal:
 
 @dataclass
 class DealsConnection:
-    deals: list[Deal]
+    nodes: list[Deal]
     count: int
     total: int
