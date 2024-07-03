@@ -40,11 +40,17 @@ class Mutation:
         resolver=signin_user_by_otp_resolver)
     signout_user: signout_user_response = strawberry.mutation(
         resolver=signout_user_resolver)
-    create_company: create_company_response = strawberry.mutation(
-        resolver=create_company_resolver)
     create_contact: create_contact_response = strawberry.mutation(
         resolver=create_contact_resolver)
     create_deal: create_deal_response = strawberry.mutation(
         resolver=create_deal_resolver)
     create_payment: create_payment_response = strawberry.mutation(
         resolver=create_payment_resolver)
+    
+    create_company: create_company_response = strawberry.mutation(
+        resolver=create_company_resolver,
+        deprecation_reason=''
+            'You cannot create a company for yourself '
+            'because one already exists. The company is ' 
+            'created when the user signs in',
+    )
