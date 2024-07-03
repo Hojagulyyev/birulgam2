@@ -6,8 +6,8 @@ from api.gql.deal.schemas import DealSchema, DealTypeSchema
 class DealMap:
     
     @classmethod
-    def to_gql_schema(cls, deal: Deal):        
-        return DealSchema(
+    def to_gql_schema(cls, deal: Deal) -> DealSchema:        
+        deal_schema = DealSchema(
             id=deal.id,
             company_id=deal.company_id,
             store_id=deal.store_id,
@@ -31,3 +31,4 @@ class DealMap:
             closed_at=deal.closed_at,
             note=deal.note,
         )
+        return deal_schema

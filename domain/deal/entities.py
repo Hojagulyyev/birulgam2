@@ -8,6 +8,7 @@ from core.enum import *
 from domain.company.entities import Company
 from domain.store.entities import Store
 from domain.user.entities import User
+
 from domain.contact.entities import Contact
 
 

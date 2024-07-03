@@ -1,5 +1,6 @@
 from domain.contact.entities import Contact
 
+from adapters.user.map import UserMap
 from api.gql.contact.schemas import ContactSchema
 
 
@@ -10,9 +11,11 @@ class ContactMap:
         if contact.id is None:
             raise TypeError
         
-        return ContactSchema(
+        contact_schema = ContactSchema(
             id=contact.id,
             company_id=contact.company_id,
+            created_by_id=contact.created_by_id,
+            user_id=contact.user_id,
             first_name=contact.first_name,
             surname=contact.surname,
             patronymic=contact.patronymic,
@@ -25,4 +28,7 @@ class ContactMap:
             passport=contact.passport,
             passport_issued_date=contact.passport_issued_date,
             passport_issued_place=contact.passport_issued_place,
+            created_by=contact.created_by and UserMap.to_gql_schema(contact.created_by),
+            user=contact.user and UserMap.to_gql_schema(contact.user),
         )
+        return contact_schema

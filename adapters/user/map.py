@@ -33,9 +33,8 @@ class UserMap:
             username=user.username,
             company_ids=user.company_ids,
             companies=(
-                user.companies and [
-                    CompanyMap.to_gql_schema(company)
-                    for company in user.companies
-                ]
-            ), # type: ignore
+                [CompanyMap.to_gql_schema(company)
+                for company in user.companies] 
+                if user.companies else None
+            ),
         )

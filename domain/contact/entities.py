@@ -1,19 +1,26 @@
+from typing import TYPE_CHECKING
 from datetime import date
 from dataclasses import dataclass
 
 from core.errors import InvalidError
 from core.phone import format_phone, is_valid_phone
 from domain.company.entities import Company
+from domain.user.entities import User
+
+if TYPE_CHECKING:
+    from domain.deal.entities import Deal
 
 
 @dataclass
 class Contact:
+    # >>> RELATED
     id: int
     company_id: int
     created_by_id: int
     user_id: int | None
-
+    # >>> REQUIRED
     first_name: str
+    # >>> OPTIONAL
     surname: str | None = None
     patronymic: str | None = None
     phone: str | None = None
@@ -25,8 +32,11 @@ class Contact:
     passport: str | None = None
     passport_issued_date: date | None = None
     passport_issued_place: str | None = None
-
+    # >>> MAP
     company: Company | None = None
+    created_by: User | None = None
+    user: User | None = None
+    deals: list['Deal'] | None = None
 
     FIRST_NAME_MIN_LENGTH = 3
     FIRST_NAME_MAX_LENGTH = 20

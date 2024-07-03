@@ -98,6 +98,51 @@ class ContactPgRepository(PgRepository, IContactRepository):
             total=total,
         )
         return contacts_connection
+    
+    async def get_by_id(
+        self, 
+        id: int,
+        company_id: int | None = None,
+    ) -> Contact | None:
+        stmt = (
+            f'''
+            SELECT
+                {self.columns()}
+            FROM contact
+            WHERE
+                id = $1
+            '''
+        )
+        args = [id]
+        
+        if company_id:
+            args.append(company_id)
+            stmt += f'AND company_id = ${len(args)}'
+        
+        row = await self._conn.fetchrow(stmt, *args)
+        if row is None:
+            return None
+
+        with Counter() as c:
+            contact = Contact(
+                id=row[c.start()],
+                company_id=row[c.auto()],
+                created_by_id=row[c.auto()],
+                user_id=row[c.auto()],
+                first_name=row[c.auto()],
+                surname=row[c.auto()],
+                patronymic=row[c.auto()],
+                phone=row[c.auto()],
+                address=row[c.auto()],
+                birthday=row[c.auto()],
+                gender=row[c.auto()],
+                workplace=row[c.auto()],
+                job_title=row[c.auto()],
+                passport=row[c.auto()],
+                passport_issued_date=row[c.auto()],
+                passport_issued_place=row[c.auto()],
+            )
+            return contact
         
     async def save(self, contact: Contact) -> Contact:
         if not contact.id:

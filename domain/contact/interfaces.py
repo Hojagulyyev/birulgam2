@@ -16,6 +16,14 @@ class IContactRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
+    async def get_by_id(
+        self,
+        id: int,
+        company_id: int | None = None,
+    ) -> Contact | None:
+        raise NotImplementedError
+    
+    @abstractmethod
     async def save(self, contact: Contact):
         raise NotImplementedError
     

@@ -1,7 +1,5 @@
-from typing import Annotated
 from datetime import datetime
 
-import strawberry
 from strawberry.types import Info
 
 from core.errors import Error
@@ -20,23 +18,20 @@ from adapters.deal.map import DealMap
 from adapters.deal.repositories import DealPgRepository
 from adapters.store.repositories import StorePgRepository
 
-from domain.deal.entities import Deal
-
 from ..error.schemas import ErrorSchema
 from .schemas import (
-    DealSchema, 
     DealsConnectionSchema, 
     DealTypeSchema,
 )
 from .inputs import (
     CreateDealInput,
 )
+from .responses import (
+    get_deals_response,
+    create_deal_response,
+)
 
 
-get_deals_response = Annotated[
-    DealsConnectionSchema | ErrorSchema,
-    strawberry.union('GetDealsResponse'),
-]
 async def get_deals_resolver(
     info: Info,
     ids: list[int] | None = None,
@@ -78,10 +73,6 @@ async def get_deals_resolver(
     return response
 
 
-create_deal_response = Annotated[
-    DealSchema | ErrorSchema,
-    strawberry.union('CreateDealResponse'),
-]
 async def create_deal_resolver(
     info: Info,
     input: CreateDealInput,

@@ -7,13 +7,13 @@ from core.errors import Error
 from domain.user_session.entities import UserSession
 
 from application.contact.usecases import (
-    CreateContactUsecase,
     GetContactsUsecase,
-) 
-from application.contact.dtos import (
     GetContactsUsecaseDto,
+    CreateContactUsecase,
     CreateContactUsecaseDto,
-)
+    GetContactUsecase,
+    GetContactUsecaseDto,
+) 
 
 from adapters.contact.map import ContactMap
 from adapters.contact.repositories import ContactPgRepository
@@ -66,6 +66,37 @@ async def get_contacts_resolver(
         count=contacts_connection.count,
         total=contacts_connection.total,
     )
+    return response
+
+
+get_contact_response = Annotated[
+    ContactSchema | ErrorSchema,
+    strawberry.union('GetContactResponse'),
+]
+async def get_contact_resolver(
+    info: Info,
+    id: int,
+) -> get_contact_response:
+    user_session: UserSession = info.context["user_session"]
+
+    try:
+        company_id: int = user_session.company_id
+
+        async with info.context["pgpool"].acquire() as conn:
+            contact_repo = ContactPgRepository(conn=conn)
+            get_contact_usecase = GetContactUsecase(
+                contact_repo=contact_repo,
+            )
+            contact = await get_contact_usecase.execute(
+                GetContactUsecaseDto(
+                    id=id,
+                    company_id=company_id,
+                )
+            )
+    except Error as e:
+        return ErrorSchema(**e.serialize())
+    
+    response = ContactMap.to_gql_schema(contact)
     return response
 
 

@@ -7,19 +7,22 @@ from domain.user.interfaces import IUserRepository
 from domain.user.entities import User, UsersConnection
 from domain.company.entities import Company
 
+from adapters.core.repositories import PgRepository
 
-class UserPgRepository(IUserRepository):
 
-    class Constraints:
-        uk_username = 'user__uk__username'
-        uk_phone = 'user__uk__phone'
+class UserPgRepository(PgRepository, IUserRepository):
 
-    columns = '''
-        id,
-        username,
-        password,
-        phone
-    '''
+    class Meta:
+        columns = (
+            'id',
+            'username',
+            'password',
+            'phone',
+        )
+        constraints = (
+            'user__uk__username',
+            'user__uk__phone',
+        )
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -29,12 +32,9 @@ class UserPgRepository(IUserRepository):
         ids: list[int] | None = None,
     ) -> UsersConnection:
         stmt = (
-            '''
+            f'''
             SELECT
-            '''
-            + self.columns + 
-            '''
-                ,
+                {self.columns()},
                 COUNT(*) OVER() AS total
             FROM user_
             WHERE
@@ -77,11 +77,9 @@ class UserPgRepository(IUserRepository):
 
     async def get_by_username(self, username: str) -> User | None:
         stmt = (
-            '''
+            f'''
             SELECT
-            '''
-            + self.columns + 
-            '''
+                {self.columns()}
             FROM user_
             WHERE
                 username = $1
@@ -102,11 +100,9 @@ class UserPgRepository(IUserRepository):
         
     async def get_by_phone(self, phone: str) -> User | None:
         stmt = (
-            '''
+            f'''
             SELECT
-            '''
-            + self.columns + 
-            '''
+                {self.columns()}
             FROM user_
             WHERE
                 phone = $1
@@ -158,9 +154,9 @@ class UserPgRepository(IUserRepository):
                 user = await self._update(user)
 
         except UniqueViolationError as e:
-            if self.Constraints.uk_username in str(e):
+            if self.Meta.constraints[0] in str(e):
                 raise UniqueError(loc=['user', 'username'])
-            if self.Constraints.uk_phone in str(e):
+            if self.Meta.constraints[1] in str(e):
                 raise UniqueError(loc=['user', 'phone'])
             raise e
         

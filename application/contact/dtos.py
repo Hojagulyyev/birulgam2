@@ -11,6 +11,12 @@ class GetContactsUsecaseDto:
 
 
 @dataclass
+class GetContactUsecaseDto:
+    id: int
+    company_id: int | None = None
+
+
+@dataclass
 class CreateContactUsecaseDto:
     company_id: int
     created_by_id: int

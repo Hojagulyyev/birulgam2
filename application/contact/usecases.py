@@ -1,3 +1,4 @@
+from core.errors import DoesNotExistError
 from domain.contact.entities import Contact, ContactsConnection
 from domain.contact.interfaces import (
     IContactRepository, 
@@ -6,6 +7,7 @@ from domain.contact.interfaces import (
 from .dtos import (
     GetContactsUsecaseDto,
     CreateContactUsecaseDto,
+    GetContactUsecaseDto,
 )
 
 
@@ -29,6 +31,26 @@ class GetContactsUsecase:
         )
         return contacts_connection
 
+
+class GetContactUsecase:
+
+    def __init__(
+        self, 
+        contact_repo: IContactRepository,
+    ):
+        self.contact_repo = contact_repo
+
+    async def execute(self, dto: GetContactUsecaseDto) -> Contact:
+        contact = await self.contact_repo.get_by_id(
+            id=dto.id,
+            company_id=dto.company_id,
+        )
+        if not contact:
+            raise DoesNotExistError(loc=['contact', 'id'])
+        
+        # await self.contact_repo.join_deals(contact)
+        return contact
+    
 
 class CreateContactUsecase:
 
