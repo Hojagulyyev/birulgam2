@@ -13,6 +13,8 @@ class GetContactsUsecaseDto:
 @dataclass
 class CreateContactUsecaseDto:
     company_id: int
+    created_by_id: int
+    user_id: int | None
     first_name: str
     surname: str | None = None
     patronymic: str | None = None

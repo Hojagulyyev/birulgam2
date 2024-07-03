@@ -5,6 +5,7 @@ import strawberry
 
 @strawberry.input
 class CreateContactInput:
+    user_id: int | None = None
     first_name: str
     surname: str | None = None
     patronymic: str | None = None

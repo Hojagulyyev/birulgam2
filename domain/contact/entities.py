@@ -10,6 +10,8 @@ from domain.company.entities import Company
 class Contact:
     id: int
     company_id: int
+    created_by_id: int
+    user_id: int | None
 
     first_name: str
     surname: str | None = None
@@ -57,6 +59,10 @@ class Contact:
 
     def validate(self):
         if not isinstance(self.id, int):
+            raise TypeError
+        if not isinstance(self.created_by_id, int):
+            raise TypeError
+        if not isinstance(self.user_id, int | None):
             raise TypeError
         self._validate_first_name()
         if self.surname:

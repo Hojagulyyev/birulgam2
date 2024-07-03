@@ -79,6 +79,9 @@ async def create_contact_resolver(
 ) -> create_contact_response:
     user_session: UserSession = info.context["user_session"]
     try:
+        company_id = user_session.company_id
+        user_id = user_session.user_id
+
         async with info.context["pgpool"].acquire() as conn:
             contact_repo = ContactPgRepository(conn=conn)
             create_contact_usecase = CreateContactUsecase(
@@ -86,7 +89,9 @@ async def create_contact_resolver(
             )
             contact = await create_contact_usecase.execute(
                 CreateContactUsecaseDto(
-                    company_id=user_session.company_id,
+                    company_id=company_id,
+                    created_by_id=user_id,
+                    user_id=input.user_id,
                     first_name=input.first_name,
                     surname=input.surname,
                     patronymic=input.patronymic,

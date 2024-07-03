@@ -4,6 +4,7 @@ from asyncpg.exceptions import UniqueViolationError
 from core.errors import (
     UniqueError,
 )
+from core.counter import Counter
 from domain.contact.interfaces import IContactRepository
 from domain.contact.entities import Contact, ContactsConnection
 
@@ -13,9 +14,11 @@ from adapters.core.repositories import PgRepository
 class ContactPgRepository(PgRepository, IContactRepository):
 
     class Meta:
-        columns = [
+        columns = (
             'id',
             'company_id',
+            'created_by_id',
+            'user_id',
             'first_name',
             'surname',
             'patronymic',
@@ -28,10 +31,11 @@ class ContactPgRepository(PgRepository, IContactRepository):
             'passport',
             'passport_issued_date',
             'passport_issued_place',
-        ]
-        constraints = {
-            'uk_phone': 'contact__uk__company_id__phone'
-        }
+        )
+        constraints = (
+            'contact__uk__company_id__phone',
+            'contact__uk__user_id__created_by_id',
+        )
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -44,12 +48,9 @@ class ContactPgRepository(PgRepository, IContactRepository):
         order_by: str | None = None,
     ) -> ContactsConnection:
         stmt = (
-            '''
+            f'''
             SELECT
-            '''
-            + self.columns() + 
-            '''
-                ,
+                {super().columns()},
                 COUNT(*) OVER() AS total
             FROM contact
             WHERE 
@@ -67,26 +68,29 @@ class ContactPgRepository(PgRepository, IContactRepository):
         stmt, args = super().offset(skip, stmt, args)
 
         rows = await self._conn.fetch(stmt, *args)
-        contacts: list[Contact] = [
-            Contact(
-                id=row[0],
-                company_id=row[1],
-                first_name=row[2],
-                surname=row[3],
-                patronymic=row[4],
-                phone=row[5],
-                address=row[6],
-                birthday=row[7],
-                gender=row[8],
-                workplace=row[9],
-                job_title=row[10],
-                passport=row[11],
-                passport_issued_date=row[12],
-                passport_issued_place=row[13],
-            )
-            for row in rows
-        ]
-        total = rows[0][14] if rows else 0
+        with Counter() as c:
+            contacts: list[Contact] = [
+                Contact(
+                    id=row[c.start()],
+                    company_id=row[c.auto()],
+                    created_by_id=row[c.auto()],
+                    user_id=row[c.auto()],
+                    first_name=row[c.auto()],
+                    surname=row[c.auto()],
+                    patronymic=row[c.auto()],
+                    phone=row[c.auto()],
+                    address=row[c.auto()],
+                    birthday=row[c.auto()],
+                    gender=row[c.auto()],
+                    workplace=row[c.auto()],
+                    job_title=row[c.auto()],
+                    passport=row[c.auto()],
+                    passport_issued_date=row[c.auto()],
+                    passport_issued_place=row[c.auto()],
+                )
+                for row in rows
+            ]
+            total = rows[0][c.auto()] if rows else 0
         
         contacts_connection = ContactsConnection(
             contacts=contacts,
@@ -108,6 +112,8 @@ class ContactPgRepository(PgRepository, IContactRepository):
             INSERT INTO contact
             (
                 company_id,
+                created_by_id,
+                user_id,
                 first_name,
                 surname,
                 patronymic,
@@ -121,14 +127,16 @@ class ContactPgRepository(PgRepository, IContactRepository):
                 passport_issued_date,
                 passport_issued_place
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, 
-                $8, $9, $10, $11, $12, $13
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+                $11, $12, $13, $14, $15
             )
             RETURNING id
             '''
         )
         args = (
             contact.company_id,
+            contact.created_by_id,
+            contact.user_id,
             contact.first_name,
             contact.surname,
             contact.patronymic,
@@ -147,35 +155,45 @@ class ContactPgRepository(PgRepository, IContactRepository):
             if not contact_id:
                 raise ValueError
         except UniqueViolationError as e:
-            if self.Meta.constraints['uk_phone'] in str(e):
+            if self.Meta.constraints[0] in str(e):
                 raise UniqueError(loc=['contact', 'phone'])
+            if self.Meta.constraints[1] in str(e):
+                raise UniqueError(
+                    'the user must have one contact for himself',
+                    loc=['contact', 'user_id'],
+                )
             raise e
 
         contact.id = contact_id
         return contact
 
     async def _update(self, contact: Contact) -> Contact:
-        stmt = (
-            '''
-            UPDATE contact SET 
-                company_id = $1,
-                first_name = $2,
-                surname = $3,
-                patronymic = $4,
-                phone = $5,
-                address = $6,
-                birthday = $7,
-                gender = $8,
-                workplace = $9,
-                job_title = $10,
-                passport = $11,
-                passport_issued_date = $12,
-                passport_issued_place = $13
-            WHERE id = $14
-            '''
-        )
+        with Counter() as c:
+            stmt = (
+                f'''
+                UPDATE contact SET 
+                    company_id = ${c.auto()},
+                    created_by_id = ${c.auto()},
+                    user_id = ${c.auto()},
+                    first_name = ${c.auto()},
+                    surname = ${c.auto()},
+                    patronymic = ${c.auto()},
+                    phone = ${c.auto()},
+                    address = ${c.auto()},
+                    birthday = ${c.auto()},
+                    gender = ${c.auto()},
+                    workplace = ${c.auto()},
+                    job_title = ${c.auto()},
+                    passport = ${c.auto()},
+                    passport_issued_date = ${c.auto()},
+                    passport_issued_place = ${c.auto()}
+                WHERE id = ${c.auto()}
+                '''
+            )
         args = (
             contact.company_id,
+            contact.created_by_id,
+            contact.user_id,
             contact.first_name,
             contact.surname,
             contact.patronymic,

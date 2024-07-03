@@ -42,6 +42,8 @@ class CreateContactUsecase:
         contact = Contact(
             id=0,
             company_id=dto.company_id,
+            created_by_id=dto.created_by_id,
+            user_id=dto.user_id,
             first_name=dto.first_name,
             surname=dto.surname,
             patronymic=dto.patronymic,

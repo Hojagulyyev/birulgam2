@@ -12,7 +12,7 @@ from adapters.core.repositories import PgRepository
 class DealPgRepository(PgRepository, IDealRepository):
 
     class Meta:
-        columns = [
+        columns = (
             'id',
             'company_id',
             'store_id',
@@ -33,10 +33,10 @@ class DealPgRepository(PgRepository, IDealRepository):
             'last_paid_at',
             'closed_at',
             'note',
-        ]
-        constraints = {
-            'fk_store_id': 'deal_store_id_fkey'
-        }
+        )
+        constraints = (
+            'deal_store_id_fkey',
+        )
     
 
     def __init__(self, conn: Connection):
@@ -52,12 +52,9 @@ class DealPgRepository(PgRepository, IDealRepository):
         order_by: str | None = None,
     ) -> DealsConnection:
         stmt = (
-            '''
+            f'''
             SELECT
-            '''
-            + self.columns() + 
-            '''
-                ,
+                {super().columns()},
                 COUNT(*) OVER() AS total
             FROM deal
             WHERE 
@@ -201,7 +198,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             if not row:
                 raise ValueError
         except ForeignKeyViolationError as e:
-            if self.Meta.constraints['fk_store_id'] in str(e):
+            if self.Meta.constraints[0] in str(e):
                 raise InvalidError(loc=['deal', 'store_id'])
             raise e
 
@@ -277,7 +274,7 @@ class DealPgRepository(PgRepository, IDealRepository):
         )
         new_code_number = await self._conn.fetchval(stmt, deal.store_id)
         if not new_code_number:
-                raise ValueError
+            raise ValueError
 
         deal.code_number = new_code_number - 1
         return deal

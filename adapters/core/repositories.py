@@ -4,7 +4,7 @@ from core.pagination import MAX_LIMIT
 
 
 class ChildMeta(ABC):
-    columns: list[str]
+    columns: tuple[str]
 
 
 class PgRepository:
