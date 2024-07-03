@@ -1,6 +1,7 @@
 from abc import ABC
 
 from core.pagination import MAX_LIMIT
+from core.errors import PermissionDeniedError
 
 
 class ChildMeta(ABC):
@@ -47,7 +48,6 @@ class PgRepository:
             limit = MAX_LIMIT
         args.append(limit)
         stmt += f'LIMIT ${len(args)}'
-
         return stmt, args
     
     def offset(
@@ -58,8 +58,9 @@ class PgRepository:
     ):
         if not offset or offset < 0:
             offset = 0
+        if offset > 99999:
+            raise PermissionDeniedError(f'offset: {offset} not supported')
+        
         args.append(offset)
         stmt += f'OFFSET ${len(args)}'
-
         return stmt, args
-    
