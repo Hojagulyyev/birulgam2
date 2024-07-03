@@ -1,18 +1,36 @@
+from abc import ABC
+
 from core.pagination import MAX_LIMIT
 
 
+class ChildMeta(ABC):
+    columns: list[str]
+
+
 class PgRepository:
+
+    def _get_child_meta(self) -> ChildMeta:
+        try:
+            meta: ChildMeta = getattr(self, 'Meta')
+        except AttributeError:
+            raise NotImplementedError
+        return meta
+
+    def columns(self):
+        meta = self._get_child_meta()
+        return ', '.join(meta.columns)
 
     def order_by(
         self,
         order_by: str | None,
         stmt: str,
         args: list,
-        available_columns: str,
     ):
+        meta = self._get_child_meta()
+        
         if order_by:
             order_field = order_by[1:] if order_by.startswith('-') else order_by
-            order_field = order_field if order_field in available_columns else 'id'
+            order_field = order_field if order_field in meta.columns else 'id'
             stmt += f'ORDER BY {order_field} '
 
             order_type = 'DESC ' if order_by.startswith('-') else 'ASC '

@@ -12,25 +12,26 @@ from adapters.core.repositories import PgRepository
 
 class ContactPgRepository(PgRepository, IContactRepository):
 
-    class Constraints:
-        uk_phone = 'contact__uk__company_id__phone'
-
-    columns = '''
-        id,
-        company_id,
-        first_name,
-        surname,
-        patronymic,
-        phone,
-        address,
-        birthday,
-        gender,
-        workplace,
-        job_title,
-        passport,
-        passport_issued_date,
-        passport_issued_place
-    '''
+    class Meta:
+        columns = [
+            'id',
+            'company_id',
+            'first_name',
+            'surname',
+            'patronymic',
+            'phone',
+            'address',
+            'birthday',
+            'gender',
+            'workplace',
+            'job_title',
+            'passport',
+            'passport_issued_date',
+            'passport_issued_place',
+        ]
+        constraints = {
+            'uk_phone': 'contact__uk__company_id__phone'
+        }
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -46,7 +47,7 @@ class ContactPgRepository(PgRepository, IContactRepository):
             '''
             SELECT
             '''
-            + self.columns + 
+            + self.columns() + 
             '''
                 ,
                 COUNT(*) OVER() AS total
@@ -61,7 +62,7 @@ class ContactPgRepository(PgRepository, IContactRepository):
             args.append(company_id)
             stmt += f'AND company_id = ${len(args)}'
 
-        stmt, args = super().order_by(order_by, stmt, args, self.columns)
+        stmt, args = super().order_by(order_by, stmt, args)
         stmt, args = super().limit(first, stmt, args)
         stmt, args = super().offset(skip, stmt, args)
 
@@ -146,7 +147,7 @@ class ContactPgRepository(PgRepository, IContactRepository):
             if not contact_id:
                 raise ValueError
         except UniqueViolationError as e:
-            if self.Constraints.uk_phone in str(e):
+            if self.Meta.constraints['uk_phone'] in str(e):
                 raise UniqueError(loc=['contact', 'phone'])
             raise e
 

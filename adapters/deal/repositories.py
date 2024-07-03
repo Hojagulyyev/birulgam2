@@ -11,31 +11,33 @@ from adapters.core.repositories import PgRepository
 
 class DealPgRepository(PgRepository, IDealRepository):
 
-    class Constraints:
-        fk_store_id = 'deal_store_id_fkey'
-
-    columns = '''
-        id,
-        company_id,
-        store_id,
-        created_by_id,
-        seller_id,
-        buyer_id,
-        store_code,
-        code_number,
-        total_amount,
-        remaining_amount_due,
-        type,
-        installments_total_amount,
-        installments,
-        installment_amount,
-        installment_trifle,
-        installment_expiration_date,
-        created_at,
-        last_paid_at,
-        closed_at,
-        note
-    '''
+    class Meta:
+        columns = [
+            'id',
+            'company_id',
+            'store_id',
+            'created_by_id',
+            'seller_id',
+            'buyer_id',
+            'store_code',
+            'code_number',
+            'total_amount',
+            'remaining_amount_due',
+            'type',
+            'installments_total_amount',
+            'installments',
+            'installment_amount',
+            'installment_trifle',
+            'installment_expiration_date',
+            'created_at',
+            'last_paid_at',
+            'closed_at',
+            'note',
+        ]
+        constraints = {
+            'fk_store_id': 'deal_store_id_fkey'
+        }
+    
 
     def __init__(self, conn: Connection):
         self._conn = conn
@@ -53,7 +55,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             '''
             SELECT
             '''
-            + self.columns + 
+            + self.columns() + 
             '''
                 ,
                 COUNT(*) OVER() AS total
@@ -78,7 +80,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             ids_placeholder = ', '.join([f'${i+param_position}' for i in range(len(ids))])
             stmt += f'AND id IN ({ids_placeholder})'
 
-        stmt, args = super().order_by(order_by, stmt, args, self.columns)
+        stmt, args = super().order_by(order_by, stmt, args)
         stmt, args = super().limit(first, stmt, args)
         stmt, args = super().offset(skip, stmt, args)
 
@@ -199,7 +201,7 @@ class DealPgRepository(PgRepository, IDealRepository):
             if not row:
                 raise ValueError
         except ForeignKeyViolationError as e:
-            if self.Constraints.fk_store_id in str(e):
+            if self.Meta.constraints['fk_store_id'] in str(e):
                 raise InvalidError(loc=['deal', 'store_id'])
             raise e
 
